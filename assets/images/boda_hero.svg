@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg_boda" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fcfbf7"/>
+      <stop offset="50%" stop-color="#f4efe6"/>
+      <stop offset="100%" stop-color="#e9e0d1"/>
+    </linearGradient>
+    <linearGradient id="gold_boda" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c5a059"/>
+      <stop offset="50%" stop-color="#ebd197"/>
+      <stop offset="100%" stop-color="#997a3a"/>
+    </linearGradient>
+    <linearGradient id="emerald" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2d5a27"/>
+      <stop offset="100%" stop-color="#1b3b18"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="1000" fill="url(#bg_boda)"/>
+
+  <!-- Geometric Frame -->
+  <g stroke="url(#gold_boda)" stroke-width="2" fill="none">
+    <rect x="100" y="100" width="600" height="800" rx="8"/>
+    <rect x="115" y="115" width="570" height="770" rx="4" stroke-dasharray="8,4"/>
+  </g>
+
+  <!-- Floral Ring Motif -->
+  <circle cx="400" cy="420" r="220" fill="none" stroke="url(#gold_boda)" stroke-width="3"/>
+  <circle cx="400" cy="420" r="210" fill="none" stroke="url(#gold_boda)" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <!-- Leaves & Floral Accents -->
+  <g fill="url(#emerald)" opacity="0.8">
+    <path d="M200,320 C180,290 190,260 220,280 C240,290 230,320 200,320 Z"/>
+    <path d="M190,340 C160,340 160,310 185,325 C200,335 195,350 190,340 Z"/>
+    <path d="M580,520 C600,550 590,580 560,560 C540,550 550,520 580,520 Z"/>
+    <path d="M600,500 C630,500 630,530 605,515 C590,505 595,490 600,500 Z"/>
+  </g>
+
+  <!-- Couple Rings Icon -->
+  <g fill="none" stroke="url(#gold_boda)" stroke-width="4">
+    <circle cx="375" cy="380" r="35"/>
+    <circle cx="425" cy="380" r="35"/>
+  </g>
+  <polygon points="375,340 379,348 387,348 380,353 383,361 375,356 367,361 370,353 363,348 371,348" fill="url(#gold_boda)"/>
+
+  <!-- Text Placeholder -->
+  <text x="400" y="520" font-family="'Cormorant Garamond', serif" font-size="48" font-weight="bold" fill="#332c23" text-anchor="middle">María &amp; Carlos</text>
+  <text x="400" y="565" font-family="'Montserrat', sans-serif" font-size="18" letter-spacing="6" fill="#8c7443" text-anchor="middle">NUESTRA BODA</text>
+  <text x="400" y="600" font-family="'Cormorant Garamond', serif" font-style="italic" font-size="22" fill="#665b4e" text-anchor="middle">"Uniendo nuestras vidas para siempre"</text>
+
+  <!-- Date Badge -->
+  <rect x="300" y="680" width="200" height="50" rx="25" fill="#ffffff" stroke="url(#gold_boda)" stroke-width="1.5"/>
+  <text x="400" y="712" font-family="'Montserrat', sans-serif" font-size="16" font-weight="600" fill="#332c23" text-anchor="middle">18 DE OCTUBRE, 2026</text>
+</svg>
