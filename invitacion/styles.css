@@ -1,8 +1,8 @@
 /* ==========================================================================
-   SISTEMA DE ESTILOS Y TEMAS VISUALES PARA INVITACIONES DIGITALES
+   SUITE DE INVITACIONES DIGITALES PREMIUM — ESTILOS & GLASSMORPHISM
    ========================================================================== */
 
-/* --- RESET & BASIC SETUP --- */
+/* --- RESET & FOUNDATION --- */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -21,9 +21,8 @@ body {
     color: var(--text-color);
     line-height: 1.6;
     overflow-x: hidden;
-    max-width: 100vw;
     min-height: 100vh;
-    transition: background-color 0.4s ease, color 0.4s ease;
+    transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 img {
@@ -33,106 +32,85 @@ img {
 }
 
 /* ==========================================================================
-   TEMAS CROMÁTICOS (SE APLICAN AUTOMÁTICAMENTE SEGÚN TIPO DE EVENTO)
+   TEMAS CROMÁTICOS PREMIUM POR TIPO DE EVENTO
    ========================================================================== */
 
-/* Tema 1: XV Años (Rosa, Dorado Elegante, Blanco Marfil) */
+/* 1. Tema XV Años (Rosa Empolvado, Dorado Garamond, Púrpura) */
 .theme-quinceanos, .theme-default {
-    --bg-color: #fff9fa;
-    --card-bg: #ffffff;
+    --bg-color: #fff5f7;
+    --card-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(212, 175, 55, 0.35);
     --text-color: #4a3e4e;
     --text-muted: #8e7a95;
     --accent-color: #d4af37;
-    --accent-glow: rgba(212, 175, 55, 0.25);
+    --accent-glow: rgba(212, 175, 55, 0.35);
     --secondary-color: #e8b4b8;
     --primary-btn-bg: linear-gradient(135deg, #d4af37 0%, #aa771c 100%);
     --primary-btn-text: #ffffff;
     --font-heading: 'Playfair Display', serif;
     --font-hand: 'Great Vibes', cursive;
-    --border-color: rgba(212, 175, 55, 0.3);
+    --shadow-color: rgba(109, 89, 122, 0.15);
 }
 
-/* Tema 2: Boda (Dorado Champán, Blanco, Esmeralda Suave) */
+/* 2. Tema Boda (Champagne Ivory, Oro Cautivador, Esmeralda) */
 .theme-boda {
     --bg-color: #fbf9f5;
-    --card-bg: #ffffff;
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(197, 160, 89, 0.4);
     --text-color: #2c2825;
     --text-muted: #736b63;
     --accent-color: #c5a059;
-    --accent-glow: rgba(197, 160, 89, 0.25);
+    --accent-glow: rgba(197, 160, 89, 0.3);
     --secondary-color: #2d5a27;
     --primary-btn-bg: linear-gradient(135deg, #c5a059 0%, #997a3a 100%);
     --primary-btn-text: #ffffff;
     --font-heading: 'Cormorant Garamond', serif;
     --font-hand: 'Cormorant Garamond', serif;
-    --border-color: rgba(197, 160, 89, 0.35);
+    --shadow-color: rgba(51, 44, 35, 0.12);
 }
 
-/* Tema 3: Cumpleaños / Fiesta (Oscuro Neón, Cian, Violeta) */
+/* 3. Tema Cumpleaños (Oscuro Neón, Cian, Magenta, Violeta) */
 .theme-cumpleanos {
-    --bg-color: #0d1117;
-    --card-bg: #161b22;
+    --bg-color: #090a12;
+    --card-bg: rgba(22, 27, 34, 0.85);
+    --glass-border: rgba(0, 242, 254, 0.4);
     --text-color: #f0f6fc;
     --text-muted: #8b949e;
     --accent-color: #00f2fe;
-    --accent-glow: rgba(0, 242, 254, 0.3);
+    --accent-glow: rgba(0, 242, 254, 0.4);
     --secondary-color: #ff416c;
     --primary-btn-bg: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
     --primary-btn-text: #ffffff;
     --font-heading: 'Outfit', sans-serif;
     --font-hand: 'Outfit', sans-serif;
-    --border-color: rgba(0, 242, 254, 0.3);
+    --shadow-color: rgba(0, 242, 254, 0.2);
 }
 
 /* ==========================================================================
-   PANTALLA DE ERROR / 404
+   GLASSMORPHISM & PANELS
    ========================================================================== */
-.full-screen-center {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: #0f172a;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 99999;
+.glass-card, .glass-panel {
+    background: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 28px;
+    box-shadow: 0 15px 35px var(--shadow-color);
 }
 
-.error-card {
-    background: #1e293b;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+.glass-box {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
     border-radius: 20px;
-    padding: 40px 25px;
-    text-align: center;
-    max-width: 420px;
-    width: 100%;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
 }
 
-.error-icon {
-    font-size: 3.5rem;
-    margin-bottom: 15px;
-}
-
-.error-card h2 {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.6rem;
-    margin-bottom: 10px;
-    color: #f8fafc;
-}
-
-.error-card p {
-    color: #94a3b8;
-    font-size: 0.95rem;
-    margin-bottom: 25px;
+.theme-cumpleanos .glass-box {
+    background: rgba(255, 255, 255, 0.05);
 }
 
 /* ==========================================================================
-   PORTADA OVERLAY DE APERTURA (COVER SCREEN)
+   PORTADA DE APERTURA (COVER OVERLAY)
    ========================================================================== */
 .cover-overlay {
     position: fixed;
@@ -145,41 +123,70 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 9000;
+    z-index: 99000;
     padding: 25px;
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transition: opacity 0.8s cubic-bezier(0.65, 0, 0.35, 1), transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .cover-overlay.hide-cover {
     opacity: 0;
-    transform: translateY(-100%);
+    transform: scale(1.1) translateY(-100%);
     pointer-events: none;
+}
+
+.particles-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.particle {
+    position: absolute;
+    background: var(--accent-color);
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: floatParticle 8s infinite linear;
+}
+
+@keyframes floatParticle {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    50% { opacity: 0.8; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
 }
 
 .cover-content {
     text-align: center;
-    max-width: 450px;
+    max-width: 440px;
     width: 100%;
-    animation: fadeIn 1s ease;
+    padding: 40px 25px;
+    position: relative;
+    z-index: 2;
+    animation: fadeInScale 1s ease;
 }
 
 .cover-badge {
     display: inline-block;
     font-size: 0.75rem;
-    letter-spacing: 3px;
+    letter-spacing: 4px;
     text-transform: uppercase;
     color: var(--accent-color);
-    border: 1px solid var(--border-color);
-    padding: 6px 16px;
+    border: 1px solid var(--glass-border);
+    padding: 6px 18px;
     border-radius: 30px;
     margin-bottom: 20px;
-    font-weight: 600;
+    font-weight: 700;
+    background: rgba(255,255,255,0.1);
 }
 
 .cover-title {
     font-family: var(--font-heading);
-    font-size: 2.8rem;
-    line-height: 1.1;
+    font-size: clamp(2.2rem, 7vw, 3.2rem);
+    line-height: 1.15;
     color: var(--text-color);
     margin-bottom: 15px;
     font-weight: 700;
@@ -190,7 +197,6 @@ img {
     color: var(--text-muted);
     font-style: italic;
     margin-bottom: 25px;
-    padding: 0 15px;
 }
 
 .cover-decoration {
@@ -202,15 +208,15 @@ img {
     color: var(--accent-color);
 }
 
-.cover-decoration .line {
+.ornament-line {
     width: 60px;
-    height: 1px;
+    height: 1.5px;
     background: var(--accent-color);
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 /* ==========================================================================
-   BOTONES & INTERACCIONES
+   BOTONES PREMIUM & EFECTOS SHIMMER
    ========================================================================== */
 .btn {
     display: inline-flex;
@@ -221,17 +227,17 @@ img {
     border-radius: 50px;
     font-family: 'Montserrat', sans-serif;
     font-size: 0.95rem;
-    font-weight: 600;
+    font-weight: 700;
     text-decoration: none;
     cursor: pointer;
     border: none;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    position: relative;
+    overflow: hidden;
 }
 
-.btn-full {
-    width: 100%;
-}
+.btn-full { width: 100%; }
 
 .btn-gold {
     background: var(--primary-btn-bg);
@@ -246,67 +252,110 @@ img {
 .btn-secondary {
     background: var(--card-bg);
     color: var(--text-color);
-    border: 1.5px solid var(--border-color);
+    border: 1.5px solid var(--glass-border);
+}
+
+.btn-waze {
+    background: linear-gradient(135deg, #33ccff 0%, #0099ff 100%);
+    color: #ffffff;
 }
 
 .btn-whatsapp {
     background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
     color: #ffffff;
     font-size: 1.05rem;
-    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
+    box-shadow: 0 12px 28px rgba(37, 211, 102, 0.35);
 }
 
 .btn:hover, .btn:active {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 25px rgba(0,0,0,0.18);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+.btn-shimmer::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(60deg, transparent 30%, rgba(255,255,255,0.4) 50%, transparent 70%);
+    transform: rotate(30deg);
+    animation: shimmerEffect 3s infinite;
+}
+
+@keyframes shimmerEffect {
+    0% { transform: translate(-100%, -100%) rotate(30deg); }
+    100% { transform: translate(100%, 100%) rotate(30deg); }
 }
 
 .btn-pulse {
-    animation: pulseGlow 2s infinite;
+    animation: pulseGlow 2.2s infinite;
 }
 
 @keyframes pulseGlow {
-    0% {
-        box-shadow: 0 0 0 0 var(--accent-glow);
-    }
-    70% {
-        box-shadow: 0 0 0 16px rgba(0, 0, 0, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-    }
+    0% { box-shadow: 0 0 0 0 var(--accent-glow); }
+    70% { box-shadow: 0 0 0 18px rgba(0, 0, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
 }
 
 /* ==========================================================================
-   REPRODUCTOR DE MÚSICA FLOTANTE
+   REPRODUCTOR DE MÚSICA FLOTANTE (VINILO & ECUALIZADOR)
    ========================================================================== */
 .floating-music-btn {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 25px;
+    right: 25px;
     z-index: 8000;
     background: var(--card-bg);
-    border: 1.5px solid var(--border-color);
+    backdrop-filter: blur(12px);
+    border: 1.5px solid var(--glass-border);
     padding: 8px 16px;
-    border-radius: 30px;
+    border-radius: 40px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     cursor: pointer;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
 }
 
 .floating-music-btn:hover {
-    transform: scale(1.05);
+    transform: scale(1.06);
+}
+
+.vinyl-disc {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #333 30%, #111 80%);
+    border: 1px solid var(--accent-color);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vinyl-center {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-color);
+}
+
+.floating-music-btn.playing .vinyl-disc {
+    animation: rotateVinyl 3s linear infinite;
+}
+
+@keyframes rotateVinyl {
+    100% { transform: rotate(360deg); }
 }
 
 .eq-bars {
     display: flex;
     align-items: flex-end;
     gap: 3px;
-    height: 16px;
+    height: 14px;
 }
 
 .bar {
@@ -314,45 +363,48 @@ img {
     height: 100%;
     background: var(--accent-color);
     border-radius: 2px;
-    transition: height 0.2s ease;
 }
 
-.floating-music-btn.playing .bar:nth-child(1) {
-    animation: eqBar 0.8s ease-in-out infinite alternate;
-}
-.floating-music-btn.playing .bar:nth-child(2) {
-    animation: eqBar 0.8s ease-in-out 0.3s infinite alternate;
-}
-.floating-music-btn.playing .bar:nth-child(3) {
-    animation: eqBar 0.8s ease-in-out 0.6s infinite alternate;
-}
+.floating-music-btn.playing .bar:nth-child(1) { animation: eqBar 0.8s ease infinite alternate; }
+.floating-music-btn.playing .bar:nth-child(2) { animation: eqBar 0.8s ease 0.3s infinite alternate; }
+.floating-music-btn.playing .bar:nth-child(3) { animation: eqBar 0.8s ease 0.6s infinite alternate; }
 
 @keyframes eqBar {
     0% { height: 4px; }
-    100% { height: 16px; }
+    100% { height: 14px; }
 }
 
 .music-label {
     font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-color);
 }
 
 /* ==========================================================================
-   ESTRUCTURA PRINCIPAL Y SECCIONES
+   DESKTOP SMARTPHONE MOCKUP SHELL (>= 768px)
    ========================================================================== */
-#invitation-app {
-    max-width: 480px;
+.desktop-mockup-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.mobile-phone-shell {
+    width: 100%;
+    max-width: 450px;
     margin: 0 auto;
-    padding-bottom: 60px;
+    padding-bottom: 70px;
     background: var(--bg-color);
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.05);
+    position: relative;
     min-height: 100vh;
 }
 
 .section {
-    padding: 40px 20px;
+    padding: 45px 22px;
     text-align: center;
+    position: relative;
 }
 
 .section-subtitle {
@@ -366,31 +418,20 @@ img {
 
 .section-title {
     font-family: var(--font-heading);
-    font-size: 2.2rem;
+    font-size: clamp(2rem, 6vw, 2.5rem);
     color: var(--text-color);
     margin-bottom: 25px;
     line-height: 1.2;
 }
 
 .section-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 24px;
-    padding: 30px 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-    position: relative;
-}
-
-.gold-border {
-    border-color: var(--accent-color);
+    padding: 32px 22px;
 }
 
 /* ==========================================================================
    HERO SECTION
    ========================================================================== */
-.hero-section {
-    padding-top: 30px;
-}
+.hero-section { padding-top: 35px; }
 
 .hero-container {
     display: flex;
@@ -399,20 +440,30 @@ img {
 }
 
 .hero-frame {
-    width: 260px;
-    height: 330px;
-    border-radius: 130px 130px 24px 24px;
+    width: 270px;
+    height: 350px;
+    border-radius: 135px 135px 28px 28px;
     overflow: hidden;
     border: 4px solid var(--card-bg);
-    outline: 2px solid var(--accent-color);
-    box-shadow: 0 15px 35px var(--accent-glow);
+    outline: 2.5px solid var(--accent-color);
+    box-shadow: 0 18px 40px var(--shadow-color);
     margin-bottom: 25px;
+    position: relative;
 }
 
 .hero-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.kenburns {
+    animation: kenburnsEffect 20s infinite alternate;
+}
+
+@keyframes kenburnsEffect {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.12); }
 }
 
 .hero-subtitle {
@@ -426,7 +477,7 @@ img {
 
 .hero-title {
     font-family: var(--font-heading);
-    font-size: 2.5rem;
+    font-size: clamp(2rem, 6vw, 2.6rem);
     color: var(--text-color);
     line-height: 1.1;
     margin-bottom: 5px;
@@ -434,22 +485,19 @@ img {
 
 .hero-name {
     font-family: var(--font-hand);
-    font-size: 3.2rem;
+    font-size: clamp(2.8rem, 9vw, 3.8rem);
     color: var(--accent-color);
     margin-bottom: 20px;
     font-weight: 400;
 }
 
 .hero-date-badge {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    padding: 12px 24px;
+    padding: 14px 28px;
     border-radius: 50px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
 .date-line {
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 700;
     color: var(--text-color);
 }
@@ -461,7 +509,7 @@ img {
 }
 
 /* ==========================================================================
-   CUENTA REGRESIVA
+   CUENTA REGRESIVA ACRYLIC GLASS
    ========================================================================== */
 .timer-grid {
     display: grid;
@@ -471,19 +519,17 @@ img {
 }
 
 .timer-box {
-    background: var(--bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 14px 6px;
+    padding: 16px 6px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
 }
 
 .timer-number {
     font-family: var(--font-heading);
-    font-size: 1.8rem;
-    font-weight: 700;
+    font-size: 1.9rem;
+    font-weight: 800;
     color: var(--accent-color);
     line-height: 1;
     margin-bottom: 4px;
@@ -492,13 +538,21 @@ img {
 .timer-label {
     font-size: 0.65rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     color: var(--text-muted);
+    font-weight: 600;
 }
 
 /* ==========================================================================
-   MENSAJE PRINCIPAL
+   MENSAJE PRINCIPAL & ORNAMENTOS
    ========================================================================== */
+.ornament-top, .ornament-bottom {
+    font-size: 1.8rem;
+    color: var(--accent-color);
+    opacity: 0.5;
+    margin: 5px 0;
+}
+
 .quote-icon {
     font-family: var(--font-heading);
     font-size: 3.5rem;
@@ -506,13 +560,11 @@ img {
     line-height: 0.5;
     opacity: 0.4;
     text-align: left;
-    margin-bottom: 10px;
 }
 
 .quote-icon.right {
     text-align: right;
     margin-top: 10px;
-    margin-bottom: 0;
 }
 
 .message-text {
@@ -524,33 +576,39 @@ img {
 }
 
 /* ==========================================================================
-   GALERÍA DE FOTOS & LIGHTBOX
+   GALERÍA MASONRY & LIGHTBOX AVANZADO
    ========================================================================== */
 .gallery-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 14px;
 }
 
 .gallery-item {
     aspect-ratio: 1 / 1;
-    border-radius: 16px;
+    border-radius: 20px;
     overflow: hidden;
     position: relative;
     cursor: pointer;
-    border: 2px solid var(--card-bg);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+    border: 2px solid var(--glass-border);
+    box-shadow: 0 8px 20px var(--shadow-color);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.gallery-item:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 25px var(--accent-glow);
 }
 
 .gallery-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
+    transition: transform 0.6s ease;
 }
 
 .gallery-item:hover img {
-    transform: scale(1.08);
+    transform: scale(1.1);
 }
 
 .lightbox-modal {
@@ -559,10 +617,10 @@ img {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 99999;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(12px);
+    z-index: 999999;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 20px;
@@ -570,215 +628,209 @@ img {
 
 .lightbox-close {
     position: absolute;
-    top: 20px;
-    right: 25px;
+    top: 25px;
+    right: 30px;
     color: #ffffff;
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     cursor: pointer;
+    z-index: 10;
+}
+
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.65);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    font-size: 1.8rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 100;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.lightbox-nav:hover {
+    background: var(--accent-color);
+    color: #ffffff;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.nav-prev { left: 15px; }
+.nav-next { right: 15px; }
+
+
+.lightbox-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 90vw;
+    max-height: 85vh;
 }
 
 .lightbox-content {
-    max-width: 90vw;
-    max-height: 80vh;
-    border-radius: 12px;
-    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    max-width: 100%;
+    max-height: 75vh;
+    border-radius: 16px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+    object-fit: contain;
 }
 
-.lightbox-caption {
-    color: #ffffff;
+.lightbox-info {
     margin-top: 15px;
-    font-size: 1rem;
     text-align: center;
+    color: #ffffff;
 }
 
-/* ==========================================================================
-   VIDEO SECTION
-   ========================================================================== */
-.video-container {
-    width: 100%;
+.lightbox-counter {
+    display: inline-block;
+    font-size: 0.8rem;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 12px;
     border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    background: #000;
+    margin-bottom: 6px;
 }
 
-.video-container video, .video-container iframe {
-    width: 100%;
-    height: 250px;
-    border: none;
-    display: block;
-}
+.lightbox-caption { font-size: 1rem; }
 
 /* ==========================================================================
-   UBICACIÓN & DETALLES
+   UBICACIÓN & BOTONES MAPA
    ========================================================================== */
-.location-icon {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-}
-
-.location-address {
-    font-size: 0.95rem;
-    color: var(--text-muted);
-    margin-bottom: 20px;
+.map-buttons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 15px;
 }
 
 .details-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 14px;
 }
 
 .detail-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 20px 15px;
+    padding: 22px 16px;
     text-align: center;
 }
 
+.full-width-card {
+    grid-column: span 2;
+}
+
 .card-icon {
-    font-size: 2rem;
+    font-size: 2.2rem;
     margin-bottom: 8px;
 }
 
 .detail-card h4 {
     font-size: 0.85rem;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--accent-color);
     margin-bottom: 6px;
     text-transform: uppercase;
 }
 
 .detail-card p {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     color: var(--text-muted);
     line-height: 1.4;
 }
 
 /* ==========================================================================
-   RSVP WHATSAPP & FOOTER
+   RSVP WHATSAPP & BOTÓN FLOTANTE MÓVIL
    ========================================================================== */
 .rsvp-card {
-    background: var(--card-bg);
     border: 2px solid #25D366;
-    border-radius: 24px;
-    padding: 30px 20px;
-    box-shadow: 0 12px 30px rgba(37, 211, 102, 0.15);
-    text-align: center;
+    border-radius: 28px;
 }
 
-.rsvp-badge {
-    display: inline-block;
-    background: rgba(37, 211, 102, 0.1);
-    color: #25D366;
-    font-weight: 700;
-    font-size: 0.7rem;
-    letter-spacing: 2px;
-    padding: 4px 12px;
-    border-radius: 20px;
-    margin-bottom: 10px;
+.rsvp-glow {
+    box-shadow: 0 15px 35px rgba(37, 211, 102, 0.2);
 }
 
-.rsvp-card h2 {
-    font-family: var(--font-heading);
-    font-size: 2rem;
-    color: var(--text-color);
-    margin-bottom: 8px;
-}
-
-.rsvp-card p {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    margin-bottom: 20px;
-}
-
-.footer-section {
-    padding: 30px 20px 10px;
-    text-align: center;
-    border-top: 1px solid var(--border-color);
-    margin-top: 20px;
-}
-
-.final-message {
-    font-family: var(--font-heading);
-    font-size: 1.4rem;
-    color: var(--text-color);
-    margin-bottom: 15px;
-    font-style: italic;
-}
-
-.footer-brand {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    letter-spacing: 1px;
+.sticky-whatsapp-mobile {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    z-index: 8500;
+    box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
 }
 
 /* ==========================================================================
-   ANIMACIONES SCROLL REVEAL
+   CLASES DE ANIMACIÓN & SCROLL REVEAL (INTERSECTION OBSERVER)
    ========================================================================== */
-.reveal-on-scroll {
+.reveal {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(35px);
     transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.reveal-on-scroll.is-visible {
+.reveal.is-visible {
     opacity: 1;
     transform: translateY(0);
 }
 
+.glow-text {
+    text-shadow: 0 0 12px var(--accent-glow);
+}
+
 /* ==========================================================================
-   RESPONSIVE BREAKPOINTS (375px, 390px, 414px, 768px, 1366px)
+   ACCESIBILIDAD (PREFERS REDUCED MOTION)
    ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
 
-/* Small Devices (375px - iPhone SE) */
-@media screen and (max-width: 375px) {
-    .cover-title { font-size: clamp(2rem, 8vw, 2.5rem); }
-    .hero-title { font-size: clamp(1.8rem, 7vw, 2.3rem); }
-    .hero-name { font-size: clamp(2.4rem, 9vw, 3rem); }
-    .timer-number { font-size: 1.5rem; }
-    .btn { padding: 14px 20px; font-size: 0.85rem; }
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS (375px, 390px, 414px, 768px, 1366px, 1920px)
+   ========================================================================== */
+@media screen and (max-width: 480px) {
+    .sticky-whatsapp-mobile { display: inline-flex; }
+    .hero-frame { width: 230px; height: 300px; }
     .details-grid { grid-template-columns: 1fr; }
-    .section { padding: 30px 15px; }
+    .full-width-card { grid-column: span 1; }
+    .map-buttons-grid { grid-template-columns: 1fr; }
+    .nav-prev { left: 10px; }
+    .nav-next { right: 10px; }
 }
 
-/* Medium Mobile (390px - 414px - iPhone 12/13/14/Pro Max) */
-@media screen and (min-width: 376px) and (max-width: 480px) {
-    #invitation-app { max-width: 100vw; }
-}
-
-/* Tablets & Larger Screens (768px - 1366px) */
 @media screen and (min-width: 768px) {
     body {
-        background-color: #0b0f19;
-        background-image: radial-gradient(circle at 50% 30%, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+        background-color: #080b12;
+        background-image: radial-gradient(circle at 50% 30%, var(--accent-glow) 0%, transparent 65%);
         padding: 40px 0;
     }
 
-    #invitation-app {
+    .mobile-phone-shell {
         margin: 0 auto;
-        border-radius: 36px;
-        border: 2px solid var(--border-color);
-        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+        border-radius: 40px;
+        border: 3px solid var(--glass-border);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
         position: relative;
     }
 
     .floating-music-btn {
-        right: calc(50vw - 220px);
-        top: 40px;
+        right: calc(50vw - 210px);
+        top: 60px;
     }
 
     .cover-overlay {
-        background: #0b0f19;
-    }
-
-    .cover-content {
-        background: var(--bg-color);
-        padding: 40px;
-        border-radius: 30px;
-        border: 1px solid var(--border-color);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        background: #080b12;
     }
 }
-

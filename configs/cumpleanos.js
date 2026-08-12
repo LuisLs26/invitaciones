@@ -16,14 +16,16 @@ const INVITATION_CONFIG = {
     locationName: "Terraza Lounge Club Bar",
     address: "Calle Los Pinos 340, Miraflores",
     mapUrl: "https://maps.google.com/?q=Miraflores+Lima",
+    wazeUrl: "https://waze.com/ul?q=Miraflores+Lima",
     whatsapp: "51933334444",
     whatsappMessage: "¡Habla Juan! Confirmo mi asistencia a tu fiesta de 18 🔥. Mi nombre es: ",
-    heroImage: "../assets/images/cumple_hero.svg",
+    heroImage: "../assets/images/cumpleanos/hero.svg",
     coverQuote: "La vida es una sola y los 18 solo se cumplen una vez.",
     mainMessage: "Se armó la fiesta de mis 18 años. Música, tragos, buena vibra y el mejor ambiente. No puedes faltar, trae toda la actitud.",
     dressCode: "Sport Elegante / Dress to Impress",
     giftInfo: "¡Tu buena vibra y tu presencia son suficientes! (Si traes regalo, no me enojo 😉).",
-    
+    passInfo: "Pase Personal para la fiesta",
+
     // Feature Toggles (Básica - No extras)
     showMusic: false,
     music: null,

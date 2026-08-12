@@ -1,5 +1,5 @@
 /* ==========================================================================
-   LANDING PAGE COMERCIAL — ESTILOS Y RESPONSIVIDAD
+   LANDING PAGE COMERCIAL PREMIUM — ESTILOS ULTRA-MODERNOS & SHIMMER
    ========================================================================== */
 
 *, *::before, *::after {
@@ -15,11 +15,23 @@ html {
 
 body {
     font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: #0b0f19;
+    background-color: #070913;
     color: #f1f5f9;
     line-height: 1.6;
     overflow-x: hidden;
-    max-width: 100vw;
+    position: relative;
+}
+
+.ambient-glow-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at 50% 15%, rgba(59, 130, 246, 0.18) 0%, transparent 60%),
+                radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.12) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 code {
@@ -30,8 +42,16 @@ code {
     color: #00f2fe;
 }
 
+.glass-card {
+    background: rgba(19, 25, 39, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+}
+
 /* ==========================================================================
-   HEADER & NAVBAR
+   NAVBAR
    ========================================================================== */
 .navbar {
     position: fixed;
@@ -39,10 +59,10 @@ code {
     left: 0;
     width: 100%;
     z-index: 9999;
-    background: rgba(11, 15, 25, 0.85);
-    backdrop-filter: blur(12px);
+    background: rgba(7, 9, 19, 0.85);
+    backdrop-filter: blur(16px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 15px 0;
+    padding: 16px 0;
 }
 
 .nav-container {
@@ -59,64 +79,52 @@ code {
     align-items: center;
     gap: 8px;
     font-family: 'Outfit', sans-serif;
-    font-size: 1.3rem;
-    font-weight: 700;
+    font-size: 1.4rem;
+    font-weight: 800;
     color: #ffffff;
     text-decoration: none;
 }
 
-.logo-sparkle {
-    font-size: 1.4rem;
-}
-
-.highlight {
-    color: #00f2fe;
-}
+.highlight { color: #00f2fe; }
 
 .nav-links {
     display: flex;
-    gap: 25px;
+    gap: 28px;
 }
 
 .nav-links a {
     color: #94a3b8;
     text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 0.92rem;
+    font-weight: 600;
     transition: color 0.3s ease;
 }
 
-.nav-links a:hover {
-    color: #00f2fe;
-}
+.nav-links a:hover { color: #00f2fe; }
 
 .btn-nav {
     background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
     color: #ffffff;
-    padding: 10px 20px;
+    padding: 10px 22px;
     border-radius: 30px;
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 700;
     text-decoration: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.btn-nav:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
 }
 
 /* ==========================================================================
    HERO LANDING
    ========================================================================== */
 .hero-landing {
-    padding: 160px 20px 80px;
+    padding: 170px 20px 90px;
     text-align: center;
-    background: radial-gradient(circle at 50% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
+    position: relative;
+    z-index: 1;
 }
 
 .hero-content {
-    max-width: 850px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
@@ -125,24 +133,25 @@ code {
     background: rgba(0, 242, 254, 0.1);
     color: #00f2fe;
     border: 1px solid rgba(0, 242, 254, 0.3);
-    padding: 6px 18px;
+    padding: 6px 20px;
     border-radius: 30px;
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 25px;
+    letter-spacing: 1px;
 }
 
 .hero-main-title {
     font-family: 'Outfit', sans-serif;
-    font-size: 3.2rem;
+    font-size: clamp(2.4rem, 7vw, 4rem);
     font-weight: 900;
-    line-height: 1.15;
-    margin-bottom: 20px;
+    line-height: 1.1;
+    margin-bottom: 22px;
     color: #ffffff;
 }
 
 .gradient-text {
-    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #00c6ff 100%);
+    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #d4af37 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -150,8 +159,8 @@ code {
 .hero-description {
     font-size: 1.15rem;
     color: #94a3b8;
-    margin-bottom: 35px;
-    max-width: 700px;
+    margin-bottom: 38px;
+    max-width: 720px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -160,85 +169,85 @@ code {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
+    gap: 18px;
     flex-wrap: wrap;
-    margin-bottom: 40px;
+    margin-bottom: 45px;
 }
 
 .btn-primary-landing {
     background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
     color: #ffffff;
-    padding: 16px 36px;
+    padding: 18px 40px;
     border-radius: 50px;
     font-size: 1.05rem;
-    font-weight: 700;
+    font-weight: 800;
     text-decoration: none;
-    box-shadow: 0 10px 25px rgba(255, 65, 108, 0.35);
-    transition: all 0.3s ease;
+    box-shadow: 0 12px 30px rgba(255, 65, 108, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .btn-primary-landing:hover {
     transform: translateY(-3px);
-    box-shadow: 0 14px 30px rgba(255, 65, 108, 0.5);
+    box-shadow: 0 16px 35px rgba(255, 65, 108, 0.55);
 }
 
 .btn-whatsapp-landing {
     background: #25D366;
     color: #ffffff;
-    padding: 16px 32px;
+    padding: 18px 36px;
     border-radius: 50px;
     font-size: 1.05rem;
-    font-weight: 700;
+    font-weight: 800;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
-    transition: all 0.3s ease;
+    box-shadow: 0 12px 30px rgba(37, 211, 102, 0.35);
+    transition: transform 0.3s ease;
 }
 
 .btn-whatsapp-landing:hover {
     transform: translateY(-3px);
-    box-shadow: 0 14px 30px rgba(37, 211, 102, 0.45);
 }
 
 .hero-stats {
     display: flex;
     justify-content: center;
-    gap: 30px;
+    gap: 20px;
     flex-wrap: wrap;
-    color: #cbd5e1;
-    font-size: 0.9rem;
-    font-weight: 600;
 }
 
-.stat-item {
+.stat-card {
     background: rgba(255, 255, 255, 0.05);
-    padding: 8px 18px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    padding: 10px 22px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #e2e8f0;
 }
 
 /* ==========================================================================
-   SECCIONES GENERALES
+   SECCIONES Y TARJETAS
    ========================================================================== */
 .section-landing {
-    padding: 90px 20px;
+    padding: 95px 20px;
+    position: relative;
+    z-index: 1;
 }
 
-.bg-darker {
-    background: #070a12;
-}
+.bg-darker { background: #05070e; }
 
 .container {
-    max-width: 1140px;
+    max-width: 1160px;
     margin: 0 auto;
 }
 
 .section-header {
     text-align: center;
-    max-width: 650px;
-    margin: 0 auto 50px;
+    max-width: 680px;
+    margin: 0 auto 55px;
 }
 
 .section-tag {
@@ -246,21 +255,21 @@ code {
     letter-spacing: 3px;
     text-transform: uppercase;
     color: #00f2fe;
-    font-weight: 700;
+    font-weight: 800;
     display: block;
     margin-bottom: 10px;
 }
 
 .section-header h2 {
     font-family: 'Outfit', sans-serif;
-    font-size: 2.3rem;
+    font-size: clamp(2rem, 5vw, 2.6rem);
     color: #ffffff;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
 .section-header p {
     color: #94a3b8;
-    font-size: 1rem;
+    font-size: 1.05rem;
 }
 
 /* ==========================================================================
@@ -269,38 +278,35 @@ code {
 .categories-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+    gap: 22px;
 }
 
 .cat-card {
-    background: #131927;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    padding: 30px 25px;
+    padding: 35px 25px;
     text-align: center;
     transition: transform 0.3s ease, border-color 0.3s ease;
 }
 
 .cat-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-6px);
     border-color: #00f2fe;
 }
 
 .cat-icon {
-    font-size: 2.8rem;
+    font-size: 3rem;
     margin-bottom: 15px;
 }
 
 .cat-card h3 {
     font-family: 'Outfit', sans-serif;
-    font-size: 1.3rem;
+    font-size: 1.35rem;
     color: #ffffff;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .cat-card p {
     color: #94a3b8;
-    font-size: 0.88rem;
+    font-size: 0.9rem;
 }
 
 /* ==========================================================================
@@ -309,50 +315,43 @@ code {
 .demos-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 30px;
-    margin-bottom: 50px;
+    gap: 32px;
+    margin-bottom: 55px;
 }
 
 .demo-card {
-    background: #131927;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     position: relative;
-    transition: transform 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
 }
 
 .demo-card:hover {
-    transform: translateY(-6px);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
 }
 
 .demo-badge {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 18px;
+    right: 18px;
     background: linear-gradient(135deg, #d4af37 0%, #aa771c 100%);
     color: #ffffff;
     font-size: 0.75rem;
-    font-weight: 700;
-    padding: 6px 14px;
+    font-weight: 800;
+    padding: 6px 16px;
     border-radius: 20px;
     z-index: 2;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
 }
 
-.demo-badge-purple {
-    background: linear-gradient(135deg, #a855f7 0%, #6b21a8 100%);
-}
-
-.demo-badge-cyan {
-    background: linear-gradient(135deg, #00f2fe 0%, #0284c7 100%);
-}
+.demo-badge-purple { background: linear-gradient(135deg, #a855f7 0%, #6b21a8 100%); }
+.demo-badge-cyan { background: linear-gradient(135deg, #00f2fe 0%, #0284c7 100%); }
 
 .demo-image-preview {
-    height: 240px;
-    background: #0b0f19;
+    height: 250px;
+    background: #070913;
     overflow: hidden;
 }
 
@@ -360,15 +359,13 @@ code {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: transform 0.6s ease;
 }
 
-.demo-card:hover .demo-image-preview img {
-    transform: scale(1.05);
-}
+.demo-card:hover .demo-image-preview img { transform: scale(1.08); }
 
 .demo-info {
-    padding: 25px;
+    padding: 28px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -376,15 +373,15 @@ code {
 
 .demo-info h3 {
     font-family: 'Outfit', sans-serif;
-    font-size: 1.35rem;
+    font-size: 1.4rem;
     color: #ffffff;
     margin-bottom: 8px;
 }
 
 .demo-info p {
     color: #94a3b8;
-    font-size: 0.9rem;
-    margin-bottom: 20px;
+    font-size: 0.92rem;
+    margin-bottom: 22px;
     flex-grow: 1;
 }
 
@@ -392,26 +389,24 @@ code {
     background: rgba(255, 255, 255, 0.08);
     color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.15);
-    padding: 12px 20px;
+    padding: 14px 24px;
     border-radius: 30px;
     text-align: center;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.9rem;
     transition: all 0.3s ease;
 }
 
 .btn-demo:hover {
     background: #00f2fe;
-    color: #0b0f19;
+    color: #070913;
     border-color: #00f2fe;
 }
 
 .error-test-box {
-    background: rgba(239, 68, 68, 0.1);
     border: 1px dashed rgba(239, 68, 68, 0.4);
-    border-radius: 20px;
-    padding: 25px;
+    padding: 30px;
     text-align: center;
     max-width: 650px;
     margin: 0 auto;
@@ -419,69 +414,63 @@ code {
 
 .error-test-box h4 {
     color: #fca5a5;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     margin-bottom: 8px;
 }
 
 .error-test-box p {
     color: #cbd5e1;
-    font-size: 0.9rem;
-    margin-bottom: 15px;
+    font-size: 0.92rem;
+    margin-bottom: 18px;
 }
 
 .btn-outline-small {
     display: inline-block;
     border: 1px solid #fca5a5;
     color: #fca5a5;
-    padding: 8px 18px;
-    border-radius: 20px;
-    font-size: 0.85rem;
+    padding: 10px 22px;
+    border-radius: 30px;
+    font-size: 0.88rem;
     text-decoration: none;
-    font-weight: 600;
-    transition: background 0.3s ease;
-}
-
-.btn-outline-small:hover {
-    background: rgba(239, 68, 68, 0.2);
+    font-weight: 700;
 }
 
 /* ==========================================================================
-   TABLA DE PRECIOS
+   TABLA DE PRECIOS & PLAN S/ 20 DESTACADO
    ========================================================================== */
 .pricing-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
     gap: 30px;
     align-items: stretch;
 }
 
 .pricing-card {
-    background: #131927;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 24px;
-    padding: 35px 25px;
+    padding: 40px 28px;
     display: flex;
     flex-direction: column;
     position: relative;
+    transition: transform 0.3s ease;
 }
 
-.pricing-card.popular {
+.popular-card {
     border: 2px solid #d4af37;
-    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15);
-    background: #171f30;
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.25);
+    transform: scale(1.04);
 }
 
 .popular-badge {
     position: absolute;
-    top: -14px;
+    top: -16px;
     left: 50%;
     transform: translateX(-50%);
     background: #d4af37;
-    color: #0b0f19;
-    font-size: 0.75rem;
-    font-weight: 800;
-    padding: 4px 16px;
+    color: #070913;
+    font-size: 0.78rem;
+    font-weight: 900;
+    padding: 5px 20px;
     border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
 }
 
 .pricing-header {
@@ -493,37 +482,35 @@ code {
 
 .pricing-header h3 {
     font-family: 'Outfit', sans-serif;
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     color: #ffffff;
     margin-bottom: 10px;
 }
 
 .price {
     font-family: 'Outfit', sans-serif;
-    font-size: 3rem;
+    font-size: 3.4rem;
     font-weight: 900;
     color: #00f2fe;
 }
 
-.pricing-card.popular .price {
-    color: #d4af37;
-}
+.gold-price { color: #d4af37; }
 
 .price-sub {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     color: #94a3b8;
 }
 
 .pricing-features {
     list-style: none;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
     flex-grow: 1;
 }
 
 .pricing-features li {
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     color: #cbd5e1;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
 .pricing-features li.disabled {
@@ -535,25 +522,16 @@ code {
     background: #3b82f6;
     color: #ffffff;
     text-align: center;
-    padding: 14px 24px;
+    padding: 16px 28px;
     border-radius: 40px;
     text-decoration: none;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 0.95rem;
     transition: all 0.3s ease;
 }
 
-.btn-pricing:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
-}
-
 .btn-gold {
     background: linear-gradient(135deg, #d4af37 0%, #aa771c 100%);
-}
-
-.btn-gold:hover {
-    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
 }
 
 /* ==========================================================================
@@ -565,87 +543,56 @@ code {
     gap: 25px;
 }
 
-.faq-item {
-    background: #131927;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 25px;
-}
+.faq-item { padding: 28px; }
 
 .faq-item h4 {
     font-family: 'Outfit', sans-serif;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     color: #ffffff;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .faq-item p {
     color: #94a3b8;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
 }
 
 .footer-landing {
-    padding: 80px 20px 40px;
+    padding: 90px 20px 45px;
     text-align: center;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
-    background: #05080e;
+    background: #04050a;
 }
 
 .footer-landing h2 {
     font-family: 'Outfit', sans-serif;
-    font-size: 2.2rem;
-    margin-bottom: 10px;
+    font-size: clamp(2rem, 5vw, 2.6rem);
+    margin-bottom: 12px;
 }
 
 .footer-landing p {
     color: #94a3b8;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
 }
 
 .footer-note {
-    margin-top: 50px;
+    margin-top: 60px;
     font-size: 0.8rem;
     color: #64748b;
 }
 
 /* ==========================================================================
-   RESPONSIVE LANDING (375px, 390px, 414px, 768px, 1366px)
+   RESPONSIVE LANDING
    ========================================================================== */
 @media screen and (max-width: 768px) {
     .nav-links { display: none; }
-    .hero-landing { padding: 130px 15px 50px; }
-    .hero-main-title { font-size: clamp(2rem, 7vw, 2.6rem); }
-    .hero-description { font-size: 1rem; }
+    .hero-landing { padding: 130px 15px 60px; }
     .faq-grid { grid-template-columns: 1fr; }
-    .section-landing { padding: 60px 15px; }
+    .popular-card { transform: scale(1); }
 }
 
 @media screen and (max-width: 480px) {
-    .hero-buttons {
-        flex-direction: column;
-        width: 100%;
-    }
-    
-    .hero-buttons .btn {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .pricing-card {
-        padding: 28px 18px;
-    }
-
-    .pricing-header h3 {
-        font-size: 1.25rem;
-    }
-
-    .price {
-        font-size: 2.5rem;
-    }
-
-    .stat-item {
-        font-size: 0.8rem;
-        padding: 6px 12px;
-    }
+    .hero-buttons { flex-direction: column; width: 100%; }
+    .hero-buttons .btn { width: 100%; justify-content: center; }
+    .pricing-card { padding: 30px 20px; }
 }
-
