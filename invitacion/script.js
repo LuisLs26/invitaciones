@@ -1,431 +1,267 @@
-/**
- * CARGADOR DINÁMICO DE INVITACIONES DIGITALES PREMIUM Y CONTROLADOR UX
- */
-
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Obtener ID de la URL (?id=demo, ?id=cliente1, ?id=cumpleanos, etc.)
-    const urlParams = new URLSearchParams(window.location.search);
-    const invitationId = urlParams.get('id') || 'demo';
-
-    // 2. Elementos del DOM
-    const errorScreen = document.getElementById('error-screen');
-    const coverScreen = document.getElementById('cover-screen');
-    const invitationApp = document.getElementById('invitation-app');
-    const openBtn = document.getElementById('open-invitation-btn');
-    const audioEl = document.getElementById('bg-audio');
-    const musicBtn = document.getElementById('music-toggle');
-    const musicText = document.getElementById('music-text');
-    const particlesContainer = document.getElementById('particles-container');
-
-    // Lightbox Elements
-    const lightboxModal = document.getElementById('lightbox-modal');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const lightboxCaption = document.getElementById('lightbox-caption');
-    const lightboxCounter = document.getElementById('lightbox-counter');
-    const lightboxClose = document.getElementById('lightbox-close');
-    const lightboxPrev = document.getElementById('lightbox-prev');
-    const lightboxNext = document.getElementById('lightbox-next');
-
-    let currentGalleryIndex = 0;
+document.addEventListener('DOMContentLoaded', async () => {
+    const params = new URLSearchParams(window.location.search);
+    const invitationId = params.get('id') || 'demo';
+    const editorPreview = params.get('editorPreview') === '1';
+    const openedDirectly = params.get('opened') === '1';
+    const $ = (selector) => document.querySelector(selector);
+    const STORAGE_KEYS = [`invitation_config_v2_${invitationId}`, `invitation_design_${invitationId}`, `invitation_config_${invitationId}`, `invitation_${invitationId}`];
+    let config;
     let currentGallery = [];
+    let currentGalleryIndex = 0;
 
-    // 3. Generar Partículas Flotantes en Portada
-    createFloatingParticles();
+    try {
+        config = await loadConfig();
+        renderInvitation(config);
+    } catch (error) {
+        $('#cover-screen').hidden = true;
+        $('#invitation-app').hidden = true;
+        $('#error-screen').hidden = false;
+        console.error(error);
+    }
 
-    // 4. Carga Dinámica de Configuración (Prioridad: localStorage -> JSON -> Script JS)
-    const localDraft = localStorage.getItem(`invitation_design_${invitationId}`) || 
-                       localStorage.getItem(`invitation_config_${invitationId}`) || 
-                       localStorage.getItem(`invitation_${invitationId}`);
-    if (localDraft) {
-        try {
-            const parsedConfig = JSON.parse(localDraft);
-            initInvitation(parsedConfig);
-        } catch (e) {
-            fetchJSONOrScriptFallback();
+    async function loadConfig() {
+        for (const key of STORAGE_KEYS) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (raw) return normalize(JSON.parse(raw));
+            } catch (error) { console.warn(`Configuración local inválida: ${key}`); }
         }
-    } else {
-        fetchJSONOrScriptFallback();
+        const response = await fetch(`../configs/editor/${encodeURIComponent(invitationId)}.json`, { cache: 'no-store' });
+        if (!response.ok) throw new Error('Invitación no encontrada');
+        return normalize(await response.json());
     }
 
-
-    function fetchJSONOrScriptFallback() {
-        fetch(`../configs/editor/${invitationId}.json`)
-            .then(res => {
-                if (!res.ok) throw new Error('No JSON');
-                return res.json();
-            })
-            .then(jsonConfig => {
-                initInvitation(jsonConfig);
-            })
-            .catch(() => {
-                // Fallback a script JS clásico
-                const scriptTag = document.createElement('script');
-                scriptTag.src = `../configs/${invitationId}.js`;
-                scriptTag.onload = () => {
-                    if (typeof INVITATION_CONFIG === 'undefined' || !INVITATION_CONFIG) {
-                        showError();
-                        return;
-                    }
-                    initInvitation(INVITATION_CONFIG);
-                };
-                scriptTag.onerror = () => showError();
-                document.head.appendChild(scriptTag);
-            });
+    function normalize(value) {
+        const result = { ...value };
+        result.gallery = Array.isArray(result.gallery) ? result.gallery : [];
+        result.showMusic = result.showMusic !== false && Boolean(result.music);
+        return result;
     }
 
+    function renderInvitation(data) {
+        document.body.className = data.theme || 'theme-default';
+        document.title = `${data.title || 'Invitación'} · ${data.personName || ''}`;
+        setText('#cover-badge', badgeForType(data.type));
+        setText('#cover-title', data.personName || 'Una celebración especial');
+        setText('#cover-quote', data.coverQuote || data.subtitle || 'Te esperamos para celebrar juntos.');
+        setAttr('#hero-img', 'src', data.heroImage || '../assets/images/xv/hero.svg');
+        setText('#hero-subtitle', data.subtitle || 'Estás cordialmente invitado a');
+        setText('#hero-title', data.title || 'Una celebración especial');
+        setText('#hero-name', data.personName || '');
+        setText('#hero-date', data.formattedDate || formatDate(data.date));
+        setText('#hero-time', data.time || formatTime(data.date));
+        setText('#main-message-text', data.mainMessage || 'Será una alegría compartir este momento contigo.');
+        setText('#location-name', data.locationName || 'Lugar del evento');
+        setText('#location-address', data.address || '');
+        setText('#dress-code-text', data.dressCode || 'Vestimenta libre');
+        setText('#gift-info-text', data.giftInfo || 'Tu presencia es nuestro mejor regalo');
+        setText('#pass-info-text', data.passInfo || 'Pase válido para 2 personas');
+        setText('#final-message-text', data.finalMessage || 'Gracias por ser parte de esta historia.');
 
-    function showError() {
-        coverScreen.style.display = 'none';
-        invitationApp.style.display = 'none';
-        errorScreen.style.display = 'flex';
-    }
+        configureVisibility(data);
+        configureLinks(data);
+        renderGallery(data.gallery);
+        renderVideo(data);
+        configureMusic(data);
+        renderDynamicElements(data.dynamicElements || []);
+        createParticles();
 
-    function initInvitation(config) {
-        // A. Aplicar Tema Cromático
-        const themeClass = config.theme || `theme-${config.type || 'default'}`;
-        document.body.className = themeClass;
-        document.title = `${config.title} - ${config.personName}`;
-
-        // B. Rellenar Portada (Cover Screen)
-        document.getElementById('cover-badge').textContent = config.type ? config.type.toUpperCase().replace('_', ' ') : 'INVITACIÓN';
-        document.getElementById('cover-title').textContent = config.personName;
-        document.getElementById('cover-quote').textContent = config.coverQuote || 'Te invitamos a compartir este día tan especial';
-        coverScreen.style.display = 'flex';
-
-        // C. Rellenar Sección Hero
-        if (config.heroImage) {
-            document.getElementById('hero-img').src = config.heroImage;
-        }
-        document.getElementById('hero-subtitle').textContent = config.subtitle || 'Estás invitado a';
-        document.getElementById('hero-title').textContent = config.title;
-        document.getElementById('hero-name').textContent = config.personName;
-        document.getElementById('hero-date').textContent = config.formattedDate || '';
-        document.getElementById('hero-time').textContent = config.time || '';
-
-        // D. Rellenar Mensaje Principal
-        document.getElementById('main-message-text').textContent = config.mainMessage || '';
-
-        // E. Configurar Cuenta Regresiva
-        if (config.showCountdown && config.date) {
-            document.getElementById('countdown-section').style.display = 'block';
-            startCountdown(config.date);
+        $('#invitation-app').hidden = false;
+        if (editorPreview || openedDirectly) {
+            $('#cover-screen').hidden = true;
+            $('#invitation-app').classList.add('is-open');
+            if (editorPreview) document.body.classList.add('editor-preview-mode');
+            requestAnimationFrame(() => document.querySelectorAll('.reveal').forEach((element) => element.classList.add('is-visible')));
         } else {
-            document.getElementById('countdown-section').style.display = 'none';
+            $('#cover-screen').hidden = false;
+            bindOpening(data);
         }
+        if (data.showCountdown && data.date) startCountdown(data.date);
+        bindLightbox();
+    }
 
-        // F. Configurar Galería de Fotos
-        if (config.showGallery && config.gallery && config.gallery.length > 0) {
-            currentGallery = config.gallery;
-            const gallerySection = document.getElementById('gallery-section');
-            const galleryGrid = document.getElementById('gallery-grid');
-            galleryGrid.innerHTML = '';
+    function configureVisibility(data) {
+        $('#countdown-section').hidden = data.showCountdown === false;
+        $('#gallery-section').hidden = data.showGallery === false || !data.gallery?.length;
+        $('#map-section').hidden = data.showMap === false;
+        $('#video-section').hidden = data.showVideo === false || !data.video;
+    }
 
-            config.gallery.forEach((photo, index) => {
-                const item = document.createElement('div');
-                item.className = 'gallery-item';
-                item.innerHTML = `<img src="${photo.url}" alt="${photo.caption || 'Foto'}" loading="lazy">`;
-                item.addEventListener('click', () => {
-                    openLightbox(index);
+    function configureLinks(data) {
+        const map = data.mapUrl || `https://maps.google.com/?q=${encodeURIComponent(data.address || data.locationName || '')}`;
+        const waze = data.wazeUrl || `https://waze.com/ul?q=${encodeURIComponent(data.locationName || data.address || '')}`;
+        const whatsapp = `https://wa.me/${String(data.whatsapp || '').replace(/\D/g, '')}?text=${encodeURIComponent(data.whatsappMessage || 'Hola, quiero confirmar mi asistencia.')}`;
+        setAttr('#map-btn', 'href', map); setAttr('#waze-btn', 'href', waze); setAttr('#rsvp-btn', 'href', whatsapp); setAttr('#floating-whatsapp', 'href', whatsapp);
+    }
+
+    function renderGallery(gallery) {
+        currentGallery = gallery || [];
+        const grid = $('#gallery-grid');
+        grid.innerHTML = '';
+        currentGallery.forEach((photo, index) => {
+            const item = document.createElement('button');
+            item.className = 'gallery-item'; item.type = 'button';
+            item.innerHTML = `<img src="${escapeAttr(photo.url)}" alt="${escapeAttr(photo.caption || 'Recuerdo')}" loading="lazy"><span>${escapeHtml(photo.caption || 'Recuerdo')}</span>`;
+            item.addEventListener('click', () => openLightbox(index));
+            grid.appendChild(item);
+        });
+    }
+
+    function renderVideo(data) {
+        if (!data.showVideo || !data.video) return;
+        const box = $('#video-container');
+        if (data.video.includes('youtube') || data.video.includes('vimeo')) box.innerHTML = `<iframe src="${escapeAttr(data.video)}" title="Video especial" allowfullscreen loading="lazy"></iframe>`;
+        else box.innerHTML = '<div class="video-placeholder"><span>▶</span><p>Un video especial para volver a vivir este momento.</p></div>';
+    }
+
+    function configureMusic(data) {
+        const button = $('#music-toggle');
+        const audio = $('#bg-audio');
+        if (!data.showMusic || !data.music) { button.hidden = true; return; }
+        button.hidden = false; audio.src = data.music;
+        let playing = false;
+        button.addEventListener('click', () => {
+            if (playing) { audio.pause(); playing = false; button.classList.remove('playing'); setText('#music-text', 'Música'); return; }
+            audio.play().then(() => { playing = true; button.classList.add('playing'); setText('#music-text', 'Pausar'); }).catch(() => showMusicHint());
+        });
+    }
+
+    function bindOpening() {
+        const card = $('#envelope-card-3d'); const button = $('#open-invitation-btn');
+        let opened = false;
+        const open = () => {
+            if (opened) return;
+            opened = true;
+            card.classList.add('open-anim');
+            const next = new URLSearchParams(window.location.search);
+            next.set('id', invitationId);
+            next.set('opened', '1');
+            next.set('v', '20260812-4');
+            setTimeout(() => { window.location.replace(`${window.location.pathname}?${next.toString()}`); }, 180);
+        };
+        button.addEventListener('click', open, { once: true });
+        card.addEventListener('click', (event) => { if (event.target !== button && !button.contains(event.target)) open(); }, { once: true });
+    }
+
+    function renderDynamicElements(elements) {
+        let overlay = $('#public-dynamic-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'public-dynamic-overlay';
+            $('#invitation-app').appendChild(overlay);
+        }
+        overlay.innerHTML = '';
+        if (!elements || !elements.length) return;
+
+        elements.forEach((item) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'dynamic-item';
+            wrapper.dataset.elemId = item.id;
+            Object.assign(wrapper.style, {
+                left: `${item.x || 0}px`,
+                top: `${item.y || 0}px`,
+                width: `${item.w || 80}px`,
+                height: `${item.h || 80}px`,
+                transform: `rotate(${item.rot || 0}deg)`,
+                opacity: item.opacity ?? 1,
+                zIndex: item.zIndex || 10,
+                pointerEvents: editorPreview ? 'auto' : 'none'
+            });
+
+            if (item.type === 'text') {
+                wrapper.textContent = item.text || '';
+                wrapper.style.color = item.color || 'currentColor';
+                wrapper.style.fontFamily = item.font || 'inherit';
+                wrapper.style.fontSize = `${item.size || 22}px`;
+            } else {
+                const image = document.createElement('img');
+                image.src = item.src;
+                image.alt = item.name || 'Decoración';
+                image.style.width = '100%';
+                image.style.height = '100%';
+                image.style.objectFit = 'contain';
+                wrapper.appendChild(image);
+            }
+
+            if (editorPreview && !item.locked) {
+                wrapper.style.cursor = 'move';
+                let isDragging = false;
+                let startX = 0, startY = 0;
+                let elemStartX = 0, elemStartY = 0;
+
+                wrapper.addEventListener('pointerdown', (e) => {
+                    e.stopPropagation();
+                    isDragging = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    elemStartX = item.x || 0;
+                    elemStartY = item.y || 0;
+                    wrapper.setPointerCapture(e.pointerId);
                 });
-                galleryGrid.appendChild(item);
-            });
-            gallerySection.style.display = 'block';
-        } else {
-            document.getElementById('gallery-section').style.display = 'none';
-        }
 
-        // G. Configurar Video
-        if (config.showVideo && config.video) {
-            const videoSection = document.getElementById('video-section');
-            const videoContainer = document.getElementById('video-container');
-            
-            if (config.video.endsWith('.mp4')) {
-                videoContainer.innerHTML = `<video controls poster="${config.heroImage}"><source src="${config.video}" type="video/mp4">Tu navegador no soporta video.</video>`;
-            } else if (config.video.includes('youtube') || config.video.includes('vimeo')) {
-                videoContainer.innerHTML = `<iframe src="${config.video}" allowfullscreen></iframe>`;
-            } else {
-                videoContainer.innerHTML = `<div style="padding:40px 20px; color:#fff; text-align:center; font-family:'Montserrat',sans-serif;">🎬 <strong>Video Especial Preparado</strong><br><small style="color:#aaa;">Visualización en alta resolución</small></div>`;
+                wrapper.addEventListener('pointermove', (e) => {
+                    if (!isDragging) return;
+                    const dx = e.clientX - startX;
+                    const dy = e.clientY - startY;
+                    item.x = elemStartX + dx;
+                    item.y = elemStartY + dy;
+                    wrapper.style.left = `${item.x}px`;
+                    wrapper.style.top = `${item.y}px`;
+                });
+
+                const endDrag = (e) => {
+                    if (isDragging) {
+                        isDragging = false;
+                        try {
+                            for (const key of STORAGE_KEYS) {
+                                const raw = localStorage.getItem(key);
+                                if (raw) {
+                                    const parsed = JSON.parse(raw);
+                                    parsed.dynamicElements = elements;
+                                    localStorage.setItem(key, JSON.stringify(parsed));
+                                }
+                            }
+                        } catch (err) {}
+                    }
+                };
+
+                wrapper.addEventListener('pointerup', endDrag);
+                wrapper.addEventListener('pointercancel', endDrag);
             }
-            videoSection.style.display = 'block';
-        } else {
-            document.getElementById('video-section').style.display = 'none';
-        }
 
-        // H. Configurar Ubicación, Google Maps y Waze
-        if (config.showMap) {
-            document.getElementById('map-section').style.display = 'block';
-            document.getElementById('location-name').textContent = config.locationName || 'Lugar del Evento';
-            document.getElementById('location-address').textContent = config.address || '';
-            
-            const mapBtn = document.getElementById('map-btn');
-            const wazeBtn = document.getElementById('waze-btn');
-            
-            mapBtn.href = config.mapUrl || `https://maps.google.com/?q=${encodeURIComponent(config.address || '')}`;
-            wazeBtn.href = config.wazeUrl || `https://waze.com/ul?q=${encodeURIComponent(config.locationName || config.address || '')}`;
-        } else {
-            document.getElementById('map-section').style.display = 'none';
-        }
-
-        // I. Rellenar Detalles del Evento
-        document.getElementById('dress-code-text').textContent = config.dressCode || 'Vestimenta Libre';
-        document.getElementById('gift-info-text').textContent = config.giftInfo || 'Su presencia es nuestro mejor regalo';
-        document.getElementById('pass-info-text').textContent = config.passInfo || 'Pase Válido para 2 Personas';
-
-        // J. Configurar Enlaces de WhatsApp RSVP (Sección + Botón Flotante Móvil)
-        const phone = config.whatsapp || '51900000000';
-        const msg = encodeURIComponent(config.whatsappMessage || 'Hola, quiero confirmar mi asistencia al evento.');
-        const waUrl = `https://wa.me/${phone}?text=${msg}`;
-
-        document.getElementById('rsvp-btn').href = waUrl;
-        document.getElementById('floating-whatsapp').href = waUrl;
-
-        // K. Rellenar Mensaje Final Footer
-        document.getElementById('final-message-text').textContent = config.finalMessage || '¡Te esperamos!';
-
-        // Renderizar Elementos Flotantes Dinámicos Guardados (GIFs, imágenes, textos libres)
-        renderDynamicElements(config.dynamicElements || []);
-
-
-        // L. Configurar Audio / Música
-        let isPlaying = false;
-        if (config.showMusic && config.music) {
-            musicBtn.style.display = 'flex';
-            audioEl.src = config.music;
-
-            musicBtn.addEventListener('click', () => {
-                if (isPlaying) {
-                    audioEl.pause();
-                    musicBtn.classList.remove('playing');
-                    musicText.textContent = 'Música';
-                    isPlaying = false;
-                } else {
-                    playAudio();
-                }
-            });
-        } else {
-            musicBtn.style.display = 'none';
-        }
-
-        function playAudio() {
-            if (!config.showMusic || !config.music) return;
-            audioEl.play().then(() => {
-                isPlaying = true;
-                musicBtn.classList.add('playing');
-                musicText.textContent = 'Pausar';
-            }).catch(err => {
-                console.log("Audio listo. Presionar botón para reproducir.");
-            });
-        }
-
-        // M. Botón y Carta "ABRIR INVITACIÓN"
-        const envelopeCard = document.getElementById('envelope-card-3d');
-        
-        function handleOpenInvitation() {
-            if (envelopeCard) envelopeCard.classList.add('open-anim');
-            triggerConfettiBurst();
-            
-            setTimeout(() => {
-                coverScreen.classList.add('hide-cover');
-                invitationApp.style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                
-                if (config.showMusic) {
-                    playAudio();
-                }
-
-                initScrollReveal();
-            }, 700);
-        }
-
-        if (openBtn) openBtn.addEventListener('click', handleOpenInvitation);
-        if (envelopeCard) envelopeCard.addEventListener('click', (e) => {
-            if (e.target !== openBtn && !openBtn.contains(e.target)) {
-                handleOpenInvitation();
-            }
+            overlay.appendChild(wrapper);
         });
     }
 
-    // Renderizar Elementos Flotantes Guardados (GIFs, Imágenes, Textos)
-    function renderDynamicElements(dynamicElements) {
-        let dynamicContainer = document.getElementById('public-dynamic-overlay');
-        if (!dynamicContainer) {
-            dynamicContainer = document.createElement('div');
-            dynamicContainer.id = 'public-dynamic-overlay';
-            dynamicContainer.style.position = 'absolute';
-            dynamicContainer.style.top = '0';
-            dynamicContainer.style.left = '0';
-            dynamicContainer.style.width = '100%';
-            dynamicContainer.style.height = '100%';
-            dynamicContainer.style.pointerEvents = 'none';
-            dynamicContainer.style.zIndex = '90';
-            if (invitationApp) invitationApp.appendChild(dynamicContainer);
-        }
 
-        dynamicContainer.innerHTML = '';
-        dynamicElements.forEach(elem => {
-            const el = document.createElement('div');
-            el.style.position = 'absolute';
-            el.style.left = `${elem.x}px`;
-            el.style.top = `${elem.y}px`;
-            el.style.width = `${elem.w}px`;
-            el.style.height = `${elem.h}px`;
-            el.style.transform = `rotate(${elem.rot || 0}deg)`;
-            el.style.opacity = elem.opacity !== undefined ? elem.opacity : 1;
-            el.style.zIndex = elem.zIndex || 100;
-            el.style.pointerEvents = 'auto';
-
-            if (elem.type === 'text') {
-                el.style.fontSize = `${elem.size || 22}px`;
-                el.style.fontFamily = elem.font || "'Playfair Display', serif";
-                el.style.color = elem.color || '#ffffff';
-                el.style.display = 'flex';
-                el.style.alignItems = 'center';
-                el.style.justifyContent = 'center';
-                el.style.textAlign = 'center';
-                el.textContent = elem.text || '';
-            } else {
-                const img = document.createElement('img');
-                img.src = elem.src;
-                img.alt = elem.name || 'Decoración';
-                img.style.width = '100%';
-                img.style.height = '100%';
-                img.style.objectFit = 'cover';
-                el.appendChild(img);
-            }
-
-            dynamicContainer.appendChild(el);
-        });
+    function createParticles() {
+        const container = $('#particles-container'); container.innerHTML = '';
+        for (let index = 0; index < 18; index += 1) { const dot = document.createElement('i'); dot.className = 'particle'; dot.style.left = `${Math.random() * 100}%`; dot.style.animationDelay = `${Math.random() * 6}s`; dot.style.animationDuration = `${7 + Math.random() * 6}s`; dot.style.width = `${3 + Math.random() * 5}px`; dot.style.height = dot.style.width; container.appendChild(dot); }
     }
 
-    // Partículas Flotantes en Portada
-    function createFloatingParticles() {
-        if (!particlesContainer) return;
-        particlesContainer.innerHTML = '';
-        const count = 15;
-        for (let i = 0; i < count; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            const size = Math.random() * 8 + 4;
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-            particle.style.left = `${Math.random() * 100}%`;
-            particle.style.animationDuration = `${Math.random() * 6 + 6}s`;
-            particle.style.animationDelay = `${Math.random() * 4}s`;
-            particlesContainer.appendChild(particle);
-        }
+    function startCountdown(value) {
+        const target = new Date(value).getTime();
+        const update = () => { const distance = target - Date.now(); const units = distance <= 0 ? [0, 0, 0, 0] : [Math.floor(distance / 86400000), Math.floor(distance / 3600000) % 24, Math.floor(distance / 60000) % 60, Math.floor(distance / 1000) % 60]; ['#cd-days','#cd-hours','#cd-minutes','#cd-seconds'].forEach((selector, index) => setText(selector, String(units[index]).padStart(2, '0'))); };
+        update(); setInterval(update, 1000);
     }
 
-    // Erupción de Confetti / Destellos al abrir invitación
-    function triggerConfettiBurst() {
-        for (let i = 0; i < 30; i++) {
-            const spark = document.createElement('div');
-            spark.style.position = 'fixed';
-            spark.style.top = '50%';
-            spark.style.left = '50%';
-            spark.style.width = '10px';
-            spark.style.height = '10px';
-            spark.style.background = ['#d4af37', '#00f2fe', '#ff416c', '#ffffff'][Math.floor(Math.random() * 4)];
-            spark.style.borderRadius = '50%';
-            spark.style.zIndex = '99999';
-            spark.style.pointerEvents = 'none';
-            spark.style.transform = `translate(-50%, -50%) translate(${(Math.random() - 0.5) * 400}px, ${(Math.random() - 0.5) * 400}px) scale(${Math.random() + 0.5})`;
-            spark.style.transition = 'all 1s cubic-bezier(0.1, 1, 0.1, 1)';
-            spark.style.opacity = '1';
-            document.body.appendChild(spark);
-
-            setTimeout(() => {
-                spark.style.opacity = '0';
-                setTimeout(() => spark.remove(), 1000);
-            }, 50);
-        }
+    function bindLightbox() {
+        const modal = $('#lightbox-modal');
+        $('#lightbox-close').addEventListener('click', () => { modal.hidden = true; });
+        $('#lightbox-prev').addEventListener('click', () => moveGallery(-1)); $('#lightbox-next').addEventListener('click', () => moveGallery(1));
+        modal.addEventListener('click', (event) => { if (event.target === modal) modal.hidden = true; });
+        document.addEventListener('keydown', (event) => { if (modal.hidden) return; if (event.key === 'Escape') modal.hidden = true; if (event.key === 'ArrowLeft') moveGallery(-1); if (event.key === 'ArrowRight') moveGallery(1); });
     }
+    function openLightbox(index) { currentGalleryIndex = index; updateLightbox(); $('#lightbox-modal').hidden = false; }
+    function moveGallery(step) { currentGalleryIndex = (currentGalleryIndex + step + currentGallery.length) % currentGallery.length; updateLightbox(); }
+    function updateLightbox() { const photo = currentGallery[currentGalleryIndex]; if (!photo) return; setAttr('#lightbox-img', 'src', photo.url); setText('#lightbox-caption', photo.caption || ''); setText('#lightbox-counter', `${currentGalleryIndex + 1} / ${currentGallery.length}`); }
 
-    // Scroll Reveal Observer
-    function initScrollReveal() {
-        const sections = document.querySelectorAll('#invitation-app .reveal');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                }
-            });
-        }, { threshold: 0.1 });
-
-        sections.forEach(sec => observer.observe(sec));
-    }
-
-    // Contador Regresivo
-    function startCountdown(targetDateStr) {
-        const targetDate = new Date(targetDateStr).getTime();
-
-        function updateTimer() {
-            const now = new Date().getTime();
-            const difference = targetDate - now;
-
-            if (difference <= 0) {
-                document.getElementById('cd-days').textContent = '00';
-                document.getElementById('cd-hours').textContent = '00';
-                document.getElementById('cd-minutes').textContent = '00';
-                document.getElementById('cd-seconds').textContent = '00';
-                return;
-            }
-
-            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-            document.getElementById('cd-days').textContent = days < 10 ? '0' + days : days;
-            document.getElementById('cd-hours').textContent = hours < 10 ? '0' + hours : hours;
-            document.getElementById('cd-minutes').textContent = minutes < 10 ? '0' + minutes : minutes;
-            document.getElementById('cd-seconds').textContent = seconds < 10 ? '0' + seconds : seconds;
-        }
-
-        updateTimer();
-        setInterval(updateTimer, 1000);
-    }
-
-    // Lightbox Avanzado con Navegación Teclado/Botones
-    function openLightbox(index) {
-        if (!currentGallery || currentGallery.length === 0) return;
-        currentGalleryIndex = index;
-        updateLightboxContent();
-        lightboxModal.style.display = 'flex';
-    }
-
-    function updateLightboxContent() {
-        const photo = currentGallery[currentGalleryIndex];
-        if (!photo) return;
-        lightboxImg.src = photo.url;
-        lightboxCaption.textContent = photo.caption || '';
-        lightboxCounter.textContent = `${currentGalleryIndex + 1} / ${currentGallery.length}`;
-    }
-
-    lightboxClose.addEventListener('click', () => {
-        lightboxModal.style.display = 'none';
-    });
-
-    lightboxPrev.addEventListener('click', () => {
-        currentGalleryIndex = (currentGalleryIndex - 1 + currentGallery.length) % currentGallery.length;
-        updateLightboxContent();
-    });
-
-    lightboxNext.addEventListener('click', () => {
-        currentGalleryIndex = (currentGalleryIndex + 1) % currentGallery.length;
-        updateLightboxContent();
-    });
-
-    lightboxModal.addEventListener('click', (e) => {
-        if (e.target === lightboxModal) {
-            lightboxModal.style.display = 'none';
-        }
-    });
-
-    document.addEventListener('keydown', (e) => {
-        if (lightboxModal.style.display === 'flex') {
-            if (e.key === 'Escape') lightboxModal.style.display = 'none';
-            if (e.key === 'ArrowLeft') lightboxPrev.click();
-            if (e.key === 'ArrowRight') lightboxNext.click();
-        }
-    });
+    function showMusicHint() { setText('#music-text', 'Toca para reproducir'); }
+    function badgeForType(type) { return type === 'boda' ? 'NUESTRA HISTORIA' : type === 'cumpleanos' ? 'LA FIESTA COMIENZA' : 'UNA NOCHE ESPECIAL'; }
+    function formatDate(value) { const date = new Date(value); return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('es-PE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(date); }
+    function formatTime(value) { const date = new Date(value); return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('es-PE', { hour: 'numeric', minute: '2-digit', hour12: true }).format(date).replace('a. m.', 'AM').replace('p. m.', 'PM'); }
+    function setText(selector, text) { const element = $(selector); if (element) element.textContent = text ?? ''; }
+    function setAttr(selector, attribute, value) { const element = $(selector); if (element) element.setAttribute(attribute, value || ''); }
+    function escapeHtml(value) { return String(value).replace(/[&<>"']/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[char])); }
+    function escapeAttr(value) { return escapeHtml(value); }
 });

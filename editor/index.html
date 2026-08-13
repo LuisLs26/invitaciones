@@ -3,583 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editor Visual Canva | Invitaciones Digitales</title>
+    <meta name="color-scheme" content="dark">
+    <title>Editor Studio | Invitaciones</title>
     <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
-    
-    <!-- Google Fonts Luxury Collection -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;600;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    <!-- Public Invitation Styles + Editor Styles -->
-    <link rel="stylesheet" href="../invitacion/styles.css">
-    <link rel="stylesheet" href="editor.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="editor.css?v=20260812-4">
 </head>
-<body class="editor-body">
-
-    <!-- Top Navigation Header Bar -->
-    <header class="editor-header">
-        <div class="header-left">
-            <a href="../index.html" class="editor-logo">
-                <span class="logo-icon">✨</span>
-                <span>Invitaciones<strong class="highlight">CANVA</strong> <small class="editor-tag">EDITOR COMPLETO</small></span>
-            </a>
-            <div class="header-divider"></div>
-            <div class="history-controls">
-                <button id="btn-undo" class="btn-icon" title="Deshacer (Ctrl+Z)" disabled>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/></svg>
-                </button>
-                <button id="btn-redo" class="btn-icon" title="Rehacer (Ctrl+Y)" disabled>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 019-9 9 9 0 016 2.3l3 2.7"/></svg>
-                </button>
-            </div>
-            <span id="save-status" class="save-status-badge">🟢 Cambios guardados</span>
+<body class="studio-body">
+    <header class="studio-header">
+        <div class="brand-lockup">
+            <a class="brand" href="../index.html" aria-label="Volver al inicio"><span class="brand-mark">✦</span><span>Invitaciones<strong>PRO</strong></span></a>
+            <span class="studio-pill">EDITOR STUDIO</span>
         </div>
-
-        <div class="header-right">
-            <button id="btn-preview" class="btn btn-secondary-editor" title="Abrir vista previa pública real">
-                <span>👁 Vista Previa</span>
-            </button>
-            <button id="btn-save" class="btn btn-primary-editor" title="Guardar cambios directamente">
-                <span>💾 GUARDAR CAMBIOS</span>
-            </button>
+        <div class="header-context"><span class="status-dot"></span><span id="save-status">Listo para editar</span><span class="saved-time" id="saved-time"></span></div>
+        <div class="header-actions">
+            <button class="icon-button" id="btn-undo" type="button" title="Deshacer (Ctrl+Z)" disabled>↶</button>
+            <button class="icon-button" id="btn-redo" type="button" title="Rehacer (Ctrl+Y)" disabled>↷</button>
+            <span class="header-divider"></span>
+            <button class="button button-ghost" id="btn-import-json" type="button" title="Cargar archivo JSON">📥 Importar</button>
+            <input type="file" id="json-file-input" accept=".json" hidden>
+            <button class="button button-ghost" id="btn-export-json" type="button" title="Descargar configuración JSON">📤 Exportar JSON</button>
+            <button class="button button-ghost" id="btn-preview" type="button">◉ Vista pública</button>
+            <button class="button button-primary" id="btn-save" type="button">Guardar invitación</button>
         </div>
     </header>
 
-
-    <!-- Main Workspace Grid -->
-    <div class="editor-workspace">
-
-        <!-- Left Tools Sidebar -->
-        <aside class="sidebar-tools">
-            <nav class="tools-tabs">
-                <button class="tab-btn active" data-tab="tab-sections" title="Secciones">
-                    <span class="tab-icon">📑</span>
-                    <span class="tab-label">Secciones</span>
-                </button>
-                <button class="tab-btn" data-tab="tab-text" title="Texto">
-                    <span class="tab-icon">📝</span>
-                    <span class="tab-label">Texto</span>
-                </button>
-                <button class="tab-btn" data-tab="tab-images" title="Imágenes">
-                    <span class="tab-icon">🖼️</span>
-                    <span class="tab-label">Fotos</span>
-                </button>
-                <button class="tab-btn" data-tab="tab-gifs" title="GIFs Animados">
-                    <span class="tab-icon">🎬</span>
-                    <span class="tab-label">GIFs</span>
-                </button>
-                <button class="tab-btn" data-tab="tab-gallery" title="Galería">
-                    <span class="tab-icon">📸</span>
-                    <span class="tab-label">Galería</span>
-                </button>
-                <button class="tab-btn" data-tab="tab-components" title="Componentes">
-                    <span class="tab-icon">🧩</span>
-                    <span class="tab-label">Partes</span>
-                </button>
-                <button class="tab-btn" data-tab="tab-layers" title="Capas">
-                    <span class="tab-icon">🥞</span>
-                    <span class="tab-label">Capas</span>
-                </button>
-            </nav>
-
-            <div class="tools-panel-content">
-
-                <!-- Tab 1: Gestor de Secciones Completo -->
-                <div id="tab-sections" class="panel-section active">
-                    <h3>Estructura de Secciones</h3>
-                    <p class="panel-desc">Usa <b>[EDITAR]</b> para enfocar o <b>[👁]</b> para visibilidad.</p>
-                    <ul id="sections-list" class="sections-list-stack">
-                        <li class="section-item" data-sec-id="sec-cover">
-                            <span class="sec-title">Portada / Opening</span>
-                            <div class="sec-btn-group">
-                                <button class="btn-sec-act btn-sec-edit" data-act="edit" data-sec="sec-cover">EDITAR</button>
-                                <button class="btn-sec-act btn-sec-vis" data-act="vis" data-sec="sec-cover">👁</button>
-                                <button class="btn-sec-act btn-sec-up" data-act="up" data-sec="sec-cover">↑</button>
-                                <button class="btn-sec-act btn-sec-down" data-act="down" data-sec="sec-cover">↓</button>
-                            </div>
-                        </li>
-                        <li class="section-item" data-sec-id="sec-hero">
-                            <span class="sec-title">Hero / Foto Principal</span>
-                            <div class="sec-btn-group">
-                                <button class="btn-sec-act btn-sec-edit" data-act="edit" data-sec="sec-hero">EDITAR</button>
-                                <button class="btn-sec-act btn-sec-vis" data-act="vis" data-sec="sec-hero">👁</button>
-                                <button class="btn-sec-act btn-sec-up" data-act="up" data-sec="sec-hero">↑</button>
-                                <button class="btn-sec-act btn-sec-down" data-act="down" data-sec="sec-hero">↓</button>
-                            </div>
-                        </li>
-                        <li class="section-item" data-sec-id="sec-countdown">
-                            <span class="sec-title">Cuenta Regresiva</span>
-                            <div class="sec-btn-group">
-                                <button class="btn-sec-act btn-sec-edit" data-act="edit" data-sec="sec-countdown">EDITAR</button>
-                                <button class="btn-sec-act btn-sec-vis" data-act="vis" data-sec="sec-countdown">👁</button>
-                                <button class="btn-sec-act btn-sec-up" data-act="up" data-sec="sec-countdown">↑</button>
-                                <button class="btn-sec-act btn-sec-down" data-act="down" data-sec="sec-countdown">↓</button>
-                            </div>
-                        </li>
-                        <li class="section-item" data-sec-id="sec-message">
-                            <span class="sec-title">Dedicatoria / Frase</span>
-                            <div class="sec-btn-group">
-                                <button class="btn-sec-act btn-sec-edit" data-act="edit" data-sec="sec-message">EDITAR</button>
-                                <button class="btn-sec-act btn-sec-vis" data-act="vis" data-sec="sec-message">👁</button>
-                                <button class="btn-sec-act btn-sec-up" data-act="up" data-sec="sec-message">↑</button>
-                                <button class="btn-sec-act btn-sec-down" data-act="down" data-sec="sec-message">↓</button>
-                            </div>
-                        </li>
-                        <li class="section-item" data-sec-id="sec-gallery">
-                            <span class="sec-title">Galería de Fotos</span>
-                            <div class="sec-btn-group">
-                                <button class="btn-sec-act btn-sec-edit" data-act="edit" data-sec="sec-gallery">EDITAR</button>
-                                <button class="btn-sec-act btn-sec-vis" data-act="vis" data-sec="sec-gallery">👁</button>
-                                <button class="btn-sec-act btn-sec-up" data-act="up" data-sec="sec-gallery">↑</button>
-                                <button class="btn-sec-act btn-sec-down" data-act="down" data-sec="sec-gallery">↓</button>
-                            </div>
-                        </li>
-                        <li class="section-item" data-sec-id="sec-map">
-                            <span class="sec-title">Ubicación & Mapas</span>
-                            <div class="sec-btn-group">
-                                <button class="btn-sec-act btn-sec-edit" data-act="edit" data-sec="sec-map">EDITAR</button>
-                                <button class="btn-sec-act btn-sec-vis" data-act="vis" data-sec="sec-map">👁</button>
-                                <button class="btn-sec-act btn-sec-up" data-act="up" data-sec="sec-map">↑</button>
-                                <button class="btn-sec-act btn-sec-down" data-act="down" data-sec="sec-map">↓</button>
-                            </div>
-                        </li>
-                        <li class="section-item" data-sec-id="sec-details">
-                            <span class="sec-title">Detalles (Vestimenta / Sobres)</span>
-                            <div class="sec-btn-group">
-                                <button class="btn-sec-act btn-sec-edit" data-act="edit" data-sec="sec-details">EDITAR</button>
-                                <button class="btn-sec-act btn-sec-vis" data-act="vis" data-sec="sec-details">👁</button>
-                                <button class="btn-sec-act btn-sec-up" data-act="up" data-sec="sec-details">↑</button>
-                                <button class="btn-sec-act btn-sec-down" data-act="down" data-sec="sec-details">↓</button>
-                            </div>
-                        </li>
-                        <li class="section-item" data-sec-id="sec-rsvp">
-                            <span class="sec-title">Confirmación WhatsApp</span>
-                            <div class="sec-btn-group">
-                                <button class="btn-sec-act btn-sec-edit" data-act="edit" data-sec="sec-rsvp">EDITAR</button>
-                                <button class="btn-sec-act btn-sec-vis" data-act="vis" data-sec="sec-rsvp">👁</button>
-                                <button class="btn-sec-act btn-sec-up" data-act="up" data-sec="sec-rsvp">↑</button>
-                                <button class="btn-sec-act btn-sec-down" data-act="down" data-sec="sec-rsvp">↓</button>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Tab 2: Texto -->
-                <div id="tab-text" class="panel-section">
-                    <h3>Edición de Texto WYSIWYG</h3>
-                    <p class="panel-desc">Haz doble clic sobre cualquier texto del lienzo para escribir directamente.</p>
-                    <div class="element-buttons-stack">
-                        <button class="add-btn" id="btn-add-new-text">
-                            + Añadir Nuevo Texto al Lienzo
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tab 3: Imágenes -->
-                <div id="tab-images" class="panel-section">
-                    <h3>Biblioteca de Imágenes</h3>
-                    <div class="upload-box">
-                        <input type="file" id="img-upload-input" accept="image/*" style="display: none;">
-                        <button id="btn-trigger-upload" class="btn btn-secondary-editor full-w">
-                            <span>📁 SUBIR IMAGEN DESDE PC</span>
-                        </button>
-                    </div>
-                    <h4>Imágenes de Servidor</h4>
-                    <div class="samples-grid">
-                        <div class="sample-item" data-action="add-image" data-src="../assets/images/xv/hero.svg">
-                            <img src="../assets/images/xv/hero.svg" alt="XV Hero">
-                            <span>XV Hero</span>
-                        </div>
-                        <div class="sample-item" data-action="add-image" data-src="../assets/images/boda/hero.svg">
-                            <img src="../assets/images/boda/hero.svg" alt="Boda Hero">
-                            <span>Boda Hero</span>
-                        </div>
-                        <div class="sample-item" data-action="add-image" data-src="../assets/images/cumpleanos/hero.svg">
-                            <img src="../assets/images/cumpleanos/hero.svg" alt="Cumple Hero">
-                            <span>Cumple Hero</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tab 4: GIFs Animados Reales (Thumbnails Vivos) -->
-                <div id="tab-gifs" class="panel-section">
-                    <h3>GIFs Animados Decorativos</h3>
-                    <p class="panel-desc">Conservan animación e imágenes reales en el lienzo.</p>
-                    
-                    <div class="upload-box">
-                        <input type="file" id="gif-upload-input" accept="image/gif" style="display: none;">
-                        <button id="btn-trigger-gif-upload" class="btn btn-secondary-editor full-w">
-                            <span>✨ SUBIR GIF DESDE PC</span>
-                        </button>
-                    </div>
-
-                    <h4>GIFs Disponibles (`/assets/gifs/`)</h4>
-                    <div class="gifs-grid">
-                        <div class="gif-item" data-action="add-gif" data-src="../assets/gifs/xv/butterfly.gif" data-name="Mariposa Dorada">
-                            <img src="../assets/gifs/xv/butterfly.gif" alt="Mariposa">
-                            <span>Mariposa</span>
-                        </div>
-                        <div class="gif-item" data-action="add-gif" data-src="../assets/gifs/xv/sparkles.gif" data-name="Destellos Dorados">
-                            <img src="../assets/gifs/xv/sparkles.gif" alt="Destellos">
-                            <span>Destellos</span>
-                        </div>
-                        <div class="gif-item" data-action="add-gif" data-src="../assets/gifs/xv/flowers.gif" data-name="Flores Rosas">
-                            <img src="../assets/gifs/xv/flowers.gif" alt="Flores">
-                            <span>Flores</span>
-                        </div>
-                        <div class="gif-item" data-action="add-gif" data-src="../assets/gifs/xv/petals.gif" data-name="Lluvia de Pétalos">
-                            <img src="../assets/gifs/xv/petals.gif" alt="Pétalos">
-                            <span>Pétalos</span>
-                        </div>
-                        <div class="gif-item" data-action="add-gif" data-src="../assets/gifs/xv/glitter.gif" data-name="Brillo Glitter">
-                            <img src="../assets/gifs/xv/glitter.gif" alt="Glitter">
-                            <span>Glitter</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tab 5: Galería de Fotos Individuales -->
-                <div id="tab-gallery" class="panel-section">
-                    <h3>Gestor de Fotos de Galería</h3>
-                    <div class="upload-box">
-                        <input type="file" id="gallery-photo-upload" accept="image/*" style="display: none;">
-                        <button id="btn-trigger-gallery-upload" class="btn btn-secondary-editor full-w">
-                            <span>📸 Añadir Foto a Galería</span>
-                        </button>
-                    </div>
-                    <div id="editor-gallery-items" class="editor-gallery-stack mt-15"></div>
-                </div>
-
-                <!-- Tab 6: Componentes -->
-                <div id="tab-components" class="panel-section">
-                    <h3>Partes e Interacciones</h3>
-                    <div class="element-buttons-stack">
-                        <button class="add-btn" data-focus="sec-rsvp">💚 WhatsApp RSVP</button>
-                        <button class="add-btn" data-focus="sec-map">📍 Ubicación Google Maps / Waze</button>
-                        <button class="add-btn" data-focus="sec-countdown">⏳ Cuenta Regresiva</button>
-                    </div>
-                </div>
-
-                <!-- Tab 7: Capas Sincronizadas (Layers) -->
-                <div id="tab-layers" class="panel-section">
-                    <h3>Arbol de Capas Sincronizado</h3>
-                    <ul id="layers-list" class="layers-list"></ul>
-                </div>
-
-            </div>
+    <main class="studio-layout">
+        <aside class="control-rail" aria-label="Herramientas del editor">
+            <button class="rail-item active" data-panel="content-panel" type="button"><span>✎</span><small>Contenido</small></button>
+            <button class="rail-item" data-panel="sections-panel" type="button"><span>☷</span><small>Secciones</small></button>
+            <button class="rail-item" data-panel="style-panel" type="button"><span>◌</span><small>Estilo</small></button>
+            <button class="rail-item" data-panel="media-panel" type="button"><span>▧</span><small>Fotos</small></button>
+            <button class="rail-item" data-panel="gifs-panel" type="button"><span>🎬</span><small>GIFs</small></button>
+            <button class="rail-item" data-panel="layers-panel" type="button"><span>≡</span><small>Capas</small></button>
+            <button class="rail-item" data-panel="inspector-panel" type="button"><span>⚙</span><small>Ajustes</small></button>
+            <div class="rail-spacer"></div>
+            <button class="rail-item rail-reset" id="btn-reset" type="button" title="Restaurar configuración original"><span>↺</span><small>Restaurar</small></button>
         </aside>
 
-        <!-- Center Scrollable Canvas Viewport -->
-        <main class="canvas-viewport">
-            
-            <!-- Zoom Controls -->
-            <div class="canvas-controls-bar">
-                <div class="zoom-group">
-                    <button id="btn-zoom-out" class="btn-zoom" title="Alejar">-</button>
-                    <select id="zoom-select" class="zoom-dropdown">
-                        <option value="0.25">25%</option>
-                        <option value="0.5">50%</option>
-                        <option value="0.75">75%</option>
-                        <option value="1" selected>100%</option>
-                        <option value="1.25">125%</option>
-                    </select>
-                    <button id="btn-zoom-in" class="btn-zoom" title="Acercar">+</button>
-                    <button id="btn-zoom-fit" class="btn-zoom-fit">Ajustar al Lienzo</button>
-                </div>
+        <aside class="settings-panel">
+            <div class="settings-heading">
+                <div><span class="eyebrow">Diseño activo</span><h1 id="design-name">Mi invitación</h1></div>
+                <span class="design-id" id="design-id">demo</span>
             </div>
 
-            <!-- Scrollable Canvas Container -->
-            <div class="canvas-scroll-container">
-                <div id="canvas-stage" class="canvas-stage">
-                    
-                    <!-- Smartphone Phone Mockup Shell (Full Real Height) -->
-                    <div id="canvas-frame" class="canvas-frame theme-default">
-                        
-                        <!-- Smart Alignment Snap Lines -->
-                        <div id="snap-guide-h" class="snap-guide snap-h" style="display: none;"></div>
-                        <div id="snap-guide-v" class="snap-guide snap-v" style="display: none;"></div>
-
-                        <!-- Real Invitation Full Render Container -->
-                        <div id="editor-invitation-container" class="editor-invitation-container">
-                            
-                            <!-- Cover Overlay Section (Interactive 3D Diplomatic Envelope) -->
-                            <div id="sec-cover" class="cover-overlay" data-editor-id="sec-cover">
-                                <div id="particles-container" class="particles-layer"></div>
-
-                                <div class="envelope-container" id="envelope-container">
-                                    <div class="envelope-card-3d" id="envelope-card-3d">
-                                        <div class="envelope-flap" id="envelope-flap"></div>
-                                        <div class="wax-seal-badge" id="wax-seal">
-                                            <span class="seal-icon">✉️</span>
-                                        </div>
-                                        <div class="letter-card-inside" id="letter-card-inside">
-                                            <div class="cover-badge" id="cover-badge" data-editor-id="cover-badge">INVITACIÓN ESPECIAL</div>
-                                            <h1 class="cover-title glow-text editable-text" id="cover-title" data-editor-id="cover-title">Ana María</h1>
-                                            <p class="cover-quote editable-text" id="cover-quote" data-editor-id="cover-quote">Te invitamos a compartir este día tan especial</p>
-                                            <button id="open-invitation-btn" class="btn btn-gold btn-shimmer" data-editor-id="open-btn">
-                                                <span>ABRIR INVITACIÓN</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <!-- Main Mobile Shell Showcase App -->
-                            <main id="invitation-app" class="mobile-phone-shell">
-                                
-                                <!-- Floating Music Player -->
-                                <button id="music-toggle" class="floating-music-btn vinyl-btn" data-editor-id="music-btn">
-                                    <div class="vinyl-disc"><span class="vinyl-center"></span></div>
-                                    <span id="music-text" class="music-label" data-editor-id="music-label">Música</span>
-                                </button>
-
-                                <!-- Hero Section -->
-                                <section id="sec-hero" class="section hero-section" data-editor-id="sec-hero">
-                                    <div class="hero-container" data-editor-id="hero-container">
-                                        <div class="hero-frame glow" data-editor-id="hero-frame">
-                                            <img id="hero-img" src="../assets/images/xv/hero.svg" alt="Portada de invitación" class="hero-image" data-editor-id="hero-img">
-                                        </div>
-                                        <div class="hero-header-text" data-editor-id="hero-header-text">
-                                            <span class="hero-subtitle editable-text" id="hero-subtitle" data-editor-id="hero-subtitle">Estás cordialmente invitado a</span>
-                                            <h1 class="hero-title editable-text" id="hero-title" data-editor-id="hero-title">Mis XV Años</h1>
-                                            <h2 class="hero-name glow-text editable-text" id="hero-name" data-editor-id="hero-name">Ana María</h2>
-                                        </div>
-                                        <div class="hero-date-badge glass-panel" data-editor-id="hero-date-badge">
-                                            <div class="date-line editable-text" id="hero-date" data-editor-id="hero-date">Sábado, 12 de Diciembre de 2026</div>
-                                            <div class="time-line editable-text" id="hero-time" data-editor-id="hero-time">8:00 PM</div>
-                                        </div>
-                                    </div>
-                                </section>
-
-                                <!-- Countdown Section -->
-                                <section id="sec-countdown" class="section countdown-section" data-editor-id="sec-countdown">
-                                    <div class="section-card glass-card gold-border" data-editor-id="countdown-card">
-                                        <h3 class="section-subtitle" data-editor-id="cd-sub">CUENTA REGRESIVA</h3>
-                                        <h2 class="section-title" data-editor-id="cd-title">Faltan tan solo...</h2>
-                                        <div class="timer-grid" data-editor-id="cd-grid">
-                                            <div class="timer-box glass-box glow" data-editor-id="cd-box-d"><span id="cd-days" class="timer-number">00</span><span class="timer-label">DÍAS</span></div>
-                                            <div class="timer-box glass-box glow" data-editor-id="cd-box-h"><span id="cd-hours" class="timer-number">00</span><span class="timer-label">HORAS</span></div>
-                                            <div class="timer-box glass-box glow" data-editor-id="cd-box-m"><span id="cd-minutes" class="timer-number">00</span><span class="timer-label">MINUTOS</span></div>
-                                            <div class="timer-box glass-box glow" data-editor-id="cd-box-s"><span id="cd-seconds" class="timer-number">00</span><span class="timer-label">SEGUNDOS</span></div>
-                                        </div>
-                                    </div>
-                                </section>
-
-                                <!-- Message Section -->
-                                <section id="sec-message" class="section message-section" data-editor-id="sec-message">
-                                    <div class="section-card glass-card ornamental-border" data-editor-id="message-card">
-
-                                        <div class="ornament-top" data-editor-id="orn-top">❦</div>
-                                        <div class="quote-icon" data-editor-id="q-left">“</div>
-                                        <p id="main-message-text" class="message-text editable-text" data-editor-id="main-message-text">
-                                            Cargando mensaje dedicatoria...
-                                        </p>
-                                        <div class="quote-icon right" data-editor-id="q-right">”</div>
-                                        <div class="ornament-bottom" data-editor-id="orn-bottom">❦</div>
-                                    </div>
-                                </section>
-
-                                <!-- Photo Gallery Section -->
-                                <section id="sec-gallery" class="section gallery-section" data-editor-id="sec-gallery">
-                                    <h3 class="section-subtitle" data-editor-id="gal-sub">NUESTROS RECUERDOS</h3>
-                                    <h2 class="section-title" data-editor-id="gal-title">Galería de Fotos</h2>
-                                    <div id="gallery-grid" class="gallery-grid masonry-grid" data-editor-id="gallery-grid"></div>
-                                </section>
-
-                                <!-- Location Section -->
-                                <section id="sec-map" class="section location-section" data-editor-id="sec-map">
-                                    <div class="section-card glass-card" data-editor-id="map-card">
-                                        <div class="location-icon float" data-editor-id="loc-icon">📍</div>
-                                        <h3 class="section-subtitle" data-editor-id="loc-sub">¿DÓNDE Y CUÁNDO?</h3>
-                                        <h2 class="section-title editable-text" id="location-name" data-editor-id="location-name">Salón Jardín de las Rosas</h2>
-                                        <p id="location-address" class="location-address editable-text" data-editor-id="location-address">Av. Las Flores 123, San Isidro</p>
-                                        <div class="map-buttons-grid" data-editor-id="map-grid">
-                                            <a id="map-btn" href="#" class="btn btn-secondary btn-full" data-editor-id="map-btn"><span>Google Maps</span></a>
-                                            <a id="waze-btn" href="#" class="btn btn-waze btn-full" data-editor-id="waze-btn"><span>Abrir Waze</span></a>
-                                        </div>
-                                    </div>
-                                </section>
-
-                                <!-- Details Section -->
-                                <section id="sec-details" class="section details-section" data-editor-id="sec-details">
-                                    <div class="details-grid" data-editor-id="details-grid">
-                                        <div class="detail-card glass-box" data-editor-id="card-dress">
-                                            <div class="card-icon" data-editor-id="icon-dress">👗</div>
-                                            <h4 data-editor-id="title-dress">Código de Vestimenta</h4>
-                                            <p id="dress-code-text" class="editable-text" data-editor-id="dress-code-text">Formal / Vestido de Gala</p>
-                                        </div>
-                                        <div class="detail-card glass-box" data-editor-id="card-gifts">
-                                            <div class="card-icon" data-editor-id="icon-gifts">🎁</div>
-                                            <h4 data-editor-id="title-gifts">Regalos & Obsequios</h4>
-                                            <p id="gift-info-text" class="editable-text" data-editor-id="gift-info-text">Cofre de lluvia de sobres en recepción</p>
-                                        </div>
-                                        <div class="detail-card glass-box full-width-card" data-editor-id="card-pass">
-                                            <div class="card-icon" data-editor-id="icon-pass">🎟️</div>
-                                            <h4 data-editor-id="title-pass">Pase de Entrada</h4>
-                                            <p id="pass-info-text" class="editable-text" data-editor-id="pass-info-text">Pase Válido para 2 Personas</p>
-                                        </div>
-                                    </div>
-                                </section>
-
-                                <!-- RSVP WhatsApp Section -->
-                                <section id="sec-rsvp" class="section rsvp-section" data-editor-id="sec-rsvp">
-                                    <div class="rsvp-card glass-card rsvp-glow" data-editor-id="rsvp-card">
-                                        <div class="rsvp-badge" data-editor-id="rsvp-badge">CONFIRMACIÓN RÁPIDA</div>
-                                        <h2 data-editor-id="rsvp-title">¿Nos acompañas?</h2>
-                                        <p data-editor-id="rsvp-desc">Por favor confirma tu presencia lo antes posible para reservar tu lugar.</p>
-                                        <a id="rsvp-btn" href="#" class="btn btn-whatsapp btn-pulse btn-full" data-editor-id="rsvp-btn">
-                                            <span>CONFIRMAR ASISTENCIA</span>
-                                        </a>
-                                    </div>
-                                </section>
-
-                                <!-- Footer -->
-                                <footer class="footer-section" data-editor-id="sec-footer">
-                                    <p id="final-message-text" class="final-message glow-text editable-text" data-editor-id="final-message-text">¡Gracias por ser parte de nuestra historia!</p>
-                                    <div class="footer-brand" data-editor-id="footer-brand">
-                                        <span>Invitación Digital Personalizada</span>
-                                    </div>
-                                </footer>
-
-                            </main>
-
-                            <!-- Dynamic Free-Floating Overlay for new user added elements -->
-                            <div id="editor-dynamic-overlay" class="editor-dynamic-overlay"></div>
-
-                        </div>
-
-                        <!-- Interactive Bounding Box & 8 Handles -->
-                        <div id="selection-box" class="selection-box" style="display: none;">
-                            <div class="rot-handle" title="Rotar (Shift snap 15°)"></div>
-                            <div class="handle nw" data-handle="nw"></div>
-                            <div class="handle n" data-handle="n"></div>
-                            <div class="handle ne" data-handle="ne"></div>
-                            <div class="handle e" data-handle="e"></div>
-                            <div class="handle se" data-handle="se"></div>
-                            <div class="handle s" data-handle="s"></div>
-                            <div class="handle sw" data-handle="sw"></div>
-                            <div class="handle w" data-handle="w"></div>
-
-                            <div class="selection-quick-bar">
-                                <button id="quick-lock" title="Bloquear/Desbloquear">🔓</button>
-                                <button id="quick-dup" title="Duplicar (Ctrl+D)">📋</button>
-                                <button id="quick-del" title="Eliminar (Del)">🗑️</button>
-                            </div>
-                        </div>
-
-                    </div>
-
+            <section class="settings-view active" id="content-panel">
+                <div class="panel-intro"><h2>Contenido principal</h2><p>Edita los textos y mira el resultado en tiempo real.</p></div>
+                <div class="field-grid two-col">
+                    <label class="field"><span>Nombre protagonista</span><input id="field-personName" type="text" autocomplete="off"></label>
+                    <label class="field"><span>Título del evento</span><input id="field-title" type="text" autocomplete="off"></label>
                 </div>
-            </div>
-        </main>
-
-        <!-- Right Inspector Sidebar -->
-        <aside class="sidebar-properties">
-            <div class="inspector-header">
-                <h3 id="inspector-title">Inspector Canva</h3>
-            </div>
-
-            <div id="inspector-content" class="inspector-content">
-
-                <!-- Design Overview -->
-                <div id="prop-canvas-panel" class="prop-panel active">
-                    <h4>Tema Cromático</h4>
-                    <select id="theme-preset-select" class="prop-input">
-                        <option value="theme-quinceanos">XV Años (Rosa / Dorado Garamond)</option>
-                        <option value="theme-boda">Boda (Champagne / Esmeralda Cormorant)</option>
-                        <option value="theme-cumpleanos">Cumpleaños (Oscuro Neón Outfit)</option>
-                    </select>
-
-                    <h4 class="mt-15">Título del Evento</h4>
-                    <input type="text" id="input-config-title" class="prop-input">
-
-                    <h4 class="mt-15">Nombre Principal</h4>
-                    <input type="text" id="input-config-name" class="prop-input">
-
-                    <h4 class="mt-15">Fecha y Hora</h4>
-                    <input type="text" id="input-config-date" class="prop-input">
-                    <input type="text" id="input-config-time" class="prop-input mt-10">
-
-                    <h4 class="mt-15">WhatsApp RSVP</h4>
-                    <span class="input-label">Número de WhatsApp:</span>
-                    <input type="text" id="input-config-wa-phone" class="prop-input">
-                    <span class="input-label mt-10">Mensaje predeterminado:</span>
-                    <textarea id="input-config-wa-msg" class="prop-input" rows="2"></textarea>
-
-                    <h4 class="mt-15">Ubicación</h4>
-                    <span class="input-label">Nombre del Local:</span>
-                    <input type="text" id="input-config-loc-name" class="prop-input">
-                    <span class="input-label mt-10">Dirección:</span>
-                    <input type="text" id="input-config-loc-addr" class="prop-input">
+                <label class="field"><span>Frase de apertura</span><input id="field-subtitle" type="text" autocomplete="off"></label>
+                <label class="field"><span>Mensaje de portada</span><textarea id="field-coverQuote" rows="2"></textarea></label>
+                <div class="field-grid two-col">
+                    <label class="field"><span>Fecha</span><input id="field-date" type="date"></label>
+                    <label class="field"><span>Hora</span><input id="field-time" type="time"></label>
                 </div>
+                <label class="field"><span>Dedicatoria</span><textarea id="field-mainMessage" rows="5"></textarea></label>
+                <div class="section-divider"></div>
+                <div class="panel-intro compact"><h2>Ubicación y confirmación</h2><p>Estos botones se actualizan juntos en el demo.</p></div>
+                <label class="field"><span>Nombre del lugar</span><input id="field-locationName" type="text" autocomplete="off"></label>
+                <label class="field"><span>Dirección</span><input id="field-address" type="text" autocomplete="off"></label>
+                <label class="field"><span>WhatsApp para RSVP</span><input id="field-whatsapp" type="tel" inputmode="numeric" autocomplete="off"></label>
+                <label class="field"><span>Mensaje de confirmación</span><textarea id="field-whatsappMessage" rows="3"></textarea></label>
+                <div class="field-grid two-col">
+                    <label class="field"><span>Vestimenta</span><input id="field-dressCode" type="text"></label>
+                    <label class="field"><span>Pase / invitados</span><input id="field-passInfo" type="text"></label>
+                </div>
+                <label class="field"><span>Regalos</span><input id="field-giftInfo" type="text"></label>
+                <label class="field"><span>Mensaje final</span><textarea id="field-finalMessage" rows="2"></textarea></label>
+            </section>
 
-                <!-- Element Inspector -->
-                <div id="prop-element-panel" class="prop-panel" style="display: none;">
-                    <div class="prop-group">
-                        <label>Elemento Seleccionado</label>
-                        <span id="selected-elem-info" class="input-label" style="color: #ffffff; font-weight: 600;">Elemento</span>
+            <section class="settings-view" id="sections-panel">
+                <div class="panel-intro"><h2>Secciones visibles</h2><p>Activa o desactiva bloques completos sin perder su contenido.</p></div>
+                <div class="toggle-list">
+                    <label class="toggle-row"><span><b>Cuenta regresiva</b><small>Contador hasta el evento</small></span><input id="toggle-showCountdown" type="checkbox"><i></i></label>
+                    <label class="toggle-row"><span><b>Galería de recuerdos</b><small>Fotos con visor ampliado</small></span><input id="toggle-showGallery" type="checkbox"><i></i></label>
+                    <label class="toggle-row"><span><b>Video especial</b><small>Bloque multimedia opcional</small></span><input id="toggle-showVideo" type="checkbox"><i></i></label>
+                    <label class="toggle-row"><span><b>Ubicación y mapas</b><small>Google Maps y Waze</small></span><input id="toggle-showMap" type="checkbox"><i></i></label>
+                    <label class="toggle-row"><span><b>Música de fondo</b><small>El invitado la activa cuando quiera</small></span><input id="toggle-showMusic" type="checkbox"><i></i></label>
+                </div>
+                <div class="tip-card"><span>✦</span><p>El demo público abre directamente el contenido en modo vista previa. La carta de apertura seguirá apareciendo para tus invitados.</p></div>
+            </section>
+
+            <section class="settings-view" id="style-panel">
+                <div class="panel-intro"><h2>Dirección visual</h2><p>Elige una paleta preparada para cada tipo de celebración.</p></div>
+                <label class="field"><span>Tema</span><select id="field-theme"><option value="theme-quinceanos">XV años · Rosa & dorado</option><option value="theme-boda">Boda · Marfil & oliva</option><option value="theme-cumpleanos">Cumpleaños · Neón & noche</option></select></label>
+                <div class="theme-preview-grid">
+                    <button type="button" class="theme-card theme-card-xv" data-theme="theme-quinceanos"><span></span><b>Romántico</b><small>Rosa / dorado</small></button>
+                    <button type="button" class="theme-card theme-card-boda" data-theme="theme-boda"><span></span><b>Editorial</b><small>Marfil / oliva</small></button>
+                    <button type="button" class="theme-card theme-card-party" data-theme="theme-cumpleanos"><span></span><b>Party</b><small>Neón / noche</small></button>
+                </div>
+            </section>
+
+            <section class="settings-view" id="media-panel">
+                <div class="panel-intro"><h2>Galería de fotos</h2><p>Reemplaza las imágenes de ejemplo por recuerdos reales.</p></div>
+                <label class="upload-button"><input id="gallery-upload" type="file" accept="image/*" multiple><span>＋ Subir fotos desde tu equipo</span></label>
+                <div class="sample-actions"><button type="button" class="small-button" data-add-sample="../assets/images/xv/g1.svg">+ Foto demo</button><button type="button" class="small-button" id="btn-clear-gallery">Vaciar galería</button></div>
+                <div id="gallery-editor-list" class="gallery-editor-list"></div>
+                <div class="tip-card soft"><span>i</span><p>Las imágenes cargadas se guardan en este navegador junto con el diseño.</p></div>
+            </section>
+
+            <!-- 🎬 Pestaña de GIFs Decorativos Animados Reales -->
+            <section class="settings-view" id="gifs-panel">
+                <div class="panel-intro"><h2>GIFs & Decoraciones</h2><p>Agrega destellos, mariposas y pétalos flotantes animados.</p></div>
+                <label class="upload-button"><input id="gif-upload" type="file" accept="image/gif,image/*"><span>✨ Subir GIF desde tu equipo</span></label>
+                <div class="gifs-grid" id="gifs-preset-grid">
+                    <button type="button" class="gif-preset-card" data-gif-src="../assets/gifs/xv/butterfly.gif" data-gif-name="Mariposa Dorada">
+                        <img src="../assets/gifs/xv/butterfly.gif" alt="Mariposa">
+                        <span>Mariposa</span>
+                    </button>
+                    <button type="button" class="gif-preset-card" data-gif-src="../assets/gifs/xv/sparkles.gif" data-gif-name="Destellos Dorados">
+                        <img src="../assets/gifs/xv/sparkles.gif" alt="Destellos">
+                        <span>Destellos</span>
+                    </button>
+                    <button type="button" class="gif-preset-card" data-gif-src="../assets/gifs/xv/flowers.gif" data-gif-name="Flores Elegantes">
+                        <img src="../assets/gifs/xv/flowers.gif" alt="Flores">
+                        <span>Flores</span>
+                    </button>
+                    <button type="button" class="gif-preset-card" data-gif-src="../assets/gifs/xv/petals.gif" data-gif-name="Lluvia de Pétalos">
+                        <img src="../assets/gifs/xv/petals.gif" alt="Pétalos">
+                        <span>Pétalos</span>
+                    </button>
+                    <button type="button" class="gif-preset-card" data-gif-src="../assets/gifs/xv/glitter.gif" data-gif-name="Brillo Glitter">
+                        <img src="../assets/gifs/xv/glitter.gif" alt="Glitter">
+                        <span>Glitter</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ≡ Pestaña de Capas (Layers) -->
+            <section class="settings-view" id="layers-panel">
+                <div class="panel-intro"><h2>Capas de la invitación</h2><p>Administra la jerarquía y visibilidad de los elementos del lienzo.</p></div>
+                <div id="layers-tree" class="layers-tree-container"></div>
+            </section>
+
+            <!-- ⚙ Pestaña de Propiedades e Inspector -->
+            <section class="settings-view" id="inspector-panel">
+                <div class="panel-intro"><h2>Inspector de elemento</h2><p>Ajusta posición, tamaño, rotación u opacidad del objeto seleccionado.</p></div>
+                <div id="inspector-empty" class="tip-card soft"><span>✦</span><p>Haz clic en cualquier GIF o elemento flotante para editar sus propiedades de transformación.</p></div>
+                <div id="inspector-form" hidden>
+                    <div class="field-grid two-col">
+                        <label class="field"><span>Posición X (px)</span><input id="insp-x" type="number"></label>
+                        <label class="field"><span>Posición Y (px)</span><input id="insp-y" type="number"></label>
                     </div>
-
-                    <div class="prop-group">
-                        <label>Transformación</label>
-                        <div class="prop-row">
-                            <div class="prop-col"><span class="input-label">X</span><input type="number" id="prop-x" class="prop-input-sm"></div>
-                            <div class="prop-col"><span class="input-label">Y</span><input type="number" id="prop-y" class="prop-input-sm"></div>
-                        </div>
-                        <div class="prop-row mt-10">
-                            <div class="prop-col"><span class="input-label">Ancho (W)</span><input type="number" id="prop-w" class="prop-input-sm"></div>
-                            <div class="prop-col"><span class="input-label">Alto (H)</span><input type="number" id="prop-h" class="prop-input-sm"></div>
-                        </div>
-                        <div class="prop-row mt-10">
-                            <div class="prop-col"><span class="input-label">Rotación (°)</span><input type="number" id="prop-rot" class="prop-input-sm"></div>
-                            <div class="prop-col"><span class="input-label">Opacidad (%)</span><input type="range" id="prop-opacity" min="0" max="100"></div>
-                        </div>
+                    <div class="field-grid two-col">
+                        <label class="field"><span>Ancho (px)</span><input id="insp-w" type="number"></label>
+                        <label class="field"><span>Alto (px)</span><input id="insp-h" type="number"></label>
                     </div>
-
-                    <!-- Text Specific Group -->
-                    <div id="prop-text-group" class="prop-group" style="display: none;">
-                        <label>Estilo de Texto</label>
-                        <select id="prop-font-family" class="prop-input">
-                            <option value="'Playfair Display', serif">Playfair Display</option>
-                            <option value="'Cormorant Garamond', serif">Cormorant Garamond</option>
-                            <option value="'Great Vibes', cursive">Great Vibes</option>
-                            <option value="'Outfit', sans-serif">Outfit</option>
-                            <option value="'Montserrat', sans-serif">Montserrat</option>
-                        </select>
-                        <div class="prop-row mt-10">
-                            <div class="prop-col"><span class="input-label">Tamaño (px)</span><input type="number" id="prop-font-size" class="prop-input-sm"></div>
-                            <div class="prop-col"><span class="input-label">Color</span><input type="color" id="prop-text-color" class="prop-color-input"></div>
-                        </div>
+                    <div class="field-grid two-col">
+                        <label class="field"><span>Rotación (°)</span><input id="insp-rot" type="number" min="-360" max="360"></label>
+                        <label class="field"><span>Opacidad (0-100%)</span><input id="insp-opacity" type="number" min="0" max="100"></label>
                     </div>
-
-                    <!-- Image / GIF Specific Group -->
-                    <div id="prop-media-group" class="prop-group" style="display: none;">
-                        <label>Ajuste de Imagen / GIF</label>
-                        <select id="prop-object-fit" class="prop-input">
-                            <option value="cover">Ajustar Cover</option>
-                            <option value="contain">Ajustar Contain</option>
-                            <option value="fill">Rellenar Fill</option>
-                        </select>
-                    </div>
-
-                    <div class="prop-actions">
-                        <button id="btn-prop-lock" class="btn btn-secondary-editor full-w">🔓 Bloquear Elemento</button>
-                        <button id="btn-prop-duplicate" class="btn btn-secondary-editor full-w mt-10">📋 Duplicar Elemento</button>
-                        <button id="btn-prop-delete" class="btn btn-danger-editor full-w mt-10">🗑️ Eliminar Elemento</button>
+                    <label class="field"><span>Capa (Z-Index)</span><input id="insp-zindex" type="number"></label>
+                    <div class="inspector-actions">
+                        <button type="button" class="small-button" id="btn-insp-dup">📋 Duplicar</button>
+                        <button type="button" class="small-button" id="btn-insp-lock">🔒 Bloquear</button>
+                        <button type="button" class="small-button danger" id="btn-insp-del">🗑️ Eliminar</button>
                     </div>
                 </div>
-
-            </div>
+            </section>
         </aside>
 
-    </div>
+        <section class="preview-workspace">
+            <div class="preview-toolbar">
+                <div><span class="eyebrow">Vista previa en vivo</span><strong id="preview-label">Invitación móvil</strong></div>
+                <div class="preview-tools"><span class="preview-status"><i></i> Sincronizado</span><button class="tool-button" id="btn-refresh-preview" type="button" title="Actualizar vista previa">⟳</button><button class="tool-button" id="btn-fit-preview" type="button" title="Ajustar vista">⌗</button></div>
+            </div>
+            <div class="preview-stage"><div class="phone-shadow"><div class="phone-topbar"><span></span><span></span><span></span></div><iframe id="preview-frame" src="../invitacion/?id=demo&editorPreview=1" title="Vista previa de la invitación" loading="eager"></iframe></div></div>
+            <div class="preview-footer"><span>Los cambios se reflejan aquí automáticamente.</span><span class="shortcut-hint">Ctrl / ⌘ + S para guardar · Esc para cerrar paneles</span></div>
+        </section>
+    </main>
 
-    <!-- Notification Toast Element -->
-    <div id="editor-toast" class="editor-toast" style="display: none;"></div>
+    <div id="editor-toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="editor.js?v=20260812-4"></script>
 
-    <!-- Editor Engine Script -->
-    <script src="editor.js"></script>
 </body>
 </html>

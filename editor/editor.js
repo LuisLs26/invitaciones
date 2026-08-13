@@ -1,1121 +1,575 @@
-/**
- * MOTOR DE EDITOR VISUAL CANVA CON ARRASTRE LIBRE 100% (VANILLA JS)
- * Permite mover imágenes y GIFs animados libremente por todo el lienzo de la invitación.
- */
-
+/* Editor Studio: una fuente de verdad, borrador automático y vista previa aislada. */
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Obtener ID del diseño de la URL (?id=demo, ?id=cliente1, ?id=cumpleanos)
-    const urlParams = new URLSearchParams(window.location.search);
-    const designId = urlParams.get('id') || 'demo';
-
-    // 2. Elementos Principales del DOM
-    const canvasStage = document.getElementById('canvas-stage');
-    const canvasFrame = document.getElementById('canvas-frame');
-    const invitationContainer = document.getElementById('editor-invitation-container');
-    const dynamicOverlay = document.getElementById('editor-dynamic-overlay');
-    const selectionBox = document.getElementById('selection-box');
-    const rotHandle = document.querySelector('.rot-handle');
-    const snapGuideH = document.getElementById('snap-guide-h');
-    const snapGuideV = document.getElementById('snap-guide-v');
-
-    // Headers & Action Buttons
-    const btnUndo = document.getElementById('btn-undo');
-    const btnRedo = document.getElementById('btn-redo');
-    const btnSave = document.getElementById('btn-save');
-    const btnPreview = document.getElementById('btn-preview');
-    const saveStatus = document.getElementById('save-status');
-
-    // Zoom Controls
-    const zoomSelect = document.getElementById('zoom-select');
-    const btnZoomIn = document.getElementById('btn-zoom-in');
-    const btnZoomOut = document.getElementById('btn-zoom-out');
-    const btnZoomFit = document.getElementById('btn-zoom-fit');
-
-    // Sidebar & Inspector Panels
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    const panelSections = document.querySelectorAll('.panel-section');
-    const inspectorTitle = document.getElementById('inspector-title');
-    const propCanvasPanel = document.getElementById('prop-canvas-panel');
-    const propElementPanel = document.getElementById('prop-element-panel');
-
-    // Form Inputs
-    const themePresetSelect = document.getElementById('theme-preset-select');
-    const inputConfigTitle = document.getElementById('input-config-title');
-    const inputConfigName = document.getElementById('input-config-name');
-    const inputConfigDate = document.getElementById('input-config-date');
-    const inputConfigTime = document.getElementById('input-config-time');
-    const inputConfigWaPhone = document.getElementById('input-config-wa-phone');
-    const inputConfigWaMsg = document.getElementById('input-config-wa-msg');
-    const inputConfigLocName = document.getElementById('input-config-loc-name');
-    const inputConfigLocAddr = document.getElementById('input-config-loc-addr');
-
-    const selectedElemInfo = document.getElementById('selected-elem-info');
-    const propX = document.getElementById('prop-x');
-    const propY = document.getElementById('prop-y');
-    const propW = document.getElementById('prop-w');
-    const propH = document.getElementById('prop-h');
-    const propRot = document.getElementById('prop-rot');
-    const propOpacity = document.getElementById('prop-opacity');
-
-    const propTextGroup = document.getElementById('prop-text-group');
-    const propFontFamily = document.getElementById('prop-font-family');
-    const propFontSize = document.getElementById('prop-font-size');
-    const propTextColor = document.getElementById('prop-text-color');
-
-    const btnPropLock = document.getElementById('btn-prop-lock');
-    const btnPropDuplicate = document.getElementById('btn-prop-duplicate');
-    const btnPropDelete = document.getElementById('btn-prop-delete');
-    const quickLock = document.getElementById('quick-lock');
-    const quickDup = document.getElementById('quick-dup');
-    const quickDel = document.getElementById('quick-del');
-
-    const layersList = document.getElementById('layers-list');
-    const galleryItemsContainer = document.getElementById('editor-gallery-items');
-
-    // 3. Estado Global del Editor
-    let activeConfig = {};
-    let dynamicElements = []; // Lista de GIFs e imágenes flotantes libres
-    let scannedElements = [];
-    let selectedElementId = null;
-    let currentZoom = 1;
-    let isLockedMap = {};
-
-    // Historial Undo / Redo (50 estados)
-    let historyStack = [];
+    const params = new URLSearchParams(window.location.search);
+    const designId = params.get('id') || 'demo';
+    const STORAGE_KEY = `invitation_config_v2_${designId}`;
+    const LEGACY_KEYS = [`invitation_design_${designId}`, `invitation_config_${designId}`, `invitation_${designId}`];
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => [...document.querySelectorAll(selector)];
+    const clone = (value) => JSON.parse(JSON.stringify(value));
+    let config = null;
+    let originalConfig = null;
+    let history = [];
     let historyIndex = -1;
-    const MAX_HISTORY = 50;
+    let persistTimer = null;
+    let previewTimer = null;
+    let toastTimer = null;
 
-    // Drag & Transform state
-    let isDragging = false;
-    let isResizing = false;
-    let isRotating = false;
-    let activeHandle = null;
-    let dragStartX = 0, dragStartY = 0;
-    let elemStartX = 0, elemStartY = 0, elemStartW = 0, elemStartH = 0;
+    const fieldMap = {
+        personName: '#field-personName', title: '#field-title', subtitle: '#field-subtitle',
+        coverQuote: '#field-coverQuote', mainMessage: '#field-mainMessage', locationName: '#field-locationName',
+        address: '#field-address', whatsapp: '#field-whatsapp', whatsappMessage: '#field-whatsappMessage',
+        dressCode: '#field-dressCode', passInfo: '#field-passInfo', giftInfo: '#field-giftInfo', finalMessage: '#field-finalMessage'
+    };
+    const toggleMap = ['showCountdown', 'showGallery', 'showVideo', 'showMap', 'showMusic'];
 
-    // 4. Inicialización
-    initEditor();
+    let selectedElementId = null;
 
-    function initEditor() {
-        loadRealConfiguration();
+    init();
 
-        // Pestañas Sidebar
-        tabButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetTab = btn.getAttribute('data-tab');
-                tabButtons.forEach(b => b.classList.remove('active'));
-                panelSections.forEach(p => p.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById(targetTab).classList.add('active');
-            });
-        });
-
-        // Zoom Controls
-        zoomSelect.addEventListener('change', (e) => setZoom(parseFloat(e.target.value)));
-        btnZoomIn.addEventListener('click', () => setZoom(currentZoom + 0.15));
-        btnZoomOut.addEventListener('click', () => setZoom(currentZoom - 0.15));
-        btnZoomFit.addEventListener('click', fitZoomToViewport);
-
-        // Events & Shortcuts
-        setupKeyboardShortcuts();
-        setupActionEvents();
-        setupTransformHandles();
+    async function init() {
+        $('#design-id').textContent = designId;
+        bindNavigation();
+        bindActions();
+        bindFields();
+        bindGallery();
+        bindGIFs();
+        bindLayers();
+        bindInspector();
+        bindJSONImportExport();
+        try {
+            config = await loadConfig();
+            originalConfig = clone(config);
+            renderEditor();
+            pushHistory(false);
+            setStatus('Borrador listo', false);
+        } catch (error) {
+            showToast('No se pudo cargar esta invitación');
+            setStatus('Error al cargar', true);
+        }
     }
 
-    // Cargar Configuración Real
-    function loadRealConfiguration() {
-        const localDraft = localStorage.getItem(`invitation_design_${designId}`);
-        if (localDraft) {
+    async function loadConfig() {
+        const stored = readStoredConfig();
+        if (stored) return normalizeConfig(stored);
+        const response = await fetch(`../configs/editor/${encodeURIComponent(designId)}.json`, { cache: 'no-store' });
+        if (!response.ok) throw new Error('Configuración no encontrada');
+        return normalizeConfig(await response.json());
+    }
+
+    function readStoredConfig() {
+        const keys = [STORAGE_KEY, ...LEGACY_KEYS];
+        for (const key of keys) {
             try {
-                activeConfig = JSON.parse(localDraft);
-                applyConfigToRealDOM(activeConfig);
-                showToast("Borrador local cargado");
-                return;
-            } catch (e) {}
+                const raw = localStorage.getItem(key);
+                if (raw) return JSON.parse(raw);
+            } catch (error) {
+                console.warn(`No se pudo leer ${key}`, error);
+            }
         }
-
-        fetch(`../configs/editor/${designId}.json`)
-            .then(res => {
-                if (!res.ok) throw new Error('No JSON');
-                return res.json();
-            })
-            .then(jsonConfig => {
-                activeConfig = jsonConfig;
-                applyConfigToRealDOM(activeConfig);
-                showToast(`Configuración de ${designId} cargada`);
-            })
-            .catch(() => {
-                const scriptTag = document.createElement('script');
-                scriptTag.src = `../configs/${designId}.js`;
-                scriptTag.onload = () => {
-                    if (typeof INVITATION_CONFIG !== 'undefined') {
-                        activeConfig = INVITATION_CONFIG;
-                        applyConfigToRealDOM(activeConfig);
-                    }
-                };
-                document.head.appendChild(scriptTag);
-            });
+        return null;
     }
 
-    // Aplicar Configuración al DOM Real
-    function applyConfigToRealDOM(config, isHistoryAction = false) {
-        canvasFrame.className = `canvas-frame ${config.theme || 'theme-quinceanos'}`;
-        themePresetSelect.value = config.theme || 'theme-quinceanos';
-
-        setDOMText('cover-title', config.personName || config.title);
-        setDOMText('cover-quote', config.coverQuote || '');
-
-        if (config.heroImage) document.getElementById('hero-img').src = config.heroImage;
-        setDOMText('hero-subtitle', config.subtitle || 'Estás cordialmente invitado a');
-        setDOMText('hero-title', config.title || 'Mis XV Años');
-        setDOMText('hero-name', config.personName || 'Ana María');
-        setDOMText('hero-date', config.formattedDate || 'Sábado, 12 de Diciembre de 2026');
-        setDOMText('hero-time', config.time || '8:00 PM');
-
-        setDOMText('main-message-text', config.mainMessage || '');
-        renderGalleryDOM(config.gallery || []);
-
-        setDOMText('location-name', config.locationName || 'Salón Jardín de las Rosas');
-        setDOMText('location-address', config.address || 'Av. Las Flores 123');
-
-        setDOMText('dress-code-text', config.dressCode || 'Formal');
-        setDOMText('gift-info-text', config.giftInfo || 'Sobres en recepción');
-        setDOMText('pass-info-text', config.passInfo || 'Pase Válido para 2 Personas');
-        setDOMText('final-message-text', config.finalMessage || '¡Gracias por acompañarnos!');
-
-        // Sincronizar Inputs
-        inputConfigTitle.value = config.title || '';
-        inputConfigName.value = config.personName || '';
-        inputConfigDate.value = config.formattedDate || '';
-        inputConfigTime.value = config.time || '';
-        inputConfigWaPhone.value = config.whatsapp || '';
-        inputConfigWaMsg.value = config.whatsappMessage || '';
-        inputConfigLocName.value = config.locationName || '';
-        inputConfigLocAddr.value = config.address || '';
-
-        // Cargar Elementos Flotantes Libres (GIFs e Imágenes Libres)
-        dynamicElements = config.dynamicElements || [
-            { id: 'gif_free_1', type: 'gif', src: '../assets/gifs/xv/butterfly.gif', name: 'Mariposa Dorada', x: 280, y: 40, w: 65, h: 65, rot: 0, opacity: 1, zIndex: 100 },
-            { id: 'gif_free_2', type: 'gif', src: '../assets/gifs/xv/sparkles.gif', name: 'Destellos Dorados', x: 20, y: 30, w: 75, h: 75, rot: 0, opacity: 1, zIndex: 101 },
-            { id: 'gif_free_3', type: 'gif', src: '../assets/gifs/xv/petals.gif', name: 'Lluvia de Pétalos', x: 10, y: 420, w: 90, h: 110, rot: 0, opacity: 0.85, zIndex: 102 }
+    function normalizeConfig(input) {
+        const result = clone(input || {});
+        result.id = result.id || designId;
+        result.type = result.type || 'quinceanos';
+        result.theme = result.theme || themeForType(result.type);
+        result.personName = result.personName || 'Tu nombre';
+        result.title = result.title || 'Una celebración especial';
+        result.subtitle = result.subtitle || 'Estás cordialmente invitado a';
+        result.coverQuote = result.coverQuote || 'Ven a compartir una noche que recordaremos para siempre.';
+        result.date = result.date || '2026-12-12T20:00:00';
+        result.time = result.time || formatTime(result.date);
+        result.formattedDate = result.formattedDate || formatDate(result.date);
+        result.mainMessage = result.mainMessage || 'Será una alegría celebrar este momento contigo.';
+        result.gallery = Array.isArray(result.gallery) ? result.gallery : [];
+        result.showCountdown = result.showCountdown !== false;
+        result.showGallery = result.showGallery !== false;
+        result.showVideo = result.showVideo === true;
+        result.showMap = result.showMap !== false;
+        result.showMusic = result.showMusic !== false && Boolean(result.music);
+        result.dynamicElements = Array.isArray(result.dynamicElements) ? result.dynamicElements : [
+            { id: 'gif_1', type: 'gif', src: '../assets/gifs/xv/butterfly.gif', name: 'Mariposa Dorada', x: 280, y: 35, w: 70, h: 70, rot: 0, opacity: 1, zIndex: 15 },
+            { id: 'gif_2', type: 'gif', src: '../assets/gifs/xv/sparkles.gif', name: 'Destellos Dorados', x: 20, y: 25, w: 75, h: 75, rot: 0, opacity: 1, zIndex: 16 }
         ];
-
-        renderDynamicOverlay();
-        scanEditableElements();
-        setupWYSIWYGInlineTextEditing();
-
-        if (!isHistoryAction) {
-            saveHistoryState();
-        }
+        return result;
     }
 
-
-    function setDOMText(id, text) {
-        const el = document.getElementById(id);
-        if (el) el.textContent = text;
+    function themeForType(type) {
+        return type === 'boda' ? 'theme-boda' : type === 'cumpleanos' ? 'theme-cumpleanos' : 'theme-quinceanos';
     }
 
-    // RENDERIZAR OVERLAY DINÁMICO (GIFs, IMÁGENES Y TEXTOS ARRASTRABLES 100% LIBRES)
-    function renderDynamicOverlay() {
-        dynamicOverlay.innerHTML = '';
-        dynamicElements.forEach(elem => {
-            const el = document.createElement('div');
-            el.id = elem.id;
-            el.className = 'canvas-element';
-            el.style.left = `${elem.x}px`;
-            el.style.top = `${elem.y}px`;
-            el.style.width = `${elem.w}px`;
-            el.style.height = `${elem.h}px`;
-            el.style.transform = `rotate(${elem.rot || 0}deg)`;
-            el.style.opacity = elem.opacity !== undefined ? elem.opacity : 1;
-            el.style.zIndex = elem.zIndex || 100;
+    function bindNavigation() {
+        $$('.rail-item[data-panel]').forEach((button) => button.addEventListener('click', () => {
+            $$('.rail-item[data-panel]').forEach((item) => item.classList.toggle('active', item === button));
+            $$('.settings-view').forEach((panel) => panel.classList.toggle('active', panel.id === button.dataset.panel));
+        }));
+        $$('.theme-card').forEach((button) => button.addEventListener('click', () => {
+            $('#field-theme').value = button.dataset.theme;
+            updateField('theme', button.dataset.theme);
+            pushHistory();
+        }));
+    }
 
-            if (elem.type === 'text') {
-                el.classList.add('editable-text');
-                el.style.fontSize = `${elem.size || 22}px`;
-                el.style.fontFamily = elem.font || "'Playfair Display', serif";
-                el.style.color = elem.color || '#ffffff';
-                el.style.display = 'flex';
-                el.style.alignItems = 'center';
-                el.style.justifyContent = 'center';
-                el.style.textAlign = 'center';
-                el.textContent = elem.text || 'Nuevo Texto';
-                el.addEventListener('dblclick', () => {
-                    el.contentEditable = "true";
-                    el.focus();
+    function bindActions() {
+        $('#btn-save').addEventListener('click', () => saveProject(true));
+        $('#btn-preview').addEventListener('click', () => window.open(`../invitacion/?id=${encodeURIComponent(designId)}`, '_blank', 'noopener,noreferrer'));
+        $('#btn-refresh-preview').addEventListener('click', () => refreshPreview(true));
+        $('#btn-fit-preview').addEventListener('click', () => $('.preview-stage').scrollTo({ top: 0, behavior: 'smooth' }));
+        $('#btn-undo').addEventListener('click', () => moveHistory(-1));
+        $('#btn-redo').addEventListener('click', () => moveHistory(1));
+        $('#btn-reset').addEventListener('click', resetToOriginal);
+        document.addEventListener('keydown', (event) => {
+            if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') { event.preventDefault(); saveProject(true); }
+            if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z' && !event.shiftKey) { event.preventDefault(); moveHistory(-1); }
+            if (((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'y') || ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === 'z')) { event.preventDefault(); moveHistory(1); }
+        });
+    }
+
+    function bindFields() {
+        Object.entries(fieldMap).forEach(([key, selector]) => {
+            const control = $(selector);
+            control.addEventListener('input', () => { updateField(key, control.value); queueDraft(); });
+            control.addEventListener('change', () => pushHistory());
+        });
+        $('#field-date').addEventListener('input', () => { updateDateTime(); queueDraft(); });
+        $('#field-date').addEventListener('change', () => pushHistory());
+        $('#field-time').addEventListener('input', () => { updateDateTime(); queueDraft(); });
+        $('#field-time').addEventListener('change', () => pushHistory());
+        toggleMap.forEach((key) => {
+            const control = $(`#toggle-${key}`);
+            control.addEventListener('change', () => { config[key] = control.checked; commitChange(); });
+        });
+        $('#field-theme').addEventListener('change', () => { updateField('theme', $('#field-theme').value); commitChange(); });
+    }
+
+    function bindGallery() {
+        $('#gallery-upload').addEventListener('change', (event) => {
+            const files = [...event.target.files];
+            if (!files.length) return;
+            Promise.all(files.map(fileToDataUrl)).then((photos) => {
+                config.gallery = [...(config.gallery || []), ...photos.map((url, index) => ({ url, caption: files[index].name.replace(/\.[^/.]+$/, '') }))];
+                renderGallery();
+                commitChange();
+                event.target.value = '';
+            });
+        });
+        $$('.small-button[data-add-sample]').forEach((button) => button.addEventListener('click', () => {
+            config.gallery = [...(config.gallery || []), { url: button.dataset.addSample, caption: 'Un recuerdo especial' }];
+            renderGallery();
+            commitChange();
+        }));
+        $('#btn-clear-gallery').addEventListener('click', () => {
+            config.gallery = [];
+            renderGallery();
+            commitChange();
+        });
+    }
+
+    function bindGIFs() {
+        $$('.gif-preset-card').forEach((card) => {
+            card.addEventListener('click', () => {
+                const src = card.dataset.gifSrc;
+                const name = card.dataset.gifName || 'GIF Decorativo';
+                addDynamicElement('gif', src, name);
+            });
+        });
+
+        const uploadInput = $('#gif-upload');
+        if (uploadInput) {
+            uploadInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                fileToDataUrl(file).then((url) => {
+                    addDynamicElement('gif', url, file.name.replace(/\.[^/.]+$/, ''));
+                    event.target.value = '';
                 });
-                el.addEventListener('blur', () => {
-                    el.contentEditable = "false";
-                    elem.text = el.textContent;
-                    saveHistoryState();
-                });
-            } else {
-                const img = document.createElement('img');
-                img.src = elem.src;
-                img.alt = elem.name || 'Elemento libre';
-                el.appendChild(img);
-            }
-
-            // Evento para arrastrar libremente
-            el.addEventListener('mousedown', (e) => {
-                if (el.isContentEditable) return;
-                e.stopPropagation();
-                selectDynamicElement(elem.id);
-                startDrag(e, elem.id);
-            });
-
-            el.addEventListener('touchstart', (e) => {
-                if (el.isContentEditable) return;
-                e.stopPropagation();
-                selectDynamicElement(elem.id);
-                startDrag(e, elem.id);
-            }, { passive: false });
-
-            dynamicOverlay.appendChild(el);
-        });
-    }
-
-
-    // Escáner Universal de DOM
-    function scanEditableElements() {
-        scannedElements = [];
-        const container = document.getElementById('editor-invitation-container');
-        if (!container) return;
-
-        const nodes = container.querySelectorAll('.editable-text, img, button, a, .section');
-        let counter = 1;
-
-        nodes.forEach(node => {
-            let editorId = node.getAttribute('data-editor-id');
-            if (!editorId) {
-                editorId = node.id || `${node.tagName.toLowerCase()}_${counter++}`;
-                node.setAttribute('data-editor-id', editorId);
-            }
-
-            scannedElements.push({
-                id: editorId,
-                node: node,
-                type: getNodeType(node),
-                name: getNodeName(node, editorId)
-            });
-
-            node.removeEventListener('click', onNodeClick);
-            node.addEventListener('click', onNodeClick);
-        });
-
-        updateLayersList();
-    }
-
-    function getNodeType(node) {
-        if (node.tagName === 'IMG') return node.src.endsWith('.gif') ? 'gif' : 'image';
-        if (['H1','H2','H3','H4','P','SPAN','A'].includes(node.tagName)) return 'text';
-        if (node.classList.contains('section')) return 'section';
-        return 'component';
-    }
-
-    function getNodeName(node, id) {
-        if (node.textContent && node.textContent.length < 30 && node.children.length === 0) {
-            return node.textContent.trim();
-        }
-        return id;
-    }
-
-    function onNodeClick(e) {
-        e.stopPropagation();
-        const editorId = e.currentTarget.getAttribute('data-editor-id');
-        selectElementByEditorId(editorId);
-    }
-
-    // SELECCIÓN Y BOUNDING BOX
-    function selectDynamicElement(id) {
-        selectedElementId = id;
-        const elem = dynamicElements.find(e => e.id === id);
-        if (!elem) return;
-
-        propCanvasPanel.style.display = 'none';
-        propElementPanel.style.display = 'block';
-        inspectorTitle.textContent = `Inspector: ${elem.type.toUpperCase()}`;
-        selectedElemInfo.textContent = `${elem.name || 'Elemento Flotante'}`;
-        propTextGroup.style.display = 'none';
-
-        propX.value = Math.round(elem.x);
-        propY.value = Math.round(elem.y);
-        propW.value = Math.round(elem.w);
-        propH.value = Math.round(elem.h);
-        propRot.value = Math.round(elem.rot || 0);
-        propOpacity.value = Math.round((elem.opacity !== undefined ? elem.opacity : 1) * 100);
-
-        updateSelectionBox();
-        updateLayersList();
-    }
-
-    function selectElementByEditorId(editorId) {
-        // Verificar si es un elemento dinámico libre primero
-        const dyn = dynamicElements.find(d => d.id === editorId);
-        if (dyn) {
-            selectDynamicElement(editorId);
-            return;
-        }
-
-        selectedElementId = editorId;
-        const scanned = scannedElements.find(item => item.id === editorId);
-        if (!scanned) {
-            deselectAll();
-            return;
-        }
-
-        const node = scanned.node;
-        propCanvasPanel.style.display = 'none';
-        propElementPanel.style.display = 'block';
-        inspectorTitle.textContent = `Inspector: ${scanned.type.toUpperCase()}`;
-        selectedElemInfo.textContent = `${scanned.name}`;
-
-        const rect = node.getBoundingClientRect();
-        const frameRect = canvasFrame.getBoundingClientRect();
-
-        propX.value = Math.round((rect.left - frameRect.left) / currentZoom);
-        propY.value = Math.round((rect.top - frameRect.top) / currentZoom);
-        propW.value = Math.round(rect.width / currentZoom);
-        propH.value = Math.round(rect.height / currentZoom);
-        propOpacity.value = Math.round((parseFloat(window.getComputedStyle(node).opacity) || 1) * 100);
-
-        if (scanned.type === 'text') {
-            propTextGroup.style.display = 'block';
-            const computed = window.getComputedStyle(node);
-            propFontSize.value = parseInt(computed.fontSize);
-            propFontFamily.value = computed.fontFamily;
-            propTextColor.value = rgbToHex(computed.color);
-        } else {
-            propTextGroup.style.display = 'none';
-        }
-
-        updateSelectionBox();
-        updateLayersList();
-    }
-
-    function deselectAll() {
-        selectedElementId = null;
-        selectionBox.style.display = 'none';
-        propElementPanel.style.display = 'none';
-        propCanvasPanel.style.display = 'block';
-        inspectorTitle.textContent = 'Propiedades del Diseño';
-        updateLayersList();
-    }
-
-    function updateSelectionBox() {
-        if (!selectedElementId) {
-            selectionBox.style.display = 'none';
-            return;
-        }
-
-        // Si es elemento dinámico libre
-        const dyn = dynamicElements.find(d => d.id === selectedElementId);
-        if (dyn) {
-            selectionBox.style.display = 'block';
-            selectionBox.style.left = `${dyn.x}px`;
-            selectionBox.style.top = `${dyn.y}px`;
-            selectionBox.style.width = `${dyn.w}px`;
-            selectionBox.style.height = `${dyn.h}px`;
-            selectionBox.style.transform = `rotate(${dyn.rot || 0}deg)`;
-
-            const isLocked = !!isLockedMap[selectedElementId];
-            quickLock.textContent = isLocked ? '🔒' : '🔓';
-            btnPropLock.textContent = isLocked ? '🔒 Desbloquear Elemento' : '🔓 Bloquear Elemento';
-            return;
-        }
-
-        // Si es elemento escaneado del DOM
-        const scanned = scannedElements.find(item => item.id === selectedElementId);
-        if (!scanned || !scanned.node) return;
-
-        const rect = scanned.node.getBoundingClientRect();
-        const frameRect = canvasFrame.getBoundingClientRect();
-
-        selectionBox.style.display = 'block';
-        selectionBox.style.left = `${(rect.left - frameRect.left) / currentZoom}px`;
-        selectionBox.style.top = `${(rect.top - frameRect.top) / currentZoom}px`;
-        selectionBox.style.width = `${rect.width / currentZoom}px`;
-        selectionBox.style.height = `${rect.height / currentZoom}px`;
-
-        const isLocked = !!isLockedMap[selectedElementId];
-        quickLock.textContent = isLocked ? '🔒' : '🔓';
-        btnPropLock.textContent = isLocked ? '🔒 Desbloquear Elemento' : '🔓 Bloquear Elemento';
-    }
-
-    // ARRASTRE DE ELEMENTOS (100% LIBRE)
-    function startDrag(e, id) {
-        if (isResizing || isRotating || isLockedMap[id]) return;
-        isDragging = true;
-
-        const dyn = dynamicElements.find(el => el.id === id);
-        const point = getEventPoint(e);
-        dragStartX = point.x;
-        dragStartY = point.y;
-
-        if (dyn) {
-            elemStartX = dyn.x;
-            elemStartY = dyn.y;
-        } else {
-            const scanned = scannedElements.find(i => i.id === id);
-            if (scanned && scanned.node) {
-                const rect = scanned.node.getBoundingClientRect();
-                const frameRect = canvasFrame.getBoundingClientRect();
-                elemStartX = (rect.left - frameRect.left) / currentZoom;
-                elemStartY = (rect.top - frameRect.top) / currentZoom;
-            }
-        }
-
-        document.addEventListener('mousemove', onDragMove);
-        document.addEventListener('mouseup', onDragEnd);
-        document.addEventListener('touchmove', onDragMove, { passive: false });
-        document.addEventListener('touchend', onDragEnd);
-    }
-
-    function onDragMove(e) {
-        if (!isDragging || !selectedElementId) return;
-        const point = getEventPoint(e);
-        const dx = (point.x - dragStartX) / currentZoom;
-        const dy = (point.y - dragStartY) / currentZoom;
-
-        const dyn = dynamicElements.find(el => el.id === selectedElementId);
-        if (dyn) {
-            dyn.x = elemStartX + dx;
-            dyn.y = elemStartY + dy;
-
-            propX.value = Math.round(dyn.x);
-            propY.value = Math.round(dyn.y);
-            renderDynamicOverlay();
-            updateSelectionBox();
-            return;
-        }
-
-        const scanned = scannedElements.find(i => i.id === selectedElementId);
-        if (scanned && scanned.node) {
-            scanned.node.style.position = 'absolute';
-            scanned.node.style.left = `${elemStartX + dx}px`;
-            scanned.node.style.top = `${elemStartY + dy}px`;
-            updateSelectionBox();
-        }
-    }
-
-    function onDragEnd() {
-        if (isDragging) {
-            isDragging = false;
-            document.removeEventListener('mousemove', onDragMove);
-            document.removeEventListener('mouseup', onDragEnd);
-            document.removeEventListener('touchmove', onDragMove);
-            document.removeEventListener('touchend', onDragEnd);
-            saveHistoryState();
-        }
-    }
-
-    // TRANSFORMACIÓN: REDIMENSIONADO Y ROTACIÓN (8 HANDLES)
-    function setupTransformHandles() {
-        document.querySelectorAll('.handle').forEach(h => {
-            h.addEventListener('mousedown', (e) => {
-                e.stopPropagation();
-                startResize(e, h.getAttribute('data-handle'));
-            });
-        });
-
-        rotHandle.addEventListener('mousedown', (e) => {
-            e.stopPropagation();
-            startRotate(e);
-        });
-    }
-
-    function startResize(e, handleType) {
-        if (isLockedMap[selectedElementId]) return;
-        isResizing = true;
-        activeHandle = handleType;
-        const point = getEventPoint(e);
-        dragStartX = point.x;
-        dragStartY = point.y;
-
-        const dyn = dynamicElements.find(el => el.id === selectedElementId);
-        if (dyn) {
-            elemStartW = dyn.w;
-            elemStartH = dyn.h;
-        } else {
-            const scanned = scannedElements.find(i => i.id === selectedElementId);
-            if (scanned && scanned.node) {
-                const rect = scanned.node.getBoundingClientRect();
-                elemStartW = rect.width / currentZoom;
-                elemStartH = rect.height / currentZoom;
-            }
-        }
-
-        document.addEventListener('mousemove', onResizeMove);
-        document.addEventListener('mouseup', onResizeEnd);
-    }
-
-    function onResizeMove(e) {
-        if (!isResizing || !selectedElementId) return;
-        const point = getEventPoint(e);
-        const dx = (point.x - dragStartX) / currentZoom;
-        const dy = (point.y - dragStartY) / currentZoom;
-
-        const dyn = dynamicElements.find(el => el.id === selectedElementId);
-        if (dyn) {
-            if (activeHandle.includes('e')) dyn.w = Math.max(20, elemStartW + dx);
-            if (activeHandle.includes('s')) dyn.h = Math.max(20, elemStartH + dy);
-            if (activeHandle.includes('w')) {
-                const newW = Math.max(20, elemStartW - dx);
-                dyn.x = elemStartX + (elemStartW - newW);
-                dyn.w = newW;
-            }
-            if (activeHandle.includes('n')) {
-                const newH = Math.max(20, elemStartH - dy);
-                dyn.y = elemStartY + (elemStartH - newH);
-                dyn.h = newH;
-            }
-
-            propW.value = Math.round(dyn.w);
-            propH.value = Math.round(dyn.h);
-            renderDynamicOverlay();
-            updateSelectionBox();
-            return;
-        }
-
-        const scanned = scannedElements.find(i => i.id === selectedElementId);
-        if (scanned && scanned.node) {
-            if (activeHandle.includes('e')) scanned.node.style.width = `${Math.max(20, elemStartW + dx)}px`;
-            if (activeHandle.includes('s')) scanned.node.style.height = `${Math.max(20, elemStartH + dy)}px`;
-            updateSelectionBox();
-        }
-    }
-
-    function onResizeEnd() {
-        if (isResizing) {
-            isResizing = false;
-            document.removeEventListener('mousemove', onResizeMove);
-            document.removeEventListener('mouseup', onResizeEnd);
-            saveHistoryState();
-        }
-    }
-
-    function startRotate(e) {
-        if (isLockedMap[selectedElementId]) return;
-        isRotating = true;
-        const rect = selectionBox.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-
-        function onRotateMove(evt) {
-            const point = getEventPoint(evt);
-            const radians = Math.atan2(point.y - centerY, point.x - centerX);
-            let degrees = Math.round(radians * (180 / Math.pi)) + 90;
-            if (evt.shiftKey) degrees = Math.round(degrees / 15) * 15;
-
-            const dyn = dynamicElements.find(el => el.id === selectedElementId);
-            if (dyn) {
-                dyn.rot = degrees;
-                propRot.value = degrees;
-                renderDynamicOverlay();
-                updateSelectionBox();
-                return;
-            }
-
-            const scanned = scannedElements.find(i => i.id === selectedElementId);
-            if (scanned && scanned.node) {
-                scanned.node.style.transform = `rotate(${degrees}deg)`;
-                updateSelectionBox();
-            }
-        }
-
-        function onRotateEnd() {
-            isRotating = false;
-            document.removeEventListener('mousemove', onRotateMove);
-            document.removeEventListener('mouseup', onRotateEnd);
-            saveHistoryState();
-        }
-
-        document.addEventListener('mousemove', onRotateMove);
-        document.addEventListener('mouseup', onRotateEnd);
-    }
-
-    // WYSIWYG EDICIÓN DIRECTA EN LÍNEA
-    function setupWYSIWYGInlineTextEditing() {
-        const editableTexts = document.querySelectorAll('.editable-text');
-        editableTexts.forEach(el => {
-            el.addEventListener('dblclick', (e) => {
-                e.stopPropagation();
-                if (isLockedMap[el.getAttribute('data-editor-id')]) return;
-                el.contentEditable = "true";
-                el.focus();
-                showToast("Modo de edición directa de texto activo");
-            });
-
-            el.addEventListener('blur', () => {
-                el.contentEditable = "false";
-                syncDOMToConfig();
-                saveHistoryState();
-            });
-        });
-    }
-
-    // GESTOR DE SECCIONES (LIMPIO SIN BUGS)
-    function setupSectionManagerEvents() {
-        document.querySelectorAll('.btn-sec-act').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const act = btn.getAttribute('data-act');
-                const secId = btn.getAttribute('data-sec');
-                const targetSec = document.getElementById(secId);
-                if (!targetSec) return;
-
-                if (act === 'edit') {
-                    targetSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    document.querySelectorAll('.section-editing-highlight').forEach(s => s.classList.remove('section-editing-highlight'));
-                    targetSec.classList.add('section-editing-highlight');
-                    selectElementByEditorId(secId);
-                    showToast(`Editando sección ${secId}`);
-                } else if (act === 'vis') {
-                    const isHidden = targetSec.style.display === 'none';
-                    targetSec.style.display = isHidden ? 'block' : 'none';
-                    btn.classList.toggle('off', !isHidden);
-                    btn.textContent = !isHidden ? '🙈' : '👁';
-                    showToast(`Sección ${secId} ${!isHidden ? 'ocultada' : 'visible'}`);
-                    saveHistoryState();
-                } else if (act === 'up') {
-                    if (targetSec.previousElementSibling) {
-                        targetSec.parentNode.insertBefore(targetSec, targetSec.previousElementSibling);
-                        showToast(`Sección ${secId} movida arriba`);
-                        saveHistoryState();
-                    }
-                } else if (act === 'down') {
-                    if (targetSec.nextElementSibling) {
-                        targetSec.parentNode.insertBefore(targetSec.nextElementSibling, targetSec);
-                        showToast(`Sección ${secId} movida abajo`);
-                        saveHistoryState();
-                    }
-                }
-            });
-        });
-    }
-
-    function updateLayersList() {
-        layersList.innerHTML = '';
-
-        // Primero elementos libres (GIFs e Imágenes)
-        dynamicElements.forEach(item => {
-            const li = document.createElement('li');
-            li.className = `layer-item ${item.id === selectedElementId ? 'active' : ''}`;
-            const isLocked = !!isLockedMap[item.id];
-            li.innerHTML = `<span>✨ ${item.name}</span><small>${isLocked ? '🔒' : item.type}</small>`;
-            li.addEventListener('click', () => selectDynamicElement(item.id));
-            layersList.appendChild(li);
-        });
-
-        // Luego elementos del DOM real
-        scannedElements.slice(0, 30).forEach(item => {
-            const li = document.createElement('li');
-            li.className = `layer-item ${item.id === selectedElementId ? 'active' : ''}`;
-            const isLocked = !!isLockedMap[item.id];
-            li.innerHTML = `<span>${item.name}</span><small>${isLocked ? '🔒' : item.type}</small>`;
-            li.addEventListener('click', () => selectElementByEditorId(item.id));
-            layersList.appendChild(li);
-        });
-    }
-
-    function toggleLockSelected() {
-        if (!selectedElementId) return;
-        isLockedMap[selectedElementId] = !isLockedMap[selectedElementId];
-        updateSelectionBox();
-        updateLayersList();
-        showToast(isLockedMap[selectedElementId] ? "Elemento bloqueado 🔒" : "Elemento desbloqueado 🔓");
-    }
-
-    function setupActionEvents() {
-        setupSectionManagerEvents();
-
-        canvasStage.addEventListener('mousedown', (e) => {
-            if (e.target === canvasStage || e.target === canvasFrame) {
-                deselectAll();
-            }
-        });
-
-        // Subir Imagen desde PC
-        document.getElementById('btn-trigger-upload').addEventListener('click', () => {
-            document.getElementById('img-upload-input').click();
-        });
-        document.getElementById('img-upload-input').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (evt) => addMediaElementToCanvas(evt.target.result, file.name, file.type.includes('gif'));
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Subir GIF desde PC
-        document.getElementById('btn-trigger-gif-upload').addEventListener('click', () => {
-            document.getElementById('gif-upload-input').click();
-        });
-        document.getElementById('gif-upload-input').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (evt) => addMediaElementToCanvas(evt.target.result, file.name, true);
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Añadir GIF de biblioteca
-        document.querySelectorAll('[data-action="add-gif"]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const src = btn.getAttribute('data-src');
-                const name = btn.getAttribute('data-name');
-                addMediaElementToCanvas(src, name, true);
-            });
-        });
-
-        // Añadir Imagen de biblioteca
-        document.querySelectorAll('[data-action="add-image"]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const src = btn.getAttribute('data-src');
-                addMediaElementToCanvas(src, 'Imagen Servidor', false);
-            });
-        });
-
-        // Bloqueo / Duplicar / Eliminar
-        quickLock.addEventListener('click', toggleLockSelected);
-        btnPropLock.addEventListener('click', toggleLockSelected);
-        quickDup.addEventListener('click', duplicateSelected);
-        btnPropDuplicate.addEventListener('click', duplicateSelected);
-        quickDel.addEventListener('click', deleteSelected);
-        btnPropDelete.addEventListener('click', deleteSelected);
-
-        // Guardar y Vista Previa
-        if (btnSave) btnSave.addEventListener('click', saveProjectState);
-        if (btnPreview) btnPreview.addEventListener('click', () => window.open(`../invitacion/?id=${designId}`, '_blank'));
-
-        // Añadir Nuevo Texto Libre al Lienzo
-        const btnAddNewText = document.getElementById('btn-add-new-text');
-        if (btnAddNewText) {
-            btnAddNewText.addEventListener('click', () => {
-                const id = 'text_' + Date.now();
-                const newElem = {
-                    id, type: 'text', text: 'Nuevo Texto Editable', font: "'Playfair Display', serif",
-                    size: 24, color: '#ffffff', x: 80, y: 300, w: 230, h: 55, rot: 0, opacity: 1, zIndex: 120
-                };
-                dynamicElements.push(newElem);
-                renderDynamicOverlay();
-                selectDynamicElement(id);
-                saveHistoryState();
-                showToast("Nuevo texto añadido al lienzo");
             });
         }
-
-        // Botones de enfoque rápido de componentes
-        document.querySelectorAll('[data-focus]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetSecId = btn.getAttribute('data-focus');
-                const sec = document.getElementById(targetSecId);
-                if (sec) {
-                    sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    selectElementByEditorId(targetSecId);
-                    showToast(`Sección ${targetSecId} enfocada`);
-                }
-            });
-        });
-
-        // Inputs de Transformación en Vivo (X, Y, W, H, Rotación, Opacidad)
-        [propX, propY, propW, propH, propRot, propOpacity].forEach(input => {
-            if (!input) return;
-            input.addEventListener('input', () => {
-                if (!selectedElementId) return;
-                const dyn = dynamicElements.find(e => e.id === selectedElementId);
-                if (dyn) {
-                    dyn.x = parseFloat(propX.value) || dyn.x;
-                    dyn.y = parseFloat(propY.value) || dyn.y;
-                    dyn.w = parseFloat(propW.value) || dyn.w;
-                    dyn.h = parseFloat(propH.value) || dyn.h;
-                    dyn.rot = parseFloat(propRot.value) || 0;
-                    dyn.opacity = (parseFloat(propOpacity.value) || 100) / 100;
-                    renderDynamicOverlay();
-                    updateSelectionBox();
-                } else {
-                    const scanned = scannedElements.find(i => i.id === selectedElementId);
-                    if (scanned && scanned.node) {
-                        scanned.node.style.position = 'absolute';
-                        scanned.node.style.left = `${propX.value}px`;
-                        scanned.node.style.top = `${propY.value}px`;
-                        scanned.node.style.width = `${propW.value}px`;
-                        scanned.node.style.height = `${propH.value}px`;
-                        scanned.node.style.transform = `rotate(${propRot.value}deg)`;
-                        scanned.node.style.opacity = (parseFloat(propOpacity.value) || 100) / 100;
-                        updateSelectionBox();
-                    }
-                }
-            });
-        });
-
-        // Inputs Configuración General
-        inputConfigName.addEventListener('input', (e) => {
-            setDOMText('hero-name', e.target.value);
-            setDOMText('cover-title', e.target.value);
-            activeConfig.personName = e.target.value;
-        });
-
-        inputConfigTitle.addEventListener('input', (e) => {
-            setDOMText('hero-title', e.target.value);
-            activeConfig.title = e.target.value;
-        });
-
-        inputConfigDate.addEventListener('input', (e) => {
-            setDOMText('hero-date', e.target.value);
-            activeConfig.formattedDate = e.target.value;
-        });
-
-        inputConfigTime.addEventListener('input', (e) => {
-            setDOMText('hero-time', e.target.value);
-            activeConfig.time = e.target.value;
-        });
-
-        inputConfigLocName.addEventListener('input', (e) => {
-            setDOMText('location-name', e.target.value);
-            activeConfig.locationName = e.target.value;
-        });
-
-        inputConfigLocAddr.addEventListener('input', (e) => {
-            setDOMText('location-address', e.target.value);
-            activeConfig.address = e.target.value;
-        });
-
-        inputConfigWaPhone.addEventListener('input', (e) => {
-            activeConfig.whatsapp = e.target.value;
-        });
-
-        inputConfigWaMsg.addEventListener('input', (e) => {
-            activeConfig.whatsappMessage = e.target.value;
-        });
-
-        // Cambio de Tema en Vivo
-        themePresetSelect.addEventListener('change', (e) => {
-            canvasFrame.className = `canvas-frame ${e.target.value}`;
-            activeConfig.theme = e.target.value;
-        });
     }
 
-
-
-    function addMediaElementToCanvas(src, name, isGif) {
-        const id = (isGif ? 'gif_' : 'img_') + Date.now();
+    function addDynamicElement(type, src, name) {
+        const id = 'elem_' + Date.now();
         const newElem = {
-            id, type: isGif ? 'gif' : 'image', src, name: name || 'Elemento Libre',
-            x: 130, y: 250, w: 100, h: 100, rot: 0, opacity: 1, zIndex: 100 + dynamicElements.length
+            id,
+            type: type || 'gif',
+            src,
+            name: name || 'Elemento',
+            x: 140,
+            y: 160,
+            w: 85,
+            h: 85,
+            rot: 0,
+            opacity: 1,
+            zIndex: 10 + (config.dynamicElements ? config.dynamicElements.length : 0)
         };
-        dynamicElements.push(newElem);
-        renderDynamicOverlay();
-        selectDynamicElement(id);
-        saveHistoryState();
-        showToast(`${isGif ? 'GIF' : 'Imagen'} ${name} añadido al lienzo`);
+        config.dynamicElements = config.dynamicElements || [];
+        config.dynamicElements.push(newElem);
+        renderLayers();
+        selectElement(id);
+        commitChange();
+        showToast(`✨ ${name} añadido al lienzo`);
     }
 
-    function deleteSelected() {
-        if (!selectedElementId) return;
-        const dynIndex = dynamicElements.findIndex(e => e.id === selectedElementId);
-        if (dynIndex !== -1) {
-            dynamicElements.splice(dynIndex, 1);
-            deselectAll();
-            renderDynamicOverlay();
-            saveHistoryState();
-            showToast("Elemento eliminado");
+    function bindLayers() {
+        renderLayers();
+    }
+
+    function renderLayers() {
+        const container = $('#layers-tree');
+        if (!container) return;
+        container.innerHTML = '';
+
+        const elements = config.dynamicElements || [];
+        if (!elements.length) {
+            container.innerHTML = '<div class="tip-card soft"><span>✦</span><p>No hay elementos flotantes en el lienzo. Añade un GIF o sticker desde la pestaña GIFs.</p></div>';
             return;
         }
 
-        const scanned = scannedElements.find(i => i.id === selectedElementId);
-        if (scanned && scanned.node) {
-            scanned.node.remove();
-            deselectAll();
-            scanEditableElements();
-            saveHistoryState();
-            showToast("Elemento eliminado");
-        }
-    }
-
-    function duplicateSelected() {
-        if (!selectedElementId) return;
-        const dyn = dynamicElements.find(e => e.id === selectedElementId);
-        if (dyn) {
-            const copy = JSON.parse(JSON.stringify(dyn));
-            copy.id = 'elem_' + Date.now();
-            copy.x += 15;
-            copy.y += 15;
-            dynamicElements.push(copy);
-            renderDynamicOverlay();
-            selectDynamicElement(copy.id);
-            saveHistoryState();
-            showToast("Elemento duplicado");
-            return;
-        }
-
-        const scanned = scannedElements.find(i => i.id === selectedElementId);
-        if (scanned && scanned.node) {
-            const clone = scanned.node.cloneNode(true);
-            const newId = 'elem_' + Date.now();
-            clone.setAttribute('data-editor-id', newId);
-            clone.style.left = `${(parseInt(clone.style.left) || 50) + 15}px`;
-            clone.style.top = `${(parseInt(clone.style.top) || 50) + 15}px`;
-            scanned.node.parentNode.appendChild(clone);
-
-            scanEditableElements();
-            selectElementByEditorId(newId);
-            saveHistoryState();
-            showToast("Elemento duplicado");
-        }
-    }
-
-    function renderGalleryDOM(galleryList) {
-        const galleryGrid = document.getElementById('gallery-grid');
-        galleryGrid.innerHTML = '';
-        galleryItemsContainer.innerHTML = '';
-
-        galleryList.forEach((photo, index) => {
-            const item = document.createElement('div');
-            item.className = 'gallery-item';
-            item.setAttribute('data-editor-id', `gallery-item-${index}`);
-            item.innerHTML = `<img src="${photo.url}" alt="${photo.caption || 'Foto'}">`;
-            galleryGrid.appendChild(item);
+        elements.forEach((item) => {
+            const row = document.createElement('div');
+            row.className = `layer-row ${item.id === selectedElementId ? 'active' : ''}`;
+            row.innerHTML = `
+                <div class="layer-row-info">
+                    <span>${item.type === 'gif' ? '🎬' : '🖼'}</span>
+                    <strong>${escapeHtml(item.name || 'Elemento')}</strong>
+                </div>
+                <div class="layer-row-actions">
+                    <button type="button" class="btn-layer-lock" title="Bloquear">${item.locked ? '🔒' : '🔓'}</button>
+                    <button type="button" class="btn-layer-del" title="Eliminar">🗑️</button>
+                </div>
+            `;
+            row.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') return;
+                selectElement(item.id);
+            });
+            row.querySelector('.btn-layer-lock').addEventListener('click', () => {
+                item.locked = !item.locked;
+                renderLayers();
+                commitChange();
+            });
+            row.querySelector('.btn-layer-del').addEventListener('click', () => {
+                deleteElement(item.id);
+            });
+            container.appendChild(row);
         });
     }
 
-    // Sincronizar Cambios del DOM al Objeto de Configuración
-    function syncDOMToConfig() {
-        if (!activeConfig) activeConfig = {};
-
-        function readDOMText(id) {
-            const el = document.getElementById(id);
-            return el ? el.textContent.trim() : null;
-        }
-
-        // Leer inputs del sidebar (prioridad sobre DOM ya que son la fuente de edición)
-        activeConfig.personName = inputConfigName.value || readDOMText('hero-name') || activeConfig.personName || '';
-        activeConfig.title = inputConfigTitle.value || readDOMText('hero-title') || activeConfig.title || '';
-        activeConfig.formattedDate = inputConfigDate.value || readDOMText('hero-date') || activeConfig.formattedDate || '';
-        activeConfig.time = inputConfigTime.value || readDOMText('hero-time') || activeConfig.time || '';
-        activeConfig.whatsapp = inputConfigWaPhone.value || activeConfig.whatsapp || '';
-        activeConfig.whatsappMessage = inputConfigWaMsg.value || activeConfig.whatsappMessage || '';
-        activeConfig.locationName = inputConfigLocName.value || readDOMText('location-name') || activeConfig.locationName || '';
-        activeConfig.address = inputConfigLocAddr.value || readDOMText('location-address') || activeConfig.address || '';
-
-        // Campos que solo vienen del DOM
-        const subtitleText = readDOMText('hero-subtitle');
-        if (subtitleText) activeConfig.subtitle = subtitleText;
-        const quoteText = readDOMText('cover-quote');
-        if (quoteText) activeConfig.coverQuote = quoteText;
-        const mainMsg = readDOMText('main-message-text');
-        if (mainMsg) activeConfig.mainMessage = mainMsg;
-        const dressText = readDOMText('dress-code-text');
-        if (dressText) activeConfig.dressCode = dressText;
-        const giftText = readDOMText('gift-info-text');
-        if (giftText) activeConfig.giftInfo = giftText;
-        const passText = readDOMText('pass-info-text');
-        if (passText) activeConfig.passInfo = passText;
-        const finalText = readDOMText('final-message-text');
-        if (finalText) activeConfig.finalMessage = finalText;
-
-        const heroImgEl = document.getElementById('hero-img');
-        if (heroImgEl && heroImgEl.src && !heroImgEl.src.endsWith('hero.svg')) {
-            activeConfig.heroImage = heroImgEl.src;
-        }
-
-        activeConfig.theme = themePresetSelect.value || activeConfig.theme || 'theme-quinceanos';
-        activeConfig.dynamicElements = dynamicElements || [];
+    function selectElement(id) {
+        selectedElementId = id;
+        renderLayers();
+        renderInspector();
     }
 
-    // HISTORIAL Y PERSISTENCIA (50 ESTADOS)
-    function saveHistoryState() {
-        syncDOMToConfig();
-        if (historyIndex < historyStack.length - 1) historyStack = historyStack.slice(0, historyIndex + 1);
-        historyStack.push(JSON.stringify(activeConfig));
-        if (historyStack.length > MAX_HISTORY) historyStack.shift();
-        historyIndex = historyStack.length - 1;
+    function bindInspector() {
+        $('#insp-x').addEventListener('input', (e) => updateSelectedProp('x', parseFloat(e.target.value) || 0));
+        $('#insp-y').addEventListener('input', (e) => updateSelectedProp('y', parseFloat(e.target.value) || 0));
+        $('#insp-w').addEventListener('input', (e) => updateSelectedProp('w', parseFloat(e.target.value) || 10));
+        $('#insp-h').addEventListener('input', (e) => updateSelectedProp('h', parseFloat(e.target.value) || 10));
+        $('#insp-rot').addEventListener('input', (e) => updateSelectedProp('rot', parseFloat(e.target.value) || 0));
+        $('#insp-opacity').addEventListener('input', (e) => updateSelectedProp('opacity', (parseFloat(e.target.value) || 100) / 100));
+        $('#insp-zindex').addEventListener('input', (e) => updateSelectedProp('zIndex', parseInt(e.target.value, 10) || 1));
 
-        btnUndo.disabled = historyIndex <= 0;
-        btnRedo.disabled = historyIndex >= historyStack.length - 1;
-    }
-
-    btnUndo.addEventListener('click', () => {
-        if (historyIndex > 0) {
-            historyIndex--;
-            activeConfig = JSON.parse(historyStack[historyIndex]);
-            applyConfigToRealDOM(activeConfig, true);
-            btnUndo.disabled = historyIndex <= 0;
-            btnRedo.disabled = historyIndex >= historyStack.length - 1;
-            showToast("↩️ Deshecho (Paso " + (historyIndex + 1) + ")");
-        }
-    });
-
-    btnRedo.addEventListener('click', () => {
-        if (historyIndex < historyStack.length - 1) {
-            historyIndex++;
-            activeConfig = JSON.parse(historyStack[historyIndex]);
-            applyConfigToRealDOM(activeConfig, true);
-            btnUndo.disabled = historyIndex <= 0;
-            btnRedo.disabled = historyIndex >= historyStack.length - 1;
-            showToast("↪️ Rehecho (Paso " + (historyIndex + 1) + ")");
-        }
-    });
-
-    function saveProjectState() {
-        syncDOMToConfig();
-        const jsonStr = JSON.stringify(activeConfig);
-        localStorage.setItem(`invitation_design_${designId}`, jsonStr);
-        localStorage.setItem(`invitation_config_${designId}`, jsonStr);
-        localStorage.setItem(`invitation_${designId}`, jsonStr);
-        saveStatus.textContent = '🟢 Cambios guardados';
-        showToast("💾 ¡CAMBIOS GUARDADOS! Reflejados en el demo público.");
-    }
-
-
-    function setZoom(val) {
-        currentZoom = Math.min(1.5, Math.max(0.25, val));
-        zoomSelect.value = currentZoom;
-        canvasStage.style.transform = `scale(${currentZoom})`;
-    }
-
-    function fitZoomToViewport() { setZoom(0.85); }
-
-    function setupKeyboardShortcuts() {
-        document.addEventListener('keydown', (e) => {
-            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName) || e.target.isContentEditable) return;
-
-            if (e.key === 'Delete' || e.key === 'Backspace') {
-                deleteSelected();
-            } else if (e.ctrlKey && e.key === 'z') {
-                e.preventDefault();
-                btnUndo.click();
-            } else if (e.ctrlKey && e.key === 'y') {
-                e.preventDefault();
-                btnRedo.click();
-            } else if (e.ctrlKey && e.key === 'd') {
-                e.preventDefault();
-                duplicateSelected();
-            } else if (e.ctrlKey && e.key === 's') {
-                e.preventDefault();
-                saveProjectState();
+        $('#btn-insp-dup').addEventListener('click', () => {
+            if (!selectedElementId) return;
+            const elem = (config.dynamicElements || []).find((el) => el.id === selectedElementId);
+            if (elem) {
+                addDynamicElement(elem.type, elem.src, (elem.name || 'Copia') + ' Copia');
             }
         });
+        $('#btn-insp-lock').addEventListener('click', () => {
+            if (!selectedElementId) return;
+            const elem = (config.dynamicElements || []).find((el) => el.id === selectedElementId);
+            if (elem) {
+                elem.locked = !elem.locked;
+                renderLayers();
+                renderInspector();
+                commitChange();
+            }
+        });
+        $('#btn-insp-del').addEventListener('click', () => {
+            if (selectedElementId) deleteElement(selectedElementId);
+        });
     }
 
-    function getEventPoint(e) {
-        if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-        return { x: e.clientX, y: e.clientY };
+    function updateSelectedProp(prop, val) {
+        if (!selectedElementId) return;
+        const elem = (config.dynamicElements || []).find((el) => el.id === selectedElementId);
+        if (elem) {
+            elem[prop] = val;
+            commitChange();
+        }
     }
 
-    function rgbToHex(rgb) {
-        if (!rgb || !rgb.startsWith('rgb')) return '#d4af37';
-        const nums = rgb.match(/\d+/g);
-        if (!nums || nums.length < 3) return '#d4af37';
-        return '#' + nums.slice(0, 3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
+    function deleteElement(id) {
+        config.dynamicElements = (config.dynamicElements || []).filter((el) => el.id !== id);
+        if (selectedElementId === id) selectedElementId = null;
+        renderLayers();
+        renderInspector();
+        commitChange();
+        showToast('Elemento eliminado');
     }
 
-    function showToast(msg) {
-        const toast = document.getElementById('editor-toast');
-        toast.textContent = msg;
-        toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 3000);
+    function renderInspector() {
+        const empty = $('#inspector-empty');
+        const form = $('#inspector-form');
+        if (!selectedElementId) {
+            empty.hidden = false;
+            form.hidden = true;
+            return;
+        }
+        const elem = (config.dynamicElements || []).find((el) => el.id === selectedElementId);
+        if (!elem) {
+            empty.hidden = false;
+            form.hidden = true;
+            return;
+        }
+        empty.hidden = true;
+        form.hidden = false;
+        $('#insp-x').value = Math.round(elem.x || 0);
+        $('#insp-y').value = Math.round(elem.y || 0);
+        $('#insp-w').value = Math.round(elem.w || 80);
+        $('#insp-h').value = Math.round(elem.h || 80);
+        $('#insp-rot').value = Math.round(elem.rot || 0);
+        $('#insp-opacity').value = Math.round((elem.opacity ?? 1) * 100);
+        $('#insp-zindex').value = elem.zIndex || 10;
+        $('#btn-insp-lock').textContent = elem.locked ? '🔓 Desbloquear' : '🔒 Bloquear';
+    }
+
+    function bindJSONImportExport() {
+        const exportBtn = $('#btn-export-json');
+        const importBtn = $('#btn-import-json');
+        const importInput = $('#json-file-input');
+
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                const str = JSON.stringify(config, null, 2);
+                const blob = new Blob([str], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `${designId}.json`;
+                a.click();
+                showToast('📤 Configuración JSON exportada');
+            });
+        }
+
+        if (importBtn && importInput) {
+            importBtn.addEventListener('click', () => importInput.click());
+            importInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    try {
+                        const parsed = JSON.parse(evt.target.result);
+                        config = normalizeConfig(parsed);
+                        renderEditor();
+                        commitChange();
+                        showToast('📥 JSON cargado exitosamente');
+                    } catch (err) {
+                        alert('Error al leer el archivo JSON');
+                    }
+                };
+                reader.readAsText(file);
+                importInput.value = '';
+            });
+        }
+    }
+
+    function fileToDataUrl(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function renderEditor() {
+        $('#design-name').textContent = config.personName || config.title;
+        Object.entries(fieldMap).forEach(([key, selector]) => { $(selector).value = config[key] || ''; });
+        $('#field-date').value = dateInputValue(config.date);
+        $('#field-time').value = timeInputValue(config.date, config.time);
+        $('#field-theme').value = config.theme;
+        toggleMap.forEach((key) => { $(`#toggle-${key}`).checked = Boolean(config[key]); });
+        $$('.theme-card').forEach((card) => card.classList.toggle('active', card.dataset.theme === config.theme));
+        renderGallery();
+        renderLayers();
+        renderInspector();
+        refreshPreview(false);
+    }
+
+
+    function renderGallery() {
+        const list = $('#gallery-editor-list');
+        list.innerHTML = '';
+        (config.gallery || []).forEach((photo, index) => {
+            const row = document.createElement('div');
+            row.className = 'gallery-row';
+            const image = document.createElement('img');
+            image.src = photo.url;
+            image.alt = photo.caption || 'Foto';
+            const input = document.createElement('input');
+            input.value = photo.caption || '';
+            input.placeholder = 'Título del recuerdo';
+            input.addEventListener('input', () => { config.gallery[index].caption = input.value; queueDraft(); });
+            input.addEventListener('change', () => pushHistory());
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.textContent = '×';
+            remove.title = 'Quitar foto';
+            remove.addEventListener('click', () => { config.gallery.splice(index, 1); renderGallery(); commitChange(); });
+            row.append(image, input, remove);
+            list.appendChild(row);
+        });
+        if (!list.children.length) {
+            const empty = document.createElement('div');
+            empty.className = 'tip-card soft';
+            empty.innerHTML = '<span>＋</span><p>Aún no hay fotos. Puedes subirlas o añadir una imagen demo.</p>';
+            list.appendChild(empty);
+        }
+    }
+
+    function updateField(key, value) {
+        config[key] = value;
+        if (key === 'personName') $('#design-name').textContent = value || 'Mi invitación';
+        if (key === 'theme') $$('.theme-card').forEach((card) => card.classList.toggle('active', card.dataset.theme === value));
+        refreshPreview(false);
+    }
+
+    function updateDateTime() {
+        const date = $('#field-date').value;
+        const time = $('#field-time').value || '20:00';
+        if (!date) return;
+        config.date = `${date}T${time}:00`;
+        config.formattedDate = formatDate(config.date);
+        config.time = formatTime(config.date);
+    }
+
+    function commitChange() {
+        pushHistory();
+        queueDraft();
+    }
+
+    function pushHistory(render = true) {
+        if (!config) return;
+        const snapshot = JSON.stringify(config);
+        if (history[historyIndex] === snapshot) return;
+        history = history.slice(0, historyIndex + 1);
+        history.push(snapshot);
+        if (history.length > 60) history.shift();
+        historyIndex = history.length - 1;
+        updateHistoryButtons();
+        if (render) { queueDraft(); refreshPreview(false); }
+    }
+
+    function moveHistory(direction) {
+        const next = historyIndex + direction;
+        if (next < 0 || next >= history.length) return;
+        historyIndex = next;
+        config = normalizeConfig(JSON.parse(history[historyIndex]));
+        renderEditor();
+        queueDraft();
+        showToast(direction < 0 ? 'Cambio deshecho' : 'Cambio rehecho');
+        updateHistoryButtons();
+    }
+
+    function updateHistoryButtons() {
+        $('#btn-undo').disabled = historyIndex <= 0;
+        $('#btn-redo').disabled = historyIndex >= history.length - 1;
+    }
+
+    async function resetToOriginal() {
+        try {
+            const response = await fetch(`../configs/editor/${encodeURIComponent(designId)}.json`, { cache: 'no-store' });
+            if (!response.ok) throw new Error('Configuración base no disponible');
+            originalConfig = normalizeConfig(await response.json());
+            config = clone(originalConfig);
+            renderEditor();
+            commitChange();
+            saveProject(false);
+            showToast('Se restauró la configuración original');
+        } catch (error) {
+            showToast('No se pudo restaurar la configuración base');
+        }
+    }
+
+    function queueDraft() {
+        setStatus('Guardando borrador…', false);
+        clearTimeout(persistTimer);
+        persistTimer = setTimeout(() => persistConfig(false), 250);
+    }
+
+    function saveProject(showMessage) {
+        clearTimeout(persistTimer);
+        persistConfig(true);
+        if (showMessage) showToast('✓ Invitación guardada y publicada en el demo');
+    }
+
+    function persistConfig(published) {
+        try {
+            const payload = JSON.stringify({ ...config, editorVersion: 2, updatedAt: new Date().toISOString() });
+            localStorage.setItem(STORAGE_KEY, payload);
+            // Mantener compatibilidad con las URLs y versiones anteriores del proyecto.
+            localStorage.setItem(`invitation_design_${designId}`, payload);
+            localStorage.setItem(`invitation_config_${designId}`, payload);
+            localStorage.setItem(`invitation_${designId}`, payload);
+            setStatus(published ? 'Publicado' : 'Borrador guardado', false);
+            refreshPreview(published);
+        } catch (error) {
+            setStatus('No se pudo guardar', true);
+            showToast('El navegador no permitió guardar este diseño');
+        }
+    }
+
+    function refreshPreview(force) {
+        clearTimeout(previewTimer);
+        previewTimer = setTimeout(() => {
+            const frame = $('#preview-frame');
+            const nextUrl = `../invitacion/?id=${encodeURIComponent(designId)}&editorPreview=1&v=${Date.now()}`;
+            if (force || !frame.src || !frame.src.includes(`id=${encodeURIComponent(designId)}`)) frame.src = nextUrl;
+            else if (frame.contentWindow) frame.contentWindow.location.replace(nextUrl);
+        }, force ? 0 : 180);
+    }
+
+    function setStatus(text, isError) {
+        $('#save-status').textContent = text;
+        $('.status-dot').style.background = isError ? '#ff6f91' : '#57e59f';
+        $('.status-dot').style.boxShadow = `0 0 12px ${isError ? '#ff6f91' : '#57e59f'}`;
+        if (!isError && text.includes('guard')) $('#saved-time').textContent = `· ${new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' })}`;
+    }
+
+    function showToast(message) {
+        const toast = $('#editor-toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    function dateInputValue(value) { return value ? String(value).split('T')[0] : ''; }
+    function timeInputValue(dateValue, fallback) {
+        const match = String(dateValue || '').match(/T(\d{2}:\d{2})/);
+        return match ? match[1] : to24Hour(fallback);
+    }
+    function to24Hour(value) {
+        const match = String(value || '').match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+        if (!match) return '20:00';
+        let hour = Number(match[1]);
+        if (match[3] && match[3].toUpperCase() === 'PM' && hour < 12) hour += 12;
+        if (match[3] && match[3].toUpperCase() === 'AM' && hour === 12) hour = 0;
+        return `${String(hour).padStart(2, '0')}:${match[2]}`;
+    }
+    function formatDate(value) {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return '';
+        const formatted = new Intl.DateTimeFormat('es-PE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(date);
+        return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+    }
+    function formatTime(value) {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return '';
+        return new Intl.DateTimeFormat('es-PE', { hour: 'numeric', minute: '2-digit', hour12: true }).format(date).replace('a. m.', 'AM').replace('p. m.', 'PM');
     }
 });
