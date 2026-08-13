@@ -293,28 +293,13 @@ img {
     100% { transform: translate3d(0, 0, 0) rotate(-1deg); }
 }
 
-/* Envelope Body & Flap - Haute Couture Luxury Redesign */
+/* Envelope Body & Flap - Base Layout */
 .envelope-body {
     position: relative;
     width: 100%;
     height: 100%;
-    background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
     border-radius: 20px;
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(212, 175, 55, 0.35);
     overflow: visible;
-}
-
-.theme-quinceanos .envelope-body,
-.theme-boda .envelope-body,
-.theme-bautizo .envelope-body,
-.theme-aniversario .envelope-body {
-    background: linear-gradient(145deg, #ffffff 0%, #fdfbf7 100%);
-    box-shadow: 0 20px 45px rgba(212, 175, 55, 0.18), 0 0 0 1px rgba(212, 175, 55, 0.35);
-}
-
-.theme-cumpleanos .envelope-body {
-    background: linear-gradient(145deg, #161b26 0%, #0a0e17 100%);
-    box-shadow: 0 20px 45px rgba(0, 242, 254, 0.2), 0 0 0 1px rgba(0, 242, 254, 0.35);
 }
 
 .envelope-flap {
@@ -323,24 +308,12 @@ img {
     left: 0;
     width: 100%;
     height: 110px;
-    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
     clip-path: polygon(0 0, 100% 0, 50% 100%);
     transform-origin: top;
     transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 5;
-    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2));
     will-change: transform;
-}
-
-.theme-quinceanos .envelope-flap,
-.theme-boda .envelope-flap,
-.theme-bautizo .envelope-flap,
-.theme-aniversario .envelope-flap {
-    background: linear-gradient(180deg, #fffaf0 0%, #f7ebd9 100%);
-}
-
-.theme-cumpleanos .envelope-flap {
-    background: linear-gradient(180deg, #1e293b 0%, #161b26 100%);
 }
 
 .envelope-wrapper.open .envelope-flap {
@@ -387,12 +360,6 @@ img {
     margin: 6px 0;
 }
 
-.theme-cumpleanos .card-inside-header {
-    color: #0f172a;
-    font-family: 'Outfit', sans-serif;
-    font-weight: 900;
-}
-
 .card-inside-ornament {
     font-size: 0.8rem;
     color: var(--accent-color);
@@ -410,10 +377,157 @@ img {
     left: 0;
     width: 100%;
     height: 110px;
-    background: linear-gradient(0deg, #0f172a 0%, #1e293b 100%);
     clip-path: polygon(0 100%, 100% 100%, 100% 0, 50% 50%, 0 0);
     border-radius: 0 0 20px 20px;
     z-index: 4;
+}
+
+/* ==========================================================================
+   THEME-SPECIFIC UNIQUE LUXURY ENVELOPES (CADA TEMA TIENE SU CARTA ÚNICA)
+   ========================================================================== */
+
+/* 1. XV Años (Rosa Princesa, Oro Rosado & Marfil) */
+.theme-quinceanos {
+    --bg-color: #fdf5f7;
+}
+
+.theme-quinceanos .envelope-body {
+    background: linear-gradient(145deg, #fff0f3 0%, #ffe4e9 100%);
+    box-shadow: 0 20px 45px rgba(229, 169, 180, 0.35), 0 0 0 1.5px rgba(229, 169, 180, 0.6);
+}
+
+.theme-quinceanos .envelope-flap {
+    background: linear-gradient(180deg, #fce4e8 0%, #f4acb7 100%);
+}
+
+.theme-quinceanos .envelope-pocket {
+    background: linear-gradient(0deg, #f4acb7 0%, #ffcad4 100%);
+}
+
+.theme-quinceanos .card-inside-header {
+    color: #b56576;
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.2rem;
+}
+
+/* 2. Boda (Blanco Imperial & Oro de Gala) */
+.theme-boda {
+    --bg-color: #faf8f5;
+}
+
+.theme-boda .envelope-body {
+    background: linear-gradient(145deg, #ffffff 0%, #fdfbf7 100%);
+    box-shadow: 0 20px 45px rgba(212, 175, 55, 0.2), 0 0 0 1.5px rgba(212, 175, 55, 0.45);
+}
+
+.theme-boda .envelope-flap {
+    background: linear-gradient(180deg, #fffaf0 0%, #f7ebd9 100%);
+}
+
+.theme-boda .envelope-pocket {
+    background: linear-gradient(0deg, #f7ebd9 0%, #fffaf0 100%);
+}
+
+.theme-boda .card-inside-header {
+    color: #aa771c;
+    font-family: 'Alex Brush', cursive;
+    font-size: 2.3rem;
+}
+
+/* 3. Cumpleaños #18 (Azul Noche VIP, Neón Cian & Magenta) */
+.theme-cumpleanos {
+    --bg-color: #080c14;
+}
+
+.theme-cumpleanos .envelope-body {
+    background: linear-gradient(145deg, #161b26 0%, #0a0e17 100%);
+    box-shadow: 0 20px 45px rgba(0, 242, 254, 0.25), 0 0 0 1.5px rgba(0, 242, 254, 0.45);
+}
+
+.theme-cumpleanos .envelope-flap {
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+}
+
+.theme-cumpleanos .envelope-pocket {
+    background: linear-gradient(0deg, #0d131f 0%, #162032 100%);
+}
+
+.theme-cumpleanos .card-inside-header {
+    color: #0f172a;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 900;
+}
+
+/* 4. Baby Shower (Azul Cielo Pastel & Nube) */
+.theme-babyshower, .theme-baby_shower {
+    --bg-color: #f0f7fc;
+}
+
+.theme-babyshower .envelope-body, .theme-baby_shower .envelope-body {
+    background: linear-gradient(145deg, #ffffff 0%, #e8f4fc 100%);
+    box-shadow: 0 20px 45px rgba(142, 202, 230, 0.28), 0 0 0 1.5px rgba(142, 202, 230, 0.5);
+}
+
+.theme-babyshower .envelope-flap, .theme-baby_shower .envelope-flap {
+    background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%);
+}
+
+.theme-babyshower .envelope-pocket, .theme-baby_shower .envelope-pocket {
+    background: linear-gradient(0deg, #bae6fd 0%, #e0f2fe 100%);
+}
+
+.theme-babyshower .card-inside-header, .theme-baby_shower .card-inside-header {
+    color: #0284c7;
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.1rem;
+}
+
+/* 5. Bautizo (Blanco Celestial & Oro Santo) */
+.theme-bautizo {
+    --bg-color: #fcfbf9;
+}
+
+.theme-bautizo .envelope-body {
+    background: linear-gradient(145deg, #ffffff 0%, #faf8f5 100%);
+    box-shadow: 0 20px 45px rgba(212, 175, 55, 0.22), 0 0 0 1.5px rgba(212, 175, 55, 0.45);
+}
+
+.theme-bautizo .envelope-flap {
+    background: linear-gradient(180deg, #fffdfa 0%, #f3ebd7 100%);
+}
+
+.theme-bautizo .envelope-pocket {
+    background: linear-gradient(0deg, #f3ebd7 0%, #fffdfa 100%);
+}
+
+.theme-bautizo .card-inside-header {
+    color: #b8860b;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+}
+
+/* 6. Aniversario (Bodas de Plata, Azul Real & Plata) */
+.theme-aniversario {
+    --bg-color: #0f172a;
+}
+
+.theme-aniversario .envelope-body {
+    background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+    box-shadow: 0 20px 45px rgba(203, 213, 225, 0.25), 0 0 0 1.5px rgba(203, 213, 225, 0.45);
+}
+
+.theme-aniversario .envelope-flap {
+    background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+}
+
+.theme-aniversario .envelope-pocket {
+    background: linear-gradient(0deg, #0f172a 0%, #1e293b 100%);
+}
+
+.theme-aniversario .card-inside-header {
+    color: #0f172a;
+    font-family: 'Playfair Display', serif;
+    font-weight: 800;
 }
 
 /* ==========================================================================
