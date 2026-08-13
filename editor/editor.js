@@ -100,20 +100,38 @@ document.addEventListener('DOMContentLoaded', () => {
             $$('.settings-view').forEach((panel) => panel.classList.toggle('active', panel.id === button.dataset.panel));
         }));
         $$('.theme-card').forEach((button) => button.addEventListener('click', () => {
-            $('#field-theme').value = button.dataset.theme;
+            const themeField = $('#field-theme');
+            if (themeField) themeField.value = button.dataset.theme;
             updateField('theme', button.dataset.theme);
             pushHistory();
         }));
     }
 
     function bindActions() {
-        $('#btn-save').addEventListener('click', () => saveProject(true));
-        $('#btn-preview').addEventListener('click', () => window.open(`../invitacion/?id=${encodeURIComponent(designId)}`, '_blank', 'noopener,noreferrer'));
-        $('#btn-refresh-preview').addEventListener('click', () => refreshPreview(true));
-        $('#btn-fit-preview').addEventListener('click', () => $('.preview-stage').scrollTo({ top: 0, behavior: 'smooth' }));
-        $('#btn-undo').addEventListener('click', () => moveHistory(-1));
-        $('#btn-redo').addEventListener('click', () => moveHistory(1));
-        $('#btn-reset').addEventListener('click', resetToOriginal);
+        const btnSave = $('#btn-save');
+        if (btnSave) btnSave.addEventListener('click', () => saveProject(true));
+
+        const btnPreview = $('#btn-preview');
+        if (btnPreview) btnPreview.addEventListener('click', () => window.open(`../invitacion/?id=${encodeURIComponent(designId)}`, '_blank', 'noopener,noreferrer'));
+
+        const btnRefresh = $('#btn-refresh-preview');
+        if (btnRefresh) btnRefresh.addEventListener('click', () => refreshPreview(true));
+
+        const btnFit = $('#btn-fit-preview');
+        if (btnFit) btnFit.addEventListener('click', () => {
+            const stage = $('.preview-stage');
+            if (stage) stage.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        const btnUndo = $('#btn-undo');
+        if (btnUndo) btnUndo.addEventListener('click', () => moveHistory(-1));
+
+        const btnRedo = $('#btn-redo');
+        if (btnRedo) btnRedo.addEventListener('click', () => moveHistory(1));
+
+        const btnReset = $('#btn-reset');
+        if (btnReset) btnReset.addEventListener('click', resetToOriginal);
+
         document.addEventListener('keydown', (event) => {
             if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') { event.preventDefault(); saveProject(true); }
             if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z' && !event.shiftKey) { event.preventDefault(); moveHistory(-1); }
@@ -124,42 +142,69 @@ document.addEventListener('DOMContentLoaded', () => {
     function bindFields() {
         Object.entries(fieldMap).forEach(([key, selector]) => {
             const control = $(selector);
+            if (!control) return;
             control.addEventListener('input', () => { updateField(key, control.value); queueDraft(); });
             control.addEventListener('change', () => pushHistory());
         });
-        $('#field-date').addEventListener('input', () => { updateDateTime(); queueDraft(); });
-        $('#field-date').addEventListener('change', () => pushHistory());
-        $('#field-time').addEventListener('input', () => { updateDateTime(); queueDraft(); });
-        $('#field-time').addEventListener('change', () => pushHistory());
+
+        const dateField = $('#field-date');
+        if (dateField) {
+            dateField.addEventListener('input', () => { updateDateTime(); queueDraft(); });
+            dateField.addEventListener('change', () => pushHistory());
+        }
+
+        const timeField = $('#field-time');
+        if (timeField) {
+            timeField.addEventListener('input', () => { updateDateTime(); queueDraft(); });
+            timeField.addEventListener('change', () => pushHistory());
+        }
+
         toggleMap.forEach((key) => {
             const control = $(`#toggle-${key}`);
-            control.addEventListener('change', () => { config[key] = control.checked; commitChange(); });
+            if (!control) return;
+            control.addEventListener('change', () => { if (config) config[key] = control.checked; commitChange(); });
         });
-        $('#field-theme').addEventListener('change', () => { updateField('theme', $('#field-theme').value); commitChange(); });
+
+        const themeField = $('#field-theme');
+        if (themeField) {
+            themeField.addEventListener('change', () => { updateField('theme', themeField.value); commitChange(); });
+        }
     }
 
     function bindGallery() {
-        $('#gallery-upload').addEventListener('change', (event) => {
-            const files = [...event.target.files];
-            if (!files.length) return;
-            Promise.all(files.map(fileToDataUrl)).then((photos) => {
-                config.gallery = [...(config.gallery || []), ...photos.map((url, index) => ({ url, caption: files[index].name.replace(/\.[^/.]+$/, '') }))];
-                renderGallery();
-                commitChange();
-                event.target.value = '';
+        const upload = $('#gallery-upload');
+        if (upload) {
+            upload.addEventListener('change', (event) => {
+                const files = [...event.target.files];
+                if (!files.length) return;
+                Promise.all(files.map(fileToDataUrl)).then((photos) => {
+                    if (!config) return;
+                    config.gallery = [...(config.gallery || []), ...photos.map((url, index) => ({ url, caption: files[index].name.replace(/\.[^/.]+$/, '') }))];
+                    renderGallery();
+                    commitChange();
+                    event.target.value = '';
+                });
             });
-        });
+        }
+
         $$('.small-button[data-add-sample]').forEach((button) => button.addEventListener('click', () => {
+            if (!config) return;
             config.gallery = [...(config.gallery || []), { url: button.dataset.addSample, caption: 'Un recuerdo especial' }];
             renderGallery();
             commitChange();
         }));
-        $('#btn-clear-gallery').addEventListener('click', () => {
-            config.gallery = [];
-            renderGallery();
-            commitChange();
-        });
+
+        const clearBtn = $('#btn-clear-gallery');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
+                if (!config) return;
+                config.gallery = [];
+                renderGallery();
+                commitChange();
+            });
+        }
     }
+
 
     function fileToDataUrl(file) {
         return new Promise((resolve, reject) => {
@@ -171,17 +216,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderEditor() {
-        $('#design-name').textContent = config.personName || config.title;
-        Object.entries(fieldMap).forEach(([key, selector]) => { $(selector).value = config[key] || ''; });
-        $('#field-date').value = dateInputValue(config.date);
-        $('#field-time').value = timeInputValue(config.date, config.time);
-        $('#field-theme').value = config.theme;
-        toggleMap.forEach((key) => { $(`#toggle-${key}`).checked = Boolean(config[key]); });
+        if (!config) return;
+        const nameEl = $('#design-name');
+        if (nameEl) nameEl.textContent = config.personName || config.title || 'Mi invitación';
+
+        Object.entries(fieldMap).forEach(([key, selector]) => {
+            const el = $(selector);
+            if (el) el.value = config[key] || '';
+        });
+
+        const dateEl = $('#field-date');
+        if (dateEl) dateEl.value = dateInputValue(config.date);
+
+        const timeEl = $('#field-time');
+        if (timeEl) timeEl.value = timeInputValue(config.date, config.time);
+
+        const themeEl = $('#field-theme');
+        if (themeEl) themeEl.value = config.theme || 'theme-quinceanos';
+
+        toggleMap.forEach((key) => {
+            const el = $(`#toggle-${key}`);
+            if (el) el.checked = Boolean(config[key]);
+        });
+
         $$('.theme-card').forEach((card) => card.classList.toggle('active', card.dataset.theme === config.theme));
         renderGallery();
         renderGifsList();
         refreshPreview(false);
     }
+
 
 
     function renderGallery() {
