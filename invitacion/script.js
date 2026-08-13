@@ -14,9 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const particlesContainer = document.getElementById('particles-container');
     const envelopeWrapper = document.getElementById('envelope-interactive');
     const openBtn = document.getElementById('open-invitation-btn');
-    const musicBtn = document.getElementById('music-toggle');
-    const musicText = document.getElementById('music-text');
-    const audioEl = document.getElementById('bg-audio');
 
     // Mapa de rutas a archivos de configuración por ID de evento
     const configMap = {
@@ -213,37 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // L. Rellenar Mensaje Final Footer
         document.getElementById('final-message-text').textContent = config.finalMessage || '¡Te esperamos!';
 
-        // M. Configurar Audio / Música
-        let isPlaying = false;
-        if (config.showMusic && config.music) {
-            musicBtn.style.display = 'flex';
-            audioEl.src = config.music;
-
-            musicBtn.addEventListener('click', () => {
-                if (isPlaying) {
-                    audioEl.pause();
-                    musicBtn.classList.remove('playing');
-                    musicText.textContent = 'Música';
-                    isPlaying = false;
-                } else {
-                    playAudio();
-                }
-            });
-        } else {
-            musicBtn.style.display = 'none';
-        }
-
-        function playAudio() {
-            if (!config.showMusic || !config.music) return;
-            audioEl.play().then(() => {
-                isPlaying = true;
-                musicBtn.classList.add('playing');
-                musicText.textContent = 'Pausar';
-            }).catch(err => {
-                console.log("Reproducción pausada por interacción.");
-            });
-        }
-
         // N. Lógica de Apertura Animada de Carta & Sobres
         let hasOpened = false;
         function triggerEnvelopeOpen() {
@@ -252,10 +218,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (envelopeWrapper) {
                 envelopeWrapper.classList.add('open');
-            }
-
-            if (config.showMusic) {
-                playAudio();
             }
 
             setTimeout(() => {

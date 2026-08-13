@@ -39,8 +39,6 @@ const INVITATION_CONFIG = {
     ],
 
     // Feature Toggles
-    showMusic: true,
-    music: "../assets/music/sample.mp3",
     showCountdown: true,
     showGallery: true,
     gallery: [

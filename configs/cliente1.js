@@ -39,8 +39,6 @@ const INVITATION_CONFIG = {
     ],
 
     // Feature Toggles (Premium - No Video)
-    showMusic: true,
-    music: "../assets/music/sample.mp3",
     showCountdown: true,
     showGallery: true,
     gallery: [
