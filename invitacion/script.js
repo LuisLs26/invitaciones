@@ -179,6 +179,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // K. Rellenar Mensaje Final Footer
         document.getElementById('final-message-text').textContent = config.finalMessage || '¡Te esperamos!';
 
+        // Renderizar Elementos Flotantes Dinámicos Guardados (GIFs, imágenes, textos libres)
+        renderDynamicElements(config.dynamicElements || []);
+
+
         // L. Configurar Audio / Música
         let isPlaying = false;
         if (config.showMusic && config.music) {
@@ -238,6 +242,57 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Renderizar Elementos Flotantes Guardados (GIFs, Imágenes, Textos)
+    function renderDynamicElements(dynamicElements) {
+        let dynamicContainer = document.getElementById('public-dynamic-overlay');
+        if (!dynamicContainer) {
+            dynamicContainer = document.createElement('div');
+            dynamicContainer.id = 'public-dynamic-overlay';
+            dynamicContainer.style.position = 'absolute';
+            dynamicContainer.style.top = '0';
+            dynamicContainer.style.left = '0';
+            dynamicContainer.style.width = '100%';
+            dynamicContainer.style.height = '100%';
+            dynamicContainer.style.pointerEvents = 'none';
+            dynamicContainer.style.zIndex = '90';
+            if (invitationApp) invitationApp.appendChild(dynamicContainer);
+        }
+
+        dynamicContainer.innerHTML = '';
+        dynamicElements.forEach(elem => {
+            const el = document.createElement('div');
+            el.style.position = 'absolute';
+            el.style.left = `${elem.x}px`;
+            el.style.top = `${elem.y}px`;
+            el.style.width = `${elem.w}px`;
+            el.style.height = `${elem.h}px`;
+            el.style.transform = `rotate(${elem.rot || 0}deg)`;
+            el.style.opacity = elem.opacity !== undefined ? elem.opacity : 1;
+            el.style.zIndex = elem.zIndex || 100;
+            el.style.pointerEvents = 'auto';
+
+            if (elem.type === 'text') {
+                el.style.fontSize = `${elem.size || 22}px`;
+                el.style.fontFamily = elem.font || "'Playfair Display', serif";
+                el.style.color = elem.color || '#ffffff';
+                el.style.display = 'flex';
+                el.style.alignItems = 'center';
+                el.style.justifyContent = 'center';
+                el.style.textAlign = 'center';
+                el.textContent = elem.text || '';
+            } else {
+                const img = document.createElement('img');
+                img.src = elem.src;
+                img.alt = elem.name || 'Decoración';
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                el.appendChild(img);
+            }
+
+            dynamicContainer.appendChild(el);
+        });
+    }
 
     // Partículas Flotantes en Portada
     function createFloatingParticles() {

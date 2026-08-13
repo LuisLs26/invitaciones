@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Aplicar Configuración al DOM Real
-    function applyConfigToRealDOM(config) {
+    function applyConfigToRealDOM(config, isHistoryAction = false) {
         canvasFrame.className = `canvas-frame ${config.theme || 'theme-quinceanos'}`;
         themePresetSelect.value = config.theme || 'theme-quinceanos';
 
@@ -206,8 +206,12 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDynamicOverlay();
         scanEditableElements();
         setupWYSIWYGInlineTextEditing();
-        saveHistoryState();
+
+        if (!isHistoryAction) {
+            saveHistoryState();
+        }
     }
+
 
     function setDOMText(id, text) {
         const el = document.getElementById(id);
@@ -967,9 +971,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (historyIndex > 0) {
             historyIndex--;
             activeConfig = JSON.parse(historyStack[historyIndex]);
-            applyConfigToRealDOM(activeConfig);
+            applyConfigToRealDOM(activeConfig, true);
             btnUndo.disabled = historyIndex <= 0;
             btnRedo.disabled = historyIndex >= historyStack.length - 1;
+            showToast("↩️ Deshecho (Paso " + (historyIndex + 1) + ")");
         }
     });
 
@@ -977,9 +982,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (historyIndex < historyStack.length - 1) {
             historyIndex++;
             activeConfig = JSON.parse(historyStack[historyIndex]);
-            applyConfigToRealDOM(activeConfig);
+            applyConfigToRealDOM(activeConfig, true);
             btnUndo.disabled = historyIndex <= 0;
             btnRedo.disabled = historyIndex >= historyStack.length - 1;
+            showToast("↪️ Rehecho (Paso " + (historyIndex + 1) + ")");
         }
     });
 
@@ -988,8 +994,9 @@ document.addEventListener('DOMContentLoaded', () => {
         activeConfig.dynamicElements = dynamicElements;
         localStorage.setItem(`invitation_design_${designId}`, JSON.stringify(activeConfig));
         saveStatus.textContent = '🟢 Cambios guardados';
-        showToast("Diseño guardado localmente");
+        showToast("💾 ¡Guardado directamente! La vista previa pública ahora muestra estos cambios.");
     }
+
 
     function exportProjectJSON() {
         syncDOMToConfig();
