@@ -274,8 +274,8 @@ img {
 /* Floating 3D Envelope Interactive Wrapper (GPU Optimized) */
 .envelope-wrapper {
     position: relative;
-    width: 280px;
-    height: 185px;
+    width: 290px;
+    height: 190px;
     margin: 25px auto 35px;
     cursor: pointer;
     perspective: 1000px;
@@ -293,46 +293,54 @@ img {
     100% { transform: translate3d(0, 0, 0) rotate(-1deg); }
 }
 
-/* Envelope Body & Flap */
+/* Envelope Body & Flap - Haute Couture Luxury Redesign */
 .envelope-body {
     position: relative;
     width: 100%;
     height: 100%;
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 18px 40px var(--shadow-color);
-    border: 1.5px solid var(--border-color);
+    background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+    border-radius: 20px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(212, 175, 55, 0.35);
     overflow: visible;
+}
+
+.theme-quinceanos .envelope-body,
+.theme-boda .envelope-body,
+.theme-bautizo .envelope-body,
+.theme-aniversario .envelope-body {
+    background: linear-gradient(145deg, #ffffff 0%, #fdfbf7 100%);
+    box-shadow: 0 20px 45px rgba(212, 175, 55, 0.18), 0 0 0 1px rgba(212, 175, 55, 0.35);
+}
+
+.theme-cumpleanos .envelope-body {
+    background: linear-gradient(145deg, #161b26 0%, #0a0e17 100%);
+    box-shadow: 0 20px 45px rgba(0, 242, 254, 0.2), 0 0 0 1px rgba(0, 242, 254, 0.35);
 }
 
 .envelope-flap {
     position: absolute;
     top: 0;
     left: 0;
-    width: 0;
-    height: 0;
-    border-left: 140px solid transparent;
-    border-right: 140px solid transparent;
-    border-top: 105px solid var(--secondary-color);
+    width: 100%;
+    height: 110px;
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
     transform-origin: top;
-    transition: transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 5;
-    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1));
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
     will-change: transform;
 }
 
-.heart-stamp {
-    position: absolute;
-    top: -92px;
-    left: -12px;
-    font-size: 1.5rem;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
-    animation: heartPulse 2s infinite ease-in-out;
+.theme-quinceanos .envelope-flap,
+.theme-boda .envelope-flap,
+.theme-bautizo .envelope-flap,
+.theme-aniversario .envelope-flap {
+    background: linear-gradient(180deg, #fffaf0 0%, #f7ebd9 100%);
 }
 
-@keyframes heartPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.18); }
+.theme-cumpleanos .envelope-flap {
+    background: linear-gradient(180deg, #1e293b 0%, #161b26 100%);
 }
 
 .envelope-wrapper.open .envelope-flap {
@@ -343,14 +351,14 @@ img {
 /* Inner Card Preview */
 .envelope-card-inside {
     position: absolute;
-    bottom: 10px;
+    bottom: 12px;
     left: 14px;
     right: 14px;
     height: 155px;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 14px;
+    background: #ffffff;
+    border: 1.5px solid var(--border-color);
+    border-radius: 14px;
+    padding: 16px 12px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -358,32 +366,41 @@ img {
     justify-content: center;
     transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 3;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
     will-change: transform;
 }
 
 .card-inside-badge {
-    font-size: 0.65rem;
-    letter-spacing: 3px;
+    font-size: 0.68rem;
+    letter-spacing: 3.5px;
+    color: var(--accent-color);
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.card-inside-header {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    color: #0f172a;
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 6px 0;
+}
+
+.theme-cumpleanos .card-inside-header {
+    color: #0f172a;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 900;
+}
+
+.card-inside-ornament {
+    font-size: 0.8rem;
     color: var(--accent-color);
     font-weight: 700;
 }
 
-.card-inside-header {
-    font-family: var(--font-hand);
-    font-size: 2.2rem;
-    color: var(--accent-color);
-    line-height: 1.1;
-    margin: 4px 0;
-}
-
-.card-inside-ornament {
-    font-size: 0.75rem;
-    color: var(--accent-color);
-}
-
 .envelope-wrapper.open .envelope-card-inside {
-    transform: translate3d(0, -90px, 0);
+    transform: translate3d(0, -95px, 0);
 }
 
 /* Front Pocket Overlay */
@@ -391,13 +408,11 @@ img {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 0;
-    height: 0;
-    border-left: 140px solid var(--card-bg);
-    border-right: 140px solid var(--card-bg);
-    border-top: 90px solid transparent;
-    border-bottom: 90px solid var(--card-bg);
-    border-radius: 0 0 16px 16px;
+    width: 100%;
+    height: 110px;
+    background: linear-gradient(0deg, #0f172a 0%, #1e293b 100%);
+    clip-path: polygon(0 100%, 100% 100%, 100% 0, 50% 50%, 0 0);
+    border-radius: 0 0 20px 20px;
     z-index: 4;
 }
 
