@@ -23,8 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const toggleMap = ['showCountdown', 'showGallery', 'showVideo', 'showMap', 'showMusic'];
 
-    init();
-
     async function init() {
         $('#design-id').textContent = designId;
         initProjectSelector();
@@ -460,6 +458,8 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'cliente1', label: '💍 Boda — María & Carlos' },
         { id: 'cumpleanos', label: '🎂 Cumpleaños — Juan' }
     ];
+
+    init();
 
     function initProjectSelector() {
         const selector = $('#project-selector');
