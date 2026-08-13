@@ -768,8 +768,75 @@ img {
 }
 
 /* ==========================================================================
-   CLASES DE ANIMACIÓN & SCROLL REVEAL (INTERSECTION OBSERVER)
+   GIFS DECORATIVOS (MARIPOSAS, DESTELLOS, PÉTALOS, FLORES, GLITTER)
    ========================================================================== */
+.gif-decor {
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+    z-index: 5;
+    opacity: 0.88;
+    transition: opacity 0.4s ease;
+}
+
+.gif-cover-butterfly {
+    top: 30px;
+    right: 25px;
+    width: 65px;
+    height: 65px;
+    filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.5));
+}
+
+.gif-cover-sparkle-left {
+    top: 50px;
+    left: 20px;
+    width: 75px;
+    height: 75px;
+}
+
+.gif-cover-sparkle-right {
+    bottom: 50px;
+    right: 20px;
+    width: 75px;
+    height: 75px;
+}
+
+.gif-hero-butterfly {
+    top: 35px;
+    right: 15px;
+    width: 60px;
+    height: 60px;
+    filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.4));
+}
+
+.gif-hero-flower-left {
+    top: 85px;
+    left: 10px;
+    width: 70px;
+    height: 70px;
+}
+
+.gif-countdown-sparkle {
+    top: -25px;
+    right: 15px;
+    width: 65px;
+    height: 65px;
+}
+
+.gif-message-petals {
+    top: -35px;
+    left: -5px;
+    width: 90px;
+    height: 110px;
+    opacity: 0.75;
+}
+
+@media screen and (max-width: 480px) {
+    .gif-cover-butterfly { width: 50px; height: 50px; right: 15px; top: 20px; }
+    .gif-hero-butterfly { width: 45px; height: 45px; right: 10px; }
+    .gif-hero-flower-left { width: 55px; height: 55px; left: 5px; }
+}
+
 .reveal {
     opacity: 0;
     transform: translateY(35px);
