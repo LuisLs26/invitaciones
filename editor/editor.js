@@ -22,9 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnUndo = document.getElementById('btn-undo');
     const btnRedo = document.getElementById('btn-redo');
     const btnSave = document.getElementById('btn-save');
-    const btnExportJson = document.getElementById('btn-export-json');
-    const btnImportJson = document.getElementById('btn-import-json');
-    const jsonFileInput = document.getElementById('json-file-input');
     const btnPreview = document.getElementById('btn-preview');
     const saveStatus = document.getElementById('save-status');
 
@@ -789,12 +786,9 @@ document.addEventListener('DOMContentLoaded', () => {
         quickDel.addEventListener('click', deleteSelected);
         btnPropDelete.addEventListener('click', deleteSelected);
 
-        // Guardar, Exportar & Importar
-        btnSave.addEventListener('click', saveProjectState);
-        btnExportJson.addEventListener('click', exportProjectJSON);
-        btnImportJson.addEventListener('click', () => jsonFileInput.click());
-        jsonFileInput.addEventListener('change', importProjectJSON);
-        btnPreview.addEventListener('click', () => window.open(`../invitacion/?id=${designId}`, '_blank'));
+        // Guardar y Vista Previa
+        if (btnSave) btnSave.addEventListener('click', saveProjectState);
+        if (btnPreview) btnPreview.addEventListener('click', () => window.open(`../invitacion/?id=${designId}`, '_blank'));
 
         // Añadir Nuevo Texto Libre al Lienzo
         const btnAddNewText = document.getElementById('btn-add-new-text');
@@ -862,15 +856,48 @@ document.addEventListener('DOMContentLoaded', () => {
             setDOMText('hero-name', e.target.value);
             setDOMText('cover-title', e.target.value);
             activeConfig.personName = e.target.value;
-            saveHistoryState();
         });
 
         inputConfigTitle.addEventListener('input', (e) => {
             setDOMText('hero-title', e.target.value);
             activeConfig.title = e.target.value;
-            saveHistoryState();
+        });
+
+        inputConfigDate.addEventListener('input', (e) => {
+            setDOMText('hero-date', e.target.value);
+            activeConfig.formattedDate = e.target.value;
+        });
+
+        inputConfigTime.addEventListener('input', (e) => {
+            setDOMText('hero-time', e.target.value);
+            activeConfig.time = e.target.value;
+        });
+
+        inputConfigLocName.addEventListener('input', (e) => {
+            setDOMText('location-name', e.target.value);
+            activeConfig.locationName = e.target.value;
+        });
+
+        inputConfigLocAddr.addEventListener('input', (e) => {
+            setDOMText('location-address', e.target.value);
+            activeConfig.address = e.target.value;
+        });
+
+        inputConfigWaPhone.addEventListener('input', (e) => {
+            activeConfig.whatsapp = e.target.value;
+        });
+
+        inputConfigWaMsg.addEventListener('input', (e) => {
+            activeConfig.whatsappMessage = e.target.value;
+        });
+
+        // Cambio de Tema en Vivo
+        themePresetSelect.addEventListener('change', (e) => {
+            canvasFrame.className = `canvas-frame ${e.target.value}`;
+            activeConfig.theme = e.target.value;
         });
     }
+
 
 
     function addMediaElementToCanvas(src, name, isGif) {
@@ -957,26 +984,44 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sincronizar Cambios del DOM al Objeto de Configuración
     function syncDOMToConfig() {
         if (!activeConfig) activeConfig = {};
-        
-        activeConfig.personName = document.getElementById('hero-name')?.textContent?.trim() || activeConfig.personName || 'Ana María';
-        activeConfig.title = document.getElementById('hero-title')?.textContent?.trim() || activeConfig.title || 'Mis XV Años';
-        activeConfig.subtitle = document.getElementById('hero-subtitle')?.textContent?.trim() || activeConfig.subtitle || '';
-        activeConfig.coverQuote = document.getElementById('cover-quote')?.textContent?.trim() || activeConfig.coverQuote || '';
-        activeConfig.formattedDate = document.getElementById('hero-date')?.textContent?.trim() || activeConfig.formattedDate || '';
-        activeConfig.time = document.getElementById('hero-time')?.textContent?.trim() || activeConfig.time || '';
-        activeConfig.mainMessage = document.getElementById('main-message-text')?.textContent?.trim() || activeConfig.mainMessage || '';
-        activeConfig.locationName = document.getElementById('location-name')?.textContent?.trim() || activeConfig.locationName || '';
-        activeConfig.address = document.getElementById('location-address')?.textContent?.trim() || activeConfig.address || '';
-        activeConfig.dressCode = document.getElementById('dress-code-text')?.textContent?.trim() || activeConfig.dressCode || '';
-        activeConfig.giftInfo = document.getElementById('gift-info-text')?.textContent?.trim() || activeConfig.giftInfo || '';
-        activeConfig.passInfo = document.getElementById('pass-info-text')?.textContent?.trim() || activeConfig.passInfo || '';
-        activeConfig.finalMessage = document.getElementById('final-message-text')?.textContent?.trim() || activeConfig.finalMessage || '';
+
+        function readDOMText(id) {
+            const el = document.getElementById(id);
+            return el ? el.textContent.trim() : null;
+        }
+
+        // Leer inputs del sidebar (prioridad sobre DOM ya que son la fuente de edición)
+        activeConfig.personName = inputConfigName.value || readDOMText('hero-name') || activeConfig.personName || '';
+        activeConfig.title = inputConfigTitle.value || readDOMText('hero-title') || activeConfig.title || '';
+        activeConfig.formattedDate = inputConfigDate.value || readDOMText('hero-date') || activeConfig.formattedDate || '';
+        activeConfig.time = inputConfigTime.value || readDOMText('hero-time') || activeConfig.time || '';
+        activeConfig.whatsapp = inputConfigWaPhone.value || activeConfig.whatsapp || '';
+        activeConfig.whatsappMessage = inputConfigWaMsg.value || activeConfig.whatsappMessage || '';
+        activeConfig.locationName = inputConfigLocName.value || readDOMText('location-name') || activeConfig.locationName || '';
+        activeConfig.address = inputConfigLocAddr.value || readDOMText('location-address') || activeConfig.address || '';
+
+        // Campos que solo vienen del DOM
+        const subtitleText = readDOMText('hero-subtitle');
+        if (subtitleText) activeConfig.subtitle = subtitleText;
+        const quoteText = readDOMText('cover-quote');
+        if (quoteText) activeConfig.coverQuote = quoteText;
+        const mainMsg = readDOMText('main-message-text');
+        if (mainMsg) activeConfig.mainMessage = mainMsg;
+        const dressText = readDOMText('dress-code-text');
+        if (dressText) activeConfig.dressCode = dressText;
+        const giftText = readDOMText('gift-info-text');
+        if (giftText) activeConfig.giftInfo = giftText;
+        const passText = readDOMText('pass-info-text');
+        if (passText) activeConfig.passInfo = passText;
+        const finalText = readDOMText('final-message-text');
+        if (finalText) activeConfig.finalMessage = finalText;
 
         const heroImgEl = document.getElementById('hero-img');
-        if (heroImgEl && heroImgEl.src) {
+        if (heroImgEl && heroImgEl.src && !heroImgEl.src.endsWith('hero.svg')) {
             activeConfig.heroImage = heroImgEl.src;
         }
 
+        activeConfig.theme = themePresetSelect.value || activeConfig.theme || 'theme-quinceanos';
         activeConfig.dynamicElements = dynamicElements || [];
     }
 

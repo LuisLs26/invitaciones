@@ -385,13 +385,29 @@ html, body {
     width: 390px;
     min-height: 844px;
     height: auto;
-    background: #ffffff;
+    background: var(--bg-color, #ffffff);
     border-radius: 36px;
     border: 3px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
     position: relative;
     overflow: visible;
     user-select: none;
+    color: var(--text-color, #333333);
+
+    /* Default fallback theme variables so text is never invisible */
+    --bg-color: #fff5f7;
+    --card-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(212, 175, 55, 0.35);
+    --text-color: #4a3e4e;
+    --text-muted: #8e7a95;
+    --accent-color: #d4af37;
+    --accent-glow: rgba(212, 175, 55, 0.35);
+    --secondary-color: #e8b4b8;
+    --primary-btn-bg: linear-gradient(135deg, #d4af37 0%, #aa771c 100%);
+    --primary-btn-text: #ffffff;
+    --font-heading: 'Playfair Display', serif;
+    --font-hand: 'Great Vibes', cursive;
+    --shadow-color: rgba(109, 89, 122, 0.15);
 }
 
 .editor-invitation-container {
@@ -399,7 +415,9 @@ html, body {
     height: 100%;
     position: relative;
     border-radius: 33px;
+    overflow: hidden;
 }
+
 
 /* Universal Hover and Selection Highlights for DOM elements */
 [data-editor-id] {
