@@ -1,234 +1,261 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    const params = new URLSearchParams(window.location.search);
-    const invitationId = params.get('id') || 'demo';
-    const editorPreview = params.get('editorPreview') === '1';
-    const openedDirectly = params.get('opened') === '1';
-    const $ = (selector) => document.querySelector(selector);
-    const STORAGE_KEYS = [`invitation_config_v2_${invitationId}`, `invitation_design_${invitationId}`, `invitation_config_${invitationId}`, `invitation_${invitationId}`];
-    let config;
-    let currentGallery = [];
-    let currentGalleryIndex = 0;
+/**
+ * CARGADOR DINÁMICO DE INVITACIONES Y CONTROLADOR DE INTERFAZ
+ */
 
-    try {
-        config = await loadConfig();
-        renderInvitation(config);
-    } catch (error) {
-        $('#cover-screen').hidden = true;
-        $('#invitation-app').hidden = true;
-        $('#error-screen').hidden = false;
-        console.error(error);
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Obtener ID de la URL (?id=demo, ?id=cliente1, ?id=cumpleanos, etc.)
+    const urlParams = new URLSearchParams(window.location.search);
+    const invitationId = urlParams.get('id') || 'demo';
 
-    async function loadConfig() {
-        for (const key of STORAGE_KEYS) {
-            try {
-                const raw = localStorage.getItem(key);
-                if (raw) return normalize(JSON.parse(raw));
-            } catch (error) { console.warn(`Configuración local inválida: ${key}`); }
+    // 2. Elementos del DOM
+    const errorScreen = document.getElementById('error-screen');
+    const coverScreen = document.getElementById('cover-screen');
+    const invitationApp = document.getElementById('invitation-app');
+    const openBtn = document.getElementById('open-invitation-btn');
+    const audioEl = document.getElementById('bg-audio');
+    const musicBtn = document.getElementById('music-toggle');
+    const musicText = document.getElementById('music-text');
+    
+    // Lightbox Elements
+    const lightboxModal = document.getElementById('lightbox-modal');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxCaption = document.getElementById('lightbox-caption');
+    const lightboxClose = document.getElementById('lightbox-close');
+
+    // 3. Inyectar script de configuración dinámicamente
+    const scriptTag = document.createElement('script');
+    scriptTag.src = `../configs/${invitationId}.js`;
+
+    scriptTag.onload = () => {
+        // Verificar si la configuración global existe
+        if (typeof INVITATION_CONFIG === 'undefined' || !INVITATION_CONFIG) {
+            showError();
+            return;
         }
-        const response = await fetch(`../configs/editor/${encodeURIComponent(invitationId)}.json`, { cache: 'no-store' });
-        if (!response.ok) throw new Error('Invitación no encontrada');
-        return normalize(await response.json());
+        initInvitation(INVITATION_CONFIG);
+    };
+
+    scriptTag.onerror = () => {
+        showError();
+    };
+
+    document.head.appendChild(scriptTag);
+
+    // Función para mostrar pantalla de error 404
+    function showError() {
+        coverScreen.style.display = 'none';
+        invitationApp.style.display = 'none';
+        errorScreen.style.display = 'flex';
     }
 
-    function normalize(value) {
-        const result = { ...value };
-        result.gallery = Array.isArray(result.gallery) ? result.gallery : [];
-        result.showMusic = result.showMusic !== false && Boolean(result.music);
-        return result;
-    }
+    // Inicializar la invitación con los datos de configuración
+    function initInvitation(config) {
+        // A. Aplicar Tema Cromático
+        const themeClass = config.theme || `theme-${config.type || 'default'}`;
+        document.body.className = themeClass;
+        document.title = `${config.title} - ${config.personName}`;
 
-    function renderInvitation(data) {
-        document.body.className = data.theme || 'theme-default';
-        document.title = `${data.title || 'Invitación'} · ${data.personName || ''}`;
-        setText('#cover-badge', badgeForType(data.type));
-        setText('#cover-title', data.personName || 'Una celebración especial');
-        setText('#cover-quote', data.coverQuote || data.subtitle || 'Te esperamos para celebrar juntos.');
-        setAttr('#hero-img', 'src', data.heroImage || '../assets/images/xv/hero.svg');
-        setText('#hero-subtitle', data.subtitle || 'Estás cordialmente invitado a');
-        setText('#hero-title', data.title || 'Una celebración especial');
-        setText('#hero-name', data.personName || '');
-        setText('#hero-date', data.formattedDate || formatDate(data.date));
-        setText('#hero-time', data.time || formatTime(data.date));
-        setText('#main-message-text', data.mainMessage || 'Será una alegría compartir este momento contigo.');
-        setText('#location-name', data.locationName || 'Lugar del evento');
-        setText('#location-address', data.address || '');
-        setText('#dress-code-text', data.dressCode || 'Vestimenta libre');
-        setText('#gift-info-text', data.giftInfo || 'Tu presencia es nuestro mejor regalo');
-        setText('#pass-info-text', data.passInfo || 'Pase válido para 2 personas');
-        setText('#final-message-text', data.finalMessage || 'Gracias por ser parte de esta historia.');
+        // B. Rellenar Portada (Cover Screen)
+        document.getElementById('cover-badge').textContent = config.type ? config.type.toUpperCase().replace('_', ' ') : 'INVITACIÓN';
+        document.getElementById('cover-title').textContent = config.personName;
+        document.getElementById('cover-quote').textContent = config.coverQuote || 'Te invitamos a compartir este día tan especial';
+        coverScreen.style.display = 'flex';
 
-        configureVisibility(data);
-        configureLinks(data);
-        renderGallery(data.gallery);
-        renderVideo(data);
-        configureMusic(data);
-        renderDynamicElements(data.dynamicElements || []);
-        createParticles();
+        // C. Rellenar Sección Hero
+        if (config.heroImage) {
+            document.getElementById('hero-img').src = config.heroImage;
+        }
+        document.getElementById('hero-subtitle').textContent = config.subtitle || 'Estás invitado a';
+        document.getElementById('hero-title').textContent = config.title;
+        document.getElementById('hero-name').textContent = config.personName;
+        document.getElementById('hero-date').textContent = config.formattedDate || '';
+        document.getElementById('hero-time').textContent = config.time || '';
 
-        $('#invitation-app').hidden = false;
-        if (editorPreview || openedDirectly) {
-            $('#cover-screen').hidden = true;
-            $('#invitation-app').classList.add('is-open');
-            if (editorPreview) document.body.classList.add('editor-preview-mode');
-            requestAnimationFrame(() => document.querySelectorAll('.reveal').forEach((element) => element.classList.add('is-visible')));
+        // D. Rellenar Mensaje Principal
+        document.getElementById('main-message-text').textContent = config.mainMessage || '';
+
+        // E. Configurar Cuenta Regresiva (si está activa)
+        if (config.showCountdown && config.date) {
+            document.getElementById('countdown-section').style.display = 'block';
+            startCountdown(config.date);
         } else {
-            $('#cover-screen').hidden = false;
-            bindOpening(data);
+            document.getElementById('countdown-section').style.display = 'none';
         }
-        if (data.showCountdown && data.date) startCountdown(data.date);
-        bindLightbox();
-    }
 
-    function configureVisibility(data) {
-        $('#countdown-section').hidden = data.showCountdown === false;
-        $('#gallery-section').hidden = data.showGallery === false || !data.gallery?.length;
-        $('#map-section').hidden = data.showMap === false;
-        $('#video-section').hidden = data.showVideo === false || !data.video;
-    }
+        // F. Configurar Galería de Fotos (si está activa)
+        if (config.showGallery && config.gallery && config.gallery.length > 0) {
+            const gallerySection = document.getElementById('gallery-section');
+            const galleryGrid = document.getElementById('gallery-grid');
+            galleryGrid.innerHTML = '';
 
-    function configureLinks(data) {
-        const map = data.mapUrl || `https://maps.google.com/?q=${encodeURIComponent(data.address || data.locationName || '')}`;
-        const waze = data.wazeUrl || `https://waze.com/ul?q=${encodeURIComponent(data.locationName || data.address || '')}`;
-        const whatsapp = `https://wa.me/${String(data.whatsapp || '').replace(/\D/g, '')}?text=${encodeURIComponent(data.whatsappMessage || 'Hola, quiero confirmar mi asistencia.')}`;
-        setAttr('#map-btn', 'href', map); setAttr('#waze-btn', 'href', waze); setAttr('#rsvp-btn', 'href', whatsapp); setAttr('#floating-whatsapp', 'href', whatsapp);
-    }
+            config.gallery.forEach((photo, index) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.innerHTML = `<img src="${photo.url}" alt="${photo.caption || 'Foto'}">`;
+                item.addEventListener('click', () => {
+                    openLightbox(photo.url, photo.caption);
+                });
+                galleryGrid.appendChild(item);
+            });
+            gallerySection.style.display = 'block';
+        } else {
+            document.getElementById('gallery-section').style.display = 'none';
+        }
 
-    function renderGallery(gallery) {
-        currentGallery = gallery || [];
-        const grid = $('#gallery-grid');
-        grid.innerHTML = '';
-        currentGallery.forEach((photo, index) => {
-            const item = document.createElement('button');
-            item.className = 'gallery-item'; item.type = 'button';
-            item.innerHTML = `<img src="${escapeAttr(photo.url)}" alt="${escapeAttr(photo.caption || 'Recuerdo')}" loading="lazy"><span>${escapeHtml(photo.caption || 'Recuerdo')}</span>`;
-            item.addEventListener('click', () => openLightbox(index));
-            grid.appendChild(item);
+        // G. Configurar Video (si está activo)
+        if (config.showVideo && config.video) {
+            const videoSection = document.getElementById('video-section');
+            const videoContainer = document.getElementById('video-container');
+            
+            if (config.video.endsWith('.mp4')) {
+                videoContainer.innerHTML = `<video controls poster="${config.heroImage}"><source src="${config.video}" type="video/mp4">Tu navegador no soporta video.</video>`;
+            } else if (config.video.includes('youtube') || config.video.includes('vimeo')) {
+                videoContainer.innerHTML = `<iframe src="${config.video}" allowfullscreen></iframe>`;
+            } else {
+                videoContainer.innerHTML = `<div style="padding:30px; color:#fff; text-align:center;">🎬 Sección de Video Lista para Reproducir</div>`;
+            }
+            videoSection.style.display = 'block';
+        } else {
+            document.getElementById('video-section').style.display = 'none';
+        }
+
+        // H. Configurar Ubicación y Mapa
+        if (config.showMap) {
+            document.getElementById('map-section').style.display = 'block';
+            document.getElementById('location-name').textContent = config.locationName || 'Lugar del Evento';
+            document.getElementById('location-address').textContent = config.address || '';
+            const mapBtn = document.getElementById('map-btn');
+            if (config.mapUrl) {
+                mapBtn.href = config.mapUrl;
+            } else {
+                mapBtn.href = `https://maps.google.com/?q=${encodeURIComponent(config.address || '')}`;
+            }
+        } else {
+            document.getElementById('map-section').style.display = 'none';
+        }
+
+        // I. Rellenar Detalles del Evento
+        document.getElementById('dress-code-text').textContent = config.dressCode || 'Vestimenta Libre';
+        document.getElementById('gift-info-text').textContent = config.giftInfo || 'Su presencia es nuestro mejor regalo';
+
+        // J. Configurar Enlace de WhatsApp RSVP
+        const rsvpBtn = document.getElementById('rsvp-btn');
+        const phone = config.whatsapp || '51900000000';
+        const msg = encodeURIComponent(config.whatsappMessage || 'Hola, quiero confirmar mi asistencia al evento.');
+        rsvpBtn.href = `https://wa.me/${phone}?text=${msg}`;
+
+        // K. Rellenar Mensaje Final Footer
+        document.getElementById('final-message-text').textContent = config.finalMessage || '¡Te esperamos!';
+
+        // L. Configurar Audio / Música
+        let isPlaying = false;
+        if (config.showMusic && config.music) {
+            musicBtn.style.display = 'flex';
+            audioEl.src = config.music;
+
+            musicBtn.addEventListener('click', () => {
+                if (isPlaying) {
+                    audioEl.pause();
+                    musicBtn.classList.remove('playing');
+                    musicText.textContent = 'Música';
+                    isPlaying = false;
+                } else {
+                    playAudio();
+                }
+            });
+        } else {
+            musicBtn.style.display = 'none';
+        }
+
+        function playAudio() {
+            if (!config.showMusic || !config.music) return;
+            audioEl.play().then(() => {
+                isPlaying = true;
+                musicBtn.classList.add('playing');
+                musicText.textContent = 'Pausar';
+            }).catch(err => {
+                console.log("Reproducción automática pausada por el navegador. El usuario puede presionar el botón de música.");
+            });
+        }
+
+        // M. Botón "Abrir Invitación"
+        openBtn.addEventListener('click', () => {
+            coverScreen.classList.add('hide-cover');
+            invitationApp.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Iniciar reproducción de audio al interactuar
+            if (config.showMusic) {
+                playAudio();
+            }
+
+            // Inicializar Scroll Reveal Observer
+            initScrollReveal();
         });
     }
 
-    function renderVideo(data) {
-        if (!data.showVideo || !data.video) return;
-        const box = $('#video-container');
-        if (data.video.includes('youtube') || data.video.includes('vimeo')) box.innerHTML = `<iframe src="${escapeAttr(data.video)}" title="Video especial" allowfullscreen loading="lazy"></iframe>`;
-        else box.innerHTML = '<div class="video-placeholder"><span>▶</span><p>Un video especial para volver a vivir este momento.</p></div>';
+    // Lógica de Scroll Reveal con IntersectionObserver
+    function initScrollReveal() {
+        const sections = document.querySelectorAll('#invitation-app .section');
+        sections.forEach(sec => sec.classList.add('reveal-on-scroll'));
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        sections.forEach(sec => observer.observe(sec));
     }
 
-    function configureMusic(data) {
-        const button = $('#music-toggle');
-        const audio = $('#bg-audio');
-        if (!data.showMusic || !data.music) { button.hidden = true; return; }
-        button.hidden = false; audio.src = data.music;
-        let playing = false;
-        button.addEventListener('click', () => {
-            if (playing) { audio.pause(); playing = false; button.classList.remove('playing'); setText('#music-text', 'Música'); return; }
-            audio.play().then(() => { playing = true; button.classList.add('playing'); setText('#music-text', 'Pausar'); }).catch(() => showMusicHint());
-        });
+    // Lógica del Contador Regresivo
+    function startCountdown(targetDateStr) {
+
+        const targetDate = new Date(targetDateStr).getTime();
+
+        function updateTimer() {
+            const now = new Date().getTime();
+            const difference = targetDate - now;
+
+            if (difference <= 0) {
+                document.getElementById('cd-days').textContent = '00';
+                document.getElementById('cd-hours').textContent = '00';
+                document.getElementById('cd-minutes').textContent = '00';
+                document.getElementById('cd-seconds').textContent = '00';
+                return;
+            }
+
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            document.getElementById('cd-days').textContent = days < 10 ? '0' + days : days;
+            document.getElementById('cd-hours').textContent = hours < 10 ? '0' + hours : hours;
+            document.getElementById('cd-minutes').textContent = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById('cd-seconds').textContent = seconds < 10 ? '0' + seconds : seconds;
+        }
+
+        updateTimer();
+        setInterval(updateTimer, 1000);
     }
 
-    function bindOpening() {
-        const card = $('#envelope-card-3d'); const button = $('#open-invitation-btn');
-        let opened = false;
-        const open = () => {
-            if (opened) return;
-            opened = true;
-            card.classList.add('open-anim');
-            const next = new URLSearchParams(window.location.search);
-            next.set('id', invitationId);
-            next.set('opened', '1');
-            next.set('v', '20260812-4');
-            setTimeout(() => { window.location.replace(`${window.location.pathname}?${next.toString()}`); }, 180);
-        };
-        button.addEventListener('click', open, { once: true });
-        card.addEventListener('click', (event) => { if (event.target !== button && !button.contains(event.target)) open(); }, { once: true });
+    // Lógica del Lightbox
+    function openLightbox(url, caption) {
+        lightboxImg.src = url;
+        lightboxCaption.textContent = caption || '';
+        lightboxModal.style.display = 'flex';
     }
 
-    function renderDynamicElements(elements) {
-        if (!elements.length) return;
-        let overlay = $('#public-dynamic-overlay');
-        if (!overlay) { overlay = document.createElement('div'); overlay.id = 'public-dynamic-overlay'; $('#invitation-app').appendChild(overlay); }
-        overlay.innerHTML = '';
-        elements.forEach((item) => {
-            const wrapper = document.createElement('div'); wrapper.className = 'dynamic-item';
-            wrapper.dataset.dynamicId = item.id || '';
-            Object.assign(wrapper.style, { left: `${item.x || 0}px`, top: `${item.y || 0}px`, width: `${item.w || 80}px`, height: `${item.h || 80}px`, transform: `rotate(${item.rot || 0}deg)`, opacity: item.opacity ?? 1, zIndex: item.zIndex || 10 });
-            if (item.type === 'text') { wrapper.textContent = item.text || ''; wrapper.style.color = item.color || 'currentColor'; wrapper.style.fontFamily = item.font || 'inherit'; wrapper.style.fontSize = `${item.size || 22}px`; }
-            else { const image = document.createElement('img'); image.src = item.src; image.alt = item.name || 'Decoración'; wrapper.appendChild(image); }
-            if (editorPreview && item.type === 'gif' && item.id) bindGifDrag(wrapper, item);
-            overlay.appendChild(wrapper);
-        });
-    }
+    lightboxClose.addEventListener('click', () => {
+        lightboxModal.style.display = 'none';
+    });
 
-    function bindGifDrag(element, item) {
-        let dragging = false;
-        let offsetX = 0;
-        let offsetY = 0;
-        const app = $('#invitation-app');
-
-        const sendPosition = (phase) => {
-            window.parent.postMessage({ type: 'invitation:move-dynamic', id: item.id, x: Number.parseFloat(element.style.left), y: Number.parseFloat(element.style.top), phase }, window.location.origin);
-        };
-
-        element.addEventListener('pointerdown', (event) => {
-            dragging = true;
-            const rect = element.getBoundingClientRect();
-            offsetX = event.clientX - rect.left;
-            offsetY = event.clientY - rect.top;
-            element.setPointerCapture(event.pointerId);
-            element.classList.add('is-dragging');
-            event.preventDefault();
-        });
-
-        element.addEventListener('pointermove', (event) => {
-            if (!dragging) return;
-            const appRect = app.getBoundingClientRect();
-            const maxX = Math.max(0, app.clientWidth - element.offsetWidth);
-            const nextX = Math.min(maxX, Math.max(0, event.clientX - appRect.left - offsetX));
-            const nextY = Math.max(0, event.clientY - appRect.top - offsetY);
-            element.style.left = `${Math.round(nextX)}px`;
-            element.style.top = `${Math.round(nextY)}px`;
-            sendPosition('move');
-        });
-
-        const finishDrag = (event) => {
-            if (!dragging) return;
-            dragging = false;
-            if (element.hasPointerCapture(event.pointerId)) element.releasePointerCapture(event.pointerId);
-            element.classList.remove('is-dragging');
-            sendPosition('end');
-        };
-        element.addEventListener('pointerup', finishDrag);
-        element.addEventListener('pointercancel', finishDrag);
-    }
-
-    function createParticles() {
-        const container = $('#particles-container'); container.innerHTML = '';
-        for (let index = 0; index < 18; index += 1) { const dot = document.createElement('i'); dot.className = 'particle'; dot.style.left = `${Math.random() * 100}%`; dot.style.animationDelay = `${Math.random() * 6}s`; dot.style.animationDuration = `${7 + Math.random() * 6}s`; dot.style.width = `${3 + Math.random() * 5}px`; dot.style.height = dot.style.width; container.appendChild(dot); }
-    }
-
-    function startCountdown(value) {
-        const target = new Date(value).getTime();
-        const update = () => { const distance = target - Date.now(); const units = distance <= 0 ? [0, 0, 0, 0] : [Math.floor(distance / 86400000), Math.floor(distance / 3600000) % 24, Math.floor(distance / 60000) % 60, Math.floor(distance / 1000) % 60]; ['#cd-days','#cd-hours','#cd-minutes','#cd-seconds'].forEach((selector, index) => setText(selector, String(units[index]).padStart(2, '0'))); };
-        update(); setInterval(update, 1000);
-    }
-
-    function bindLightbox() {
-        const modal = $('#lightbox-modal');
-        $('#lightbox-close').addEventListener('click', () => { modal.hidden = true; });
-        $('#lightbox-prev').addEventListener('click', () => moveGallery(-1)); $('#lightbox-next').addEventListener('click', () => moveGallery(1));
-        modal.addEventListener('click', (event) => { if (event.target === modal) modal.hidden = true; });
-        document.addEventListener('keydown', (event) => { if (modal.hidden) return; if (event.key === 'Escape') modal.hidden = true; if (event.key === 'ArrowLeft') moveGallery(-1); if (event.key === 'ArrowRight') moveGallery(1); });
-    }
-    function openLightbox(index) { currentGalleryIndex = index; updateLightbox(); $('#lightbox-modal').hidden = false; }
-    function moveGallery(step) { currentGalleryIndex = (currentGalleryIndex + step + currentGallery.length) % currentGallery.length; updateLightbox(); }
-    function updateLightbox() { const photo = currentGallery[currentGalleryIndex]; if (!photo) return; setAttr('#lightbox-img', 'src', photo.url); setText('#lightbox-caption', photo.caption || ''); setText('#lightbox-counter', `${currentGalleryIndex + 1} / ${currentGallery.length}`); }
-
-    function showMusicHint() { setText('#music-text', 'Toca para reproducir'); }
-    function badgeForType(type) { return type === 'boda' ? 'NUESTRA HISTORIA' : type === 'cumpleanos' ? 'LA FIESTA COMIENZA' : 'UNA NOCHE ESPECIAL'; }
-    function formatDate(value) { const date = new Date(value); return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('es-PE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(date); }
-    function formatTime(value) { const date = new Date(value); return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('es-PE', { hour: 'numeric', minute: '2-digit', hour12: true }).format(date).replace('a. m.', 'AM').replace('p. m.', 'PM'); }
-    function setText(selector, text) { const element = $(selector); if (element) element.textContent = text ?? ''; }
-    function setAttr(selector, attribute, value) { const element = $(selector); if (element) element.setAttribute(attribute, value || ''); }
-    function escapeHtml(value) { return String(value).replace(/[&<>"']/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[char])); }
-    function escapeAttr(value) { return escapeHtml(value); }
+    lightboxModal.addEventListener('click', (e) => {
+        if (e.target === lightboxModal) {
+            lightboxModal.style.display = 'none';
+        }
+    });
 });

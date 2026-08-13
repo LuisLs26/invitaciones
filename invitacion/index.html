@@ -2,70 +2,201 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <meta name="theme-color" content="#f8eef2">
-    <title>Invitación digital</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Invitación Digital</title>
     <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    
+    <!-- Google Fonts for Luxury Aesthetics -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=Playfair+Display:ital,wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20260813-1">
-    <style>
-        .cover-overlay { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 100vh; }
-        .envelope-container { margin: auto; }
-        .desktop-mockup-wrapper { width: 100%; }
-        .editor-preview-mode .dynamic-item { pointer-events: auto; cursor: grab; touch-action: none; outline: 1px dashed transparent; }
-        .editor-preview-mode .dynamic-item:hover { outline-color: var(--accent); }
-        .editor-preview-mode .dynamic-item.is-dragging { cursor: grabbing; outline: 2px solid var(--accent); filter: drop-shadow(0 7px 10px rgba(0,0,0,.25)); }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body class="theme-default">
-    <div id="error-screen" class="full-screen-center" hidden><div class="error-card"><span class="cover-kicker">INVITACIÓN DIGITAL</span><h2>Invitación no encontrada</h2><p>Este enlace ya no está disponible. Revisa la dirección e inténtalo de nuevo.</p><a href="../index.html" class="btn btn-primary">Volver al inicio</a></div></div>
 
-    <div id="cover-screen" class="cover-overlay">
-        <div id="particles-container" class="particles-layer"></div>
-        <div class="cover-orbit orbit-one"></div><div class="cover-orbit orbit-two"></div>
-        <div class="envelope-container"><div id="envelope-card-3d" class="envelope-card-3d">
-            <div class="envelope-flap"></div><div id="wax-seal" class="wax-seal-badge"><span>✦</span></div>
-            <div id="letter-card-inside" class="letter-card-inside">
-                <span id="cover-badge" class="cover-kicker">INVITACIÓN ESPECIAL</span>
-                <h1 id="cover-title" class="cover-title">Cargando…</h1>
-                <p id="cover-quote" class="cover-quote">Una celebración para compartir contigo.</p>
-                <div class="cover-decoration"><i></i><span>✦</span><i></i></div>
-                <button id="open-invitation-btn" class="btn btn-gold" type="button"><span>Abrir invitación</span><b>↓</b></button>
+    <!-- Screen 404 / Error State (Shown if ID does not exist) -->
+    <div id="error-screen" class="full-screen-center" style="display: none;">
+        <div class="error-card fade-in">
+            <div class="error-icon">✨</div>
+            <h2>Invitación No Encontrada</h2>
+            <p>Esta invitación no existe o ya no está disponible. Por favor verifica el enlace introducido.</p>
+            <a href="../index.html" class="btn btn-primary btn-bounce">Volver a la página principal</a>
+        </div>
+    </div>
+
+    <!-- Opening Cover Screen (User interaction trigger for Autoplay & WOW factor) -->
+    <div id="cover-screen" class="cover-overlay" style="display: none;">
+        <div class="cover-content">
+            <div class="cover-badge" id="cover-badge">INVITACIÓN ESPECIAL</div>
+            <h1 class="cover-title" id="cover-title">Cargando...</h1>
+            <p class="cover-quote" id="cover-quote">Te invitamos a compartir este día único</p>
+            <div class="cover-decoration">
+                <span class="star">✦</span>
+                <span class="line"></span>
+                <span class="star">✦</span>
             </div>
-        </div></div>
+            <button id="open-invitation-btn" class="btn btn-gold btn-pulse">
+                <span>Ver Invitación</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+            </button>
+        </div>
     </div>
 
-    <div id="desktop-mockup-wrapper" class="desktop-mockup-wrapper">
-        <main id="invitation-app" class="mobile-phone-shell" hidden>
-            <button id="music-toggle" class="floating-music-btn" type="button" hidden><span class="vinyl-disc"><i></i></span><span class="eq-bars"><i></i><i></i><i></i></span><span id="music-text">Música</span></button>
-            <audio id="bg-audio" loop preload="auto"></audio>
+    <!-- Main Invitation Application -->
+    <main id="invitation-app" style="display: none;">
 
-            <section class="section hero-section reveal"><div class="hero-container">
-                <div class="hero-frame"><img id="hero-img" src="../assets/images/xv/hero.svg" alt="Imagen principal" class="hero-image"><span class="hero-frame-shine"></span></div>
-                <div class="hero-header-text"><span id="hero-subtitle" class="hero-subtitle">Estás cordialmente invitado a</span><h1 id="hero-title" class="hero-title">Mis XV Años</h1><h2 id="hero-name" class="hero-name">Ana María</h2></div>
-                <div class="hero-date-badge"><span id="hero-date">Sábado, 12 de diciembre de 2026</span><strong id="hero-time">8:00 PM</strong></div>
-            </div></section>
+        <!-- Floating Music Player Control -->
+        <button id="music-toggle" class="floating-music-btn" style="display: none;" aria-label="Reproducir/Pausar música">
+            <div class="eq-bars">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            <span id="music-text" class="music-label">Música</span>
+        </button>
 
-            <section id="countdown-section" class="section reveal"><div class="section-card countdown-card"><span class="section-subtitle">FALTAN SOLO</span><h2 class="section-title">Momentos para celebrar</h2><div class="timer-grid"><div><b id="cd-days">00</b><span>Días</span></div><div><b id="cd-hours">00</b><span>Horas</span></div><div><b id="cd-minutes">00</b><span>Minutos</span></div><div><b id="cd-seconds">00</b><span>Segundos</span></div></div></div></section>
+        <!-- Hidden Audio Element -->
+        <audio id="bg-audio" loop preload="auto"></audio>
 
-            <section class="section message-section reveal"><div class="section-card message-card"><span class="card-spark">✦</span><span class="quote-mark">“</span><p id="main-message-text">Cargando mensaje…</p><span class="quote-mark end">”</span><span class="card-spark bottom">✦</span></div></section>
+        <!-- Hero Section -->
+        <section class="section hero-section">
+            <div class="hero-container">
+                <div class="hero-frame">
+                    <img id="hero-img" src="../assets/images/xv_hero.svg" alt="Portada de invitación" class="hero-image">
+                </div>
+                <div class="hero-header-text">
+                    <span class="hero-subtitle" id="hero-subtitle">Estás cordialmente invitado a</span>
+                    <h1 class="hero-title" id="hero-title">Mis XV Años</h1>
+                    <h2 class="hero-name" id="hero-name">Ana María</h2>
+                </div>
+                <div class="hero-date-badge">
+                    <div class="date-line" id="hero-date">Sábado, 12 de Diciembre de 2026</div>
+                    <div class="time-line" id="hero-time">8:00 PM</div>
+                </div>
+            </div>
+        </section>
 
-            <section id="gallery-section" class="section reveal"><span class="section-subtitle">MOMENTOS QUE ATESORO</span><h2 class="section-title">Galería de recuerdos</h2><div id="gallery-grid" class="gallery-grid"></div></section>
-            <section id="video-section" class="section reveal"><span class="section-subtitle">UN MOMENTO ESPECIAL</span><h2 class="section-title">Para volver a vivirlo</h2><div id="video-container" class="video-container"></div></section>
+        <!-- Countdown Timer Section -->
+        <section id="countdown-section" class="section countdown-section" style="display: none;">
+            <div class="section-card">
+                <h3 class="section-subtitle">CUENTA REGRESIVA</h3>
+                <h2 class="section-title">Faltan tan solo...</h2>
+                <div class="timer-grid">
+                    <div class="timer-box">
+                        <span id="cd-days" class="timer-number">00</span>
+                        <span class="timer-label">Días</span>
+                    </div>
+                    <div class="timer-box">
+                        <span id="cd-hours" class="timer-number">00</span>
+                        <span class="timer-label">Horas</span>
+                    </div>
+                    <div class="timer-box">
+                        <span id="cd-minutes" class="timer-number">00</span>
+                        <span class="timer-label">Minutos</span>
+                    </div>
+                    <div class="timer-box">
+                        <span id="cd-seconds" class="timer-number">00</span>
+                        <span class="timer-label">Segundos</span>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-            <section id="map-section" class="section reveal"><div class="section-card location-card"><div class="location-icon">⌖</div><span class="section-subtitle">ENCUENTRO</span><h2 id="location-name" class="section-title">Lugar del evento</h2><p id="location-address" class="location-address">Dirección del evento</p><div class="map-buttons-grid"><a id="map-btn" class="btn btn-secondary" href="#" target="_blank" rel="noopener">Google Maps <span>↗</span></a><a id="waze-btn" class="btn btn-waze" href="#" target="_blank" rel="noopener">Abrir Waze <span>↗</span></a></div></div></section>
+        <!-- Presentation / Dedication Message -->
+        <section class="section message-section">
+            <div class="section-card gold-border">
+                <div class="quote-icon">“</div>
+                <p id="main-message-text" class="message-text">
+                    Cargando mensaje...
+                </p>
+                <div class="quote-icon right">”</div>
+            </div>
+        </section>
 
-            <section class="section reveal"><div class="details-grid"><article class="detail-card"><span>◒</span><h3>Vestimenta</h3><p id="dress-code-text">Formal / Gala</p></article><article class="detail-card"><span>◇</span><h3>Regalos</h3><p id="gift-info-text">Tu presencia es el mejor regalo</p></article><article class="detail-card detail-wide"><span>✧</span><h3>Pase de entrada</h3><p id="pass-info-text">Pase válido para 2 personas</p></article></div></section>
+        <!-- Photo Gallery Section -->
+        <section id="gallery-section" class="section gallery-section" style="display: none;">
+            <h3 class="section-subtitle">NUESTROS RECUERDOS</h3>
+            <h2 class="section-title">Galería de Fotos</h2>
+            <div id="gallery-grid" class="gallery-grid">
+                <!-- Dynamically injected gallery photos -->
+            </div>
+        </section>
 
-            <section class="section reveal"><div class="rsvp-card"><span class="section-subtitle">UN ÚLTIMO DETALLE</span><h2>¿Nos acompañas?</h2><p>Confirma tu asistencia para preparar todo con mucho cariño.</p><a id="rsvp-btn" class="btn btn-whatsapp" href="#" target="_blank" rel="noopener"><span>Confirmar asistencia</span><b>↗</b></a></div></section>
-            <footer class="footer-section"><p id="final-message-text" class="final-message">Gracias por ser parte de esta historia.</p><span>Invitación digital personalizada · 2026</span></footer>
-            <a id="floating-whatsapp" class="sticky-whatsapp-mobile btn btn-whatsapp" href="#" target="_blank" rel="noopener">WhatsApp <span>↗</span></a>
-        </main>
+        <!-- Video Section (Optional) -->
+        <section id="video-section" class="section video-section" style="display: none;">
+            <h3 class="section-subtitle">VIDEO ESPECIAL</h3>
+            <h2 class="section-title">Un Momento Inolvidable</h2>
+            <div id="video-container" class="video-container">
+                <!-- Dynamically injected video element or iframe -->
+            </div>
+        </section>
+
+        <!-- Location & Map Section -->
+        <section id="map-section" class="section location-section" style="display: none;">
+            <div class="section-card">
+                <div class="location-icon">📍</div>
+                <h3 class="section-subtitle">¿DÓNDE Y CUÁNDO?</h3>
+                <h2 class="section-title" id="location-name">Lugar del Evento</h2>
+                <p id="location-address" class="location-address">Dirección del lugar</p>
+                <a id="map-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-full">
+                    <span>Ver Ubicación en Google Maps</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+                </a>
+            </div>
+        </section>
+
+        <!-- Event Details (Dresscode & Gifts) -->
+        <section class="section details-section">
+            <div class="details-grid">
+                <div class="detail-card">
+                    <div class="card-icon">👗</div>
+                    <h4>Código de Vestimenta</h4>
+                    <p id="dress-code-text">Vestimenta Elegante / Formal</p>
+                </div>
+                <div class="detail-card">
+                    <div class="card-icon">🎁</div>
+                    <h4>Regalos & Obsequios</h4>
+                    <p id="gift-info-text">Cofre de lluvia de sobres en recepción</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- RSVP Confirmation Section -->
+        <section class="section rsvp-section">
+            <div class="rsvp-card">
+                <div class="rsvp-header">
+                    <div class="rsvp-badge">CONFIRMACIÓN</div>
+                    <h2>¿Nos acompañas?</h2>
+                    <p>Por favor confirma tu presencia lo antes posible para organizar los lugares.</p>
+                </div>
+                <a id="rsvp-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp btn-pulse btn-full">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                    </svg>
+                    <span>Confirmar Asistencia por WhatsApp</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Final Message & Footer -->
+        <footer class="footer-section">
+            <p id="final-message-text" class="final-message">¡Gracias por ser parte de nuestra historia!</p>
+            <div class="footer-brand">
+                <span>Invitación Digital Personalizada</span>
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- Modal Lightbox for Gallery Photos -->
+    <div id="lightbox-modal" class="lightbox-modal" style="display: none;">
+        <span id="lightbox-close" class="lightbox-close">&times;</span>
+        <img id="lightbox-img" src="" alt="Imagen ampliada" class="lightbox-content">
+        <div id="lightbox-caption" class="lightbox-caption"></div>
     </div>
 
-    <div id="lightbox-modal" class="lightbox-modal" hidden><button id="lightbox-close" class="lightbox-close" type="button">×</button><button id="lightbox-prev" class="lightbox-nav nav-prev" type="button">‹</button><div class="lightbox-container"><img id="lightbox-img" src="" alt="Foto ampliada"><div class="lightbox-info"><span id="lightbox-counter"></span><span id="lightbox-caption"></span></div></div><button id="lightbox-next" class="lightbox-nav nav-next" type="button">›</button></div>
-    <script src="script.js?v=20260813-1"></script>
+    <!-- Invitation Loader Script -->
+    <script src="script.js"></script>
 </body>
 </html>
