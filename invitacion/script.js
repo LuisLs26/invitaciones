@@ -210,20 +210,34 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // M. Botón "ABRIR INVITACIÓN"
-        openBtn.addEventListener('click', () => {
+        // M. Botón y Carta "ABRIR INVITACIÓN"
+        const envelopeCard = document.getElementById('envelope-card-3d');
+        
+        function handleOpenInvitation() {
+            if (envelopeCard) envelopeCard.classList.add('open-anim');
             triggerConfettiBurst();
-            coverScreen.classList.add('hide-cover');
-            invitationApp.style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
             
-            if (config.showMusic) {
-                playAudio();
-            }
+            setTimeout(() => {
+                coverScreen.classList.add('hide-cover');
+                invitationApp.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                if (config.showMusic) {
+                    playAudio();
+                }
 
-            initScrollReveal();
+                initScrollReveal();
+            }, 700);
+        }
+
+        if (openBtn) openBtn.addEventListener('click', handleOpenInvitation);
+        if (envelopeCard) envelopeCard.addEventListener('click', (e) => {
+            if (e.target !== openBtn && !openBtn.contains(e.target)) {
+                handleOpenInvitation();
+            }
         });
     }
+
 
     // Partículas Flotantes en Portada
     function createFloatingParticles() {

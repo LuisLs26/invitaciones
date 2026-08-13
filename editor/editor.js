@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (el) el.textContent = text;
     }
 
-    // RENDERIZAR OVERLAY DINÁMICO (GIFs E IMÁGENES ARRASTRABLES 100% LIBRES)
+    // RENDERIZAR OVERLAY DINÁMICO (GIFs, IMÁGENES Y TEXTOS ARRASTRABLES 100% LIBRES)
     function renderDynamicOverlay() {
         dynamicOverlay.innerHTML = '';
         dynamicElements.forEach(elem => {
@@ -229,19 +229,42 @@ document.addEventListener('DOMContentLoaded', () => {
             el.style.opacity = elem.opacity !== undefined ? elem.opacity : 1;
             el.style.zIndex = elem.zIndex || 100;
 
-            const img = document.createElement('img');
-            img.src = elem.src;
-            img.alt = elem.name || 'Elemento libre';
-            el.appendChild(img);
+            if (elem.type === 'text') {
+                el.classList.add('editable-text');
+                el.style.fontSize = `${elem.size || 22}px`;
+                el.style.fontFamily = elem.font || "'Playfair Display', serif";
+                el.style.color = elem.color || '#ffffff';
+                el.style.display = 'flex';
+                el.style.alignItems = 'center';
+                el.style.justifyContent = 'center';
+                el.style.textAlign = 'center';
+                el.textContent = elem.text || 'Nuevo Texto';
+                el.addEventListener('dblclick', () => {
+                    el.contentEditable = "true";
+                    el.focus();
+                });
+                el.addEventListener('blur', () => {
+                    el.contentEditable = "false";
+                    elem.text = el.textContent;
+                    saveHistoryState();
+                });
+            } else {
+                const img = document.createElement('img');
+                img.src = elem.src;
+                img.alt = elem.name || 'Elemento libre';
+                el.appendChild(img);
+            }
 
             // Evento para arrastrar libremente
             el.addEventListener('mousedown', (e) => {
+                if (el.isContentEditable) return;
                 e.stopPropagation();
                 selectDynamicElement(elem.id);
                 startDrag(e, elem.id);
             });
 
             el.addEventListener('touchstart', (e) => {
+                if (el.isContentEditable) return;
                 e.stopPropagation();
                 selectDynamicElement(elem.id);
                 startDrag(e, elem.id);
@@ -250,6 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
             dynamicOverlay.appendChild(el);
         });
     }
+
 
     // Escáner Universal de DOM
     function scanEditableElements() {
@@ -768,7 +792,68 @@ document.addEventListener('DOMContentLoaded', () => {
         jsonFileInput.addEventListener('change', importProjectJSON);
         btnPreview.addEventListener('click', () => window.open(`../invitacion/?id=${designId}`, '_blank'));
 
-        // Inputs Inspector
+        // Añadir Nuevo Texto Libre al Lienzo
+        const btnAddNewText = document.getElementById('btn-add-new-text');
+        if (btnAddNewText) {
+            btnAddNewText.addEventListener('click', () => {
+                const id = 'text_' + Date.now();
+                const newElem = {
+                    id, type: 'text', text: 'Nuevo Texto Editable', font: "'Playfair Display', serif",
+                    size: 24, color: '#ffffff', x: 80, y: 300, w: 230, h: 55, rot: 0, opacity: 1, zIndex: 120
+                };
+                dynamicElements.push(newElem);
+                renderDynamicOverlay();
+                selectDynamicElement(id);
+                saveHistoryState();
+                showToast("Nuevo texto añadido al lienzo");
+            });
+        }
+
+        // Botones de enfoque rápido de componentes
+        document.querySelectorAll('[data-focus]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetSecId = btn.getAttribute('data-focus');
+                const sec = document.getElementById(targetSecId);
+                if (sec) {
+                    sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    selectElementByEditorId(targetSecId);
+                    showToast(`Sección ${targetSecId} enfocada`);
+                }
+            });
+        });
+
+        // Inputs de Transformación en Vivo (X, Y, W, H, Rotación, Opacidad)
+        [propX, propY, propW, propH, propRot, propOpacity].forEach(input => {
+            if (!input) return;
+            input.addEventListener('input', () => {
+                if (!selectedElementId) return;
+                const dyn = dynamicElements.find(e => e.id === selectedElementId);
+                if (dyn) {
+                    dyn.x = parseFloat(propX.value) || dyn.x;
+                    dyn.y = parseFloat(propY.value) || dyn.y;
+                    dyn.w = parseFloat(propW.value) || dyn.w;
+                    dyn.h = parseFloat(propH.value) || dyn.h;
+                    dyn.rot = parseFloat(propRot.value) || 0;
+                    dyn.opacity = (parseFloat(propOpacity.value) || 100) / 100;
+                    renderDynamicOverlay();
+                    updateSelectionBox();
+                } else {
+                    const scanned = scannedElements.find(i => i.id === selectedElementId);
+                    if (scanned && scanned.node) {
+                        scanned.node.style.position = 'absolute';
+                        scanned.node.style.left = `${propX.value}px`;
+                        scanned.node.style.top = `${propY.value}px`;
+                        scanned.node.style.width = `${propW.value}px`;
+                        scanned.node.style.height = `${propH.value}px`;
+                        scanned.node.style.transform = `rotate(${propRot.value}deg)`;
+                        scanned.node.style.opacity = (parseFloat(propOpacity.value) || 100) / 100;
+                        updateSelectionBox();
+                    }
+                }
+            });
+        });
+
+        // Inputs Configuración General
         inputConfigName.addEventListener('input', (e) => {
             setDOMText('hero-name', e.target.value);
             setDOMText('cover-title', e.target.value);
@@ -782,6 +867,7 @@ document.addEventListener('DOMContentLoaded', () => {
             saveHistoryState();
         });
     }
+
 
     function addMediaElementToCanvas(src, name, isGif) {
         const id = (isGif ? 'gif_' : 'img_') + Date.now();
