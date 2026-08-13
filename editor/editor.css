@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CANVA-LIKE VISUAL EDITOR — ESTILOS & LAYOUT UNIFICADO REAL
+   CANVA-LIKE VISUAL EDITOR — ESTILOS COMPLETO & UNIVERSAL
    ========================================================================== */
 
 *, *::before, *::after {
@@ -18,9 +18,7 @@ html, body {
     font-size: 14px;
 }
 
-/* ==========================================================================
-   TOP HEADER BAR
-   ========================================================================== */
+/* Header Bar */
 .editor-header {
     height: 56px;
     background: #121824;
@@ -151,9 +149,7 @@ html, body {
 .mt-10 { margin-top: 10px; }
 .mt-15 { margin-top: 15px; }
 
-/* ==========================================================================
-   WORKSPACE GRID (TOOLS SIDEBAR + CANVAS + INSPECTOR)
-   ========================================================================== */
+/* Workspace Grid */
 .editor-workspace {
     display: flex;
     height: calc(100vh - 56px);
@@ -161,9 +157,7 @@ html, body {
     position: relative;
 }
 
-/* ==========================================================================
-   LEFT SIDEBAR (TOOLS TABS & PANELS)
-   ========================================================================== */
+/* Left Sidebar Tools */
 .sidebar-tools {
     width: 340px;
     background: #121824;
@@ -230,38 +224,59 @@ html, body {
     margin-bottom: 16px;
 }
 
+/* Gestor de Secciones */
 .sections-list-stack {
     list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.section-item {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 10px 12px;
+    border-radius: 10px;
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.section-item {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 10px 12px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.82rem;
+.sec-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #ffffff;
 }
 
-.btn-toggle-sec {
-    background: rgba(0, 242, 254, 0.15);
-    color: #00f2fe;
-    border: 1px solid rgba(0, 242, 254, 0.3);
+.sec-btn-group {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-sec-act {
     padding: 4px 8px;
     border-radius: 6px;
     font-size: 0.72rem;
+    font-weight: 700;
+    border: 1px solid rgba(255,255,255,0.12);
     cursor: pointer;
+    background: rgba(255,255,255,0.06);
+    color: #ffffff;
+    transition: all 0.2s ease;
 }
 
-.btn-toggle-sec.off {
-    background: rgba(255, 255, 255, 0.05);
-    color: #64748b;
-    border-color: rgba(255, 255, 255, 0.1);
+.btn-sec-edit {
+    background: rgba(0, 242, 254, 0.15);
+    color: #00f2fe;
+    border-color: rgba(0, 242, 254, 0.4);
+    flex-grow: 1;
+}
+
+.btn-sec-edit:hover { background: rgba(0, 242, 254, 0.3); }
+
+.btn-sec-vis.off {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
 }
 
 .samples-grid, .gifs-grid {
@@ -303,9 +318,7 @@ html, body {
     text-overflow: ellipsis;
 }
 
-/* ==========================================================================
-   CANVAS VIEWPORT & STAGE (FULL INVITATION PAGE HEIGHT)
-   ========================================================================== */
+/* Canvas Viewport */
 .canvas-viewport {
     flex-grow: 1;
     background: #070911;
@@ -367,7 +380,7 @@ html, body {
     transform-origin: top center;
 }
 
-/* Smartphone Phone Mockup Shell (Full Height Canvas) */
+/* Smartphone Shell (Full Real Height Canvas) */
 .canvas-frame {
     width: 390px;
     min-height: 844px;
@@ -385,37 +398,33 @@ html, body {
     width: 100%;
     height: 100%;
     position: relative;
-    overflow: hidden;
     border-radius: 33px;
 }
 
-/* Cover screen overlay inside editor */
-.editor-invitation-container .cover-overlay {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    z-index: 100;
+/* Universal Hover and Selection Highlights for DOM elements */
+[data-editor-id] {
+    transition: outline 0.15s ease;
+    position: relative;
 }
 
-/* Inline WYSIWYG Editable Text */
-.editable-text {
-    outline: none;
-    transition: box-shadow 0.2s ease, background 0.2s ease;
+[data-editor-id]:hover {
+    outline: 1.5px dashed #00f2fe !important;
     cursor: pointer;
 }
 
-.editable-text:hover {
-    box-shadow: 0 0 0 2px rgba(0, 242, 254, 0.5);
-    border-radius: 4px;
+.section-editing-highlight {
+    outline: 3px solid #00f2fe !important;
+    box-shadow: 0 0 25px rgba(0, 242, 254, 0.4) !important;
 }
 
+/* Inline Editable Text */
 .editable-text[contenteditable="true"] {
-    box-shadow: 0 0 0 3px #00f2fe !important;
-    background: rgba(0, 242, 254, 0.1) !important;
+    outline: 3px solid #00f2fe !important;
+    background: rgba(0, 242, 254, 0.15) !important;
     border-radius: 4px;
     cursor: text;
 }
 
-/* Dynamic Free-Floating Overlay Items (GIFs & Icons) */
 .editor-dynamic-overlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -438,12 +447,12 @@ html, body {
     pointer-events: none;
 }
 
-/* Selection Bounding Box & Transformation Handles */
+/* Selection Bounding Box & 8 Handles */
 .selection-box {
     position: absolute;
     border: 2px solid #00f2fe;
     pointer-events: none;
-    box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+    box-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
     z-index: 9999;
 }
 
@@ -465,7 +474,7 @@ html, body {
 .handle.se { bottom: -6px; right: -6px; cursor: nwse-resize; }
 .handle.s  { bottom: -6px; left: calc(50% - 5px); cursor: ns-resize; }
 .handle.sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
-.handle.w  { top: calc(50% - 5px); left: -6px; cursor: ew-resize; }
+.handle.w  { top: calc(50% - 5px); right: auto; left: -6px; cursor: ew-resize; }
 
 .rot-handle {
     position: absolute;
@@ -525,9 +534,7 @@ html, body {
 .snap-h { height: 1.5px; width: 100%; left: 0; }
 .snap-v { width: 1.5px; height: 100%; top: 0; }
 
-/* ==========================================================================
-   RIGHT SIDEBAR (PROPERTIES INSPECTOR)
-   ========================================================================== */
+/* Right Properties Inspector */
 .sidebar-properties {
     width: 300px;
     background: #121824;
@@ -616,6 +623,32 @@ html, body {
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 6px;
     cursor: pointer;
+}
+
+/* Layers List */
+.layers-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.layer-item {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.layer-item.active {
+    border-color: #00f2fe;
+    background: rgba(0, 242, 254, 0.12);
+    color: #ffffff;
 }
 
 .editor-toast {
