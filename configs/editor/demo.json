@@ -32,5 +32,10 @@
   "whatsapp": "51900000000",
   "whatsappMessage": "¡Hola! Confirmo con mucha alegría mi asistencia a los XV Años de Ana María.",
   "music": "../assets/music/song.mp3",
-  "finalMessage": "¡Gracias por ser parte de nuestra historia!"
+  "finalMessage": "¡Gracias por ser parte de nuestra historia!",
+  "dynamicElements": [
+    { "id": "gif_free_1", "type": "gif", "src": "../assets/gifs/xv/butterfly.gif", "name": "Mariposa Dorada", "x": 280, "y": 40, "w": 65, "h": 65, "rot": 0, "opacity": 1, "zIndex": 100 },
+    { "id": "gif_free_2", "type": "gif", "src": "../assets/gifs/xv/sparkles.gif", "name": "Destellos Dorados", "x": 20, "y": 30, "w": 75, "h": 75, "rot": 0, "opacity": 1, "zIndex": 101 },
+    { "id": "gif_free_3", "type": "gif", "src": "../assets/gifs/xv/petals.gif", "name": "Lluvia de Pétalos", "x": 10, "y": 420, "w": 90, "h": 110, "rot": 0, "opacity": 0.85, "zIndex": 102 }
+  ]
 }
