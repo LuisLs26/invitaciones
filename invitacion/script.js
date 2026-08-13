@@ -32,23 +32,44 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Generar Partículas Flotantes en Portada
     createFloatingParticles();
 
-    // 4. Inyectar script de configuración dinámicamente
-    const scriptTag = document.createElement('script');
-    scriptTag.src = `../configs/${invitationId}.js`;
-
-    scriptTag.onload = () => {
-        if (typeof INVITATION_CONFIG === 'undefined' || !INVITATION_CONFIG) {
-            showError();
-            return;
+    // 4. Carga Dinámica de Configuración (Prioridad: localStorage -> JSON -> Script JS)
+    const localDraft = localStorage.getItem(`invitation_design_${invitationId}`);
+    if (localDraft) {
+        try {
+            const parsedConfig = JSON.parse(localDraft);
+            initInvitation(parsedConfig);
+        } catch (e) {
+            fetchJSONOrScriptFallback();
         }
-        initInvitation(INVITATION_CONFIG);
-    };
+    } else {
+        fetchJSONOrScriptFallback();
+    }
 
-    scriptTag.onerror = () => {
-        showError();
-    };
+    function fetchJSONOrScriptFallback() {
+        fetch(`../configs/editor/${invitationId}.json`)
+            .then(res => {
+                if (!res.ok) throw new Error('No JSON');
+                return res.json();
+            })
+            .then(jsonConfig => {
+                initInvitation(jsonConfig);
+            })
+            .catch(() => {
+                // Fallback a script JS clásico
+                const scriptTag = document.createElement('script');
+                scriptTag.src = `../configs/${invitationId}.js`;
+                scriptTag.onload = () => {
+                    if (typeof INVITATION_CONFIG === 'undefined' || !INVITATION_CONFIG) {
+                        showError();
+                        return;
+                    }
+                    initInvitation(INVITATION_CONFIG);
+                };
+                scriptTag.onerror = () => showError();
+                document.head.appendChild(scriptTag);
+            });
+    }
 
-    document.head.appendChild(scriptTag);
 
     function showError() {
         coverScreen.style.display = 'none';

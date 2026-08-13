@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CANVA-LIKE VISUAL EDITOR — ESTILOS & LAYOUT
+   CANVA-LIKE VISUAL EDITOR — ESTILOS & LAYOUT UNIFICADO REAL
    ========================================================================== */
 
 *, *::before, *::after {
@@ -43,7 +43,7 @@ html, body {
     align-items: center;
     gap: 8px;
     font-family: 'Outfit', sans-serif;
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     font-weight: 800;
     color: #ffffff;
     text-decoration: none;
@@ -106,7 +106,7 @@ html, body {
 }
 
 .btn {
-    padding: 9px 18px;
+    padding: 9px 16px;
     border-radius: 8px;
     font-weight: 700;
     font-size: 0.85rem;
@@ -205,7 +205,7 @@ html, body {
     border-left-color: #00f2fe;
 }
 
-.tab-icon { font-size: 1.4rem; }
+.tab-icon { font-size: 1.3rem; }
 .tab-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
 
 .tools-panel-content {
@@ -219,49 +219,49 @@ html, body {
 
 .panel-section h3 {
     font-family: 'Outfit', sans-serif;
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     margin-bottom: 6px;
     color: #ffffff;
 }
 
 .panel-desc {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: #94a3b8;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 
-.panel-section h4 {
-    font-size: 0.85rem;
-    color: #cbd5e1;
-    margin-top: 18px;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.element-buttons-stack {
+.sections-list-stack {
+    list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 
-.add-btn {
+.section-item {
     background: rgba(255, 255, 255, 0.05);
-    color: #f1f5f9;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 12px 16px;
-    border-radius: 10px;
-    font-weight: 600;
-    text-align: left;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 10px 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.82rem;
 }
 
-.add-btn:hover {
-    background: rgba(0, 242, 254, 0.12);
-    border-color: #00f2fe;
-    color: #ffffff;
-    transform: translateX(3px);
+.btn-toggle-sec {
+    background: rgba(0, 242, 254, 0.15);
+    color: #00f2fe;
+    border: 1px solid rgba(0, 242, 254, 0.3);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    cursor: pointer;
+}
+
+.btn-toggle-sec.off {
+    background: rgba(255, 255, 255, 0.05);
+    color: #64748b;
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .samples-grid, .gifs-grid {
@@ -288,14 +288,14 @@ html, body {
 
 .sample-item img, .gif-item img {
     width: 100%;
-    height: 80px;
+    height: 75px;
     object-fit: cover;
     border-radius: 8px;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .sample-item span, .gif-item span {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     color: #cbd5e1;
     display: block;
     white-space: nowrap;
@@ -303,44 +303,13 @@ html, body {
     text-overflow: ellipsis;
 }
 
-/* Layers Manager */
-.layers-actions {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 15px;
-}
-
-.layers-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.layer-item {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 10px 12px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
-
-.layer-item.active {
-    border-color: #00f2fe;
-    background: rgba(0, 242, 254, 0.12);
-}
-
 /* ==========================================================================
-   CANVAS VIEWPORT & STAGE
+   CANVAS VIEWPORT & STAGE (FULL INVITATION PAGE HEIGHT)
    ========================================================================== */
 .canvas-viewport {
     flex-grow: 1;
     background: #070911;
-    background-image: radial-gradient(circle at 50% 30%, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+    background-image: radial-gradient(circle at 50% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 60%);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -388,44 +357,78 @@ html, body {
     flex-grow: 1;
     overflow: auto;
     display: flex;
-    align-items: center;
     justify-content: center;
-    padding: 40px;
+    padding: 40px 20px;
 }
 
 .canvas-stage {
     position: relative;
     transition: transform 0.2s ease;
-    transform-origin: center center;
+    transform-origin: top center;
 }
 
-/* Smartphone Phone Mockup Shell (390px x 844px) */
+/* Smartphone Phone Mockup Shell (Full Height Canvas) */
 .canvas-frame {
     width: 390px;
-    height: 844px;
+    min-height: 844px;
+    height: auto;
     background: #ffffff;
     border-radius: 36px;
     border: 3px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     user-select: none;
 }
 
-.canvas-root {
+.editor-invitation-container {
     width: 100%;
     height: 100%;
     position: relative;
     overflow: hidden;
+    border-radius: 33px;
 }
 
-/* Canvas Draggable Elements */
+/* Cover screen overlay inside editor */
+.editor-invitation-container .cover-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 100;
+}
+
+/* Inline WYSIWYG Editable Text */
+.editable-text {
+    outline: none;
+    transition: box-shadow 0.2s ease, background 0.2s ease;
+    cursor: pointer;
+}
+
+.editable-text:hover {
+    box-shadow: 0 0 0 2px rgba(0, 242, 254, 0.5);
+    border-radius: 4px;
+}
+
+.editable-text[contenteditable="true"] {
+    box-shadow: 0 0 0 3px #00f2fe !important;
+    background: rgba(0, 242, 254, 0.1) !important;
+    border-radius: 4px;
+    cursor: text;
+}
+
+/* Dynamic Free-Floating Overlay Items (GIFs & Icons) */
+.editor-dynamic-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 50;
+}
+
 .canvas-element {
     position: absolute;
     cursor: move;
     user-select: none;
     touch-action: none;
-    box-sizing: border-box;
+    pointer-events: auto;
 }
 
 .canvas-element img {
@@ -556,19 +559,19 @@ html, body {
 .prop-panel.active { display: block; }
 
 .prop-group {
-    margin-bottom: 22px;
-    padding-bottom: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .prop-group label {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 700;
     color: #00f2fe;
     text-transform: uppercase;
     letter-spacing: 1px;
     display: block;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .input-label {
@@ -615,23 +618,6 @@ html, body {
     cursor: pointer;
 }
 
-.btn-toggle {
-    background: rgba(255, 255, 255, 0.06);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.btn-toggle.active {
-    background: #00f2fe;
-    color: #0b0e14;
-}
-
-/* ==========================================================================
-   TOAST NOTIFICATIONS
-   ========================================================================== */
 .editor-toast {
     position: fixed;
     bottom: 25px;

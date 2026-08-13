@@ -1,22 +1,23 @@
 /**
- * MOTOR DEL EDITOR VISUAL PROFESIONAL TIPO CANVA (VANILLA JS)
+ * MOTOR DE EDITOR VISUAL REAL DE PÁGINA COMPLETA (VANILLA JS)
+ * Carga y edita la invitación real completa en tiempo real.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Obtener ID de la URL (?id=demo, ?id=cliente1, ?id=cumpleanos)
+    // 1. Obtener ID del diseño (?id=demo, ?id=cliente1, ?id=cumpleanos)
     const urlParams = new URLSearchParams(window.location.search);
     const designId = urlParams.get('id') || 'demo';
 
-    // 2. Elementos principales del DOM
+    // 2. Elementos DOM del Editor
     const canvasStage = document.getElementById('canvas-stage');
     const canvasFrame = document.getElementById('canvas-frame');
-    const canvasRoot = document.getElementById('canvas-root');
+    const dynamicOverlay = document.getElementById('editor-dynamic-overlay');
     const selectionBox = document.getElementById('selection-box');
     const rotHandle = document.querySelector('.rot-handle');
     const snapGuideH = document.getElementById('snap-guide-h');
     const snapGuideV = document.getElementById('snap-guide-v');
 
-    // Headers & Buttons
+    // Header Controls
     const btnUndo = document.getElementById('btn-undo');
     const btnRedo = document.getElementById('btn-redo');
     const btnSave = document.getElementById('btn-save');
@@ -32,18 +33,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnZoomOut = document.getElementById('btn-zoom-out');
     const btnZoomFit = document.getElementById('btn-zoom-fit');
 
-    // Sidebar & Inspector Panels
+    // Sidebar & Inspector
     const tabButtons = document.querySelectorAll('.tab-btn');
     const panelSections = document.querySelectorAll('.panel-section');
     const inspectorTitle = document.getElementById('inspector-title');
     const propCanvasPanel = document.getElementById('prop-canvas-panel');
     const propElementPanel = document.getElementById('prop-element-panel');
 
-    // Inputs de Propiedades
+    // Form Inputs Inspector
     const themePresetSelect = document.getElementById('theme-preset-select');
-    const bgColorPicker = document.getElementById('bg-color-picker');
-    const canvasTitleInput = document.getElementById('canvas-title-input');
+    const inputConfigTitle = document.getElementById('input-config-title');
+    const inputConfigName = document.getElementById('input-config-name');
+    const inputConfigDate = document.getElementById('input-config-date');
+    const inputConfigTime = document.getElementById('input-config-time');
+    const inputConfigWaPhone = document.getElementById('input-config-wa-phone');
+    const inputConfigWaMsg = document.getElementById('input-config-wa-msg');
+    const inputConfigLocName = document.getElementById('input-config-loc-name');
+    const inputConfigLocAddr = document.getElementById('input-config-loc-addr');
 
+    const selectedElemInfo = document.getElementById('selected-elem-info');
     const propX = document.getElementById('prop-x');
     const propY = document.getElementById('prop-y');
     const propW = document.getElementById('prop-w');
@@ -55,341 +63,295 @@ document.addEventListener('DOMContentLoaded', () => {
     const propFontFamily = document.getElementById('prop-font-family');
     const propFontSize = document.getElementById('prop-font-size');
     const propTextColor = document.getElementById('prop-text-color');
-    const btnTextBold = document.getElementById('btn-text-bold');
-    const btnTextItalic = document.getElementById('btn-text-italic');
-
-    const propComponentGroup = document.getElementById('prop-component-group');
-    const compWaFields = document.getElementById('comp-whatsapp-fields');
-    const propWaPhone = document.getElementById('prop-wa-phone');
-    const propWaMsg = document.getElementById('prop-wa-msg');
-
-    const compMapFields = document.getElementById('comp-map-fields');
-    const propMapName = document.getElementById('prop-map-name');
-    const propMapAddress = document.getElementById('prop-map-address');
-
-    const compCountdownFields = document.getElementById('comp-countdown-fields');
-    const propCdDate = document.getElementById('prop-cd-date');
-
-    const propAnimEntrance = document.getElementById('prop-anim-entrance');
-    const propAnimLoop = document.getElementById('prop-anim-loop');
 
     const btnPropDuplicate = document.getElementById('btn-prop-duplicate');
     const btnPropDelete = document.getElementById('btn-prop-delete');
     const quickDup = document.getElementById('quick-dup');
     const quickDel = document.getElementById('quick-del');
 
+    const sectionsList = document.getElementById('sections-list');
+    const galleryItemsContainer = document.getElementById('editor-gallery-items');
     const layersList = document.getElementById('layers-list');
 
-    // 3. Estado Global del Editor
-    let elementsData = []; // Arreglo de objetos de elementos
+    // 3. Estado Global del Diseño
+    let activeConfig = {};
+    let dynamicElements = []; // GIFs y elementos libres superpuestos
     let selectedElementId = null;
-    let copiedElementData = null;
     let currentZoom = 1;
 
-    // Historial de Undo / Redo
+    // Historial Undo / Redo
     let historyStack = [];
     let historyIndex = -1;
-    const MAX_HISTORY = 30;
 
-    // Estado de Interacción Drag & Transform
+    // Drag & Transform state
     let isDragging = false;
     let isResizing = false;
     let isRotating = false;
     let activeHandle = null;
+    let dragStartX = 0, dragStartY = 0;
+    let elemStartX = 0, elemStartY = 0, elemStartW = 0, elemStartH = 0;
 
-    let dragStartX = 0;
-    let dragStartY = 0;
-    let elemStartX = 0;
-    let elemStartY = 0;
-    let elemStartW = 0;
-    let elemStartH = 0;
-    let elemStartRot = 0;
-
-    // 4. Inicializar Editor
+    // 4. Inicialización
     initEditor();
 
     function initEditor() {
-        // A. Cargar datos existentes desde localStorage o Config JS
-        loadProjectState();
+        // Cargar Configuración Real
+        loadRealConfiguration();
 
-        // B. Inicializar Pestañas del Sidebar
+        // Configurar Pestañas Sidebar
         tabButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetTab = btn.getAttribute('data-tab');
                 tabButtons.forEach(b => b.classList.remove('active'));
                 panelSections.forEach(p => p.classList.remove('active'));
-
                 btn.classList.add('active');
                 document.getElementById(targetTab).classList.add('active');
             });
         });
 
-        // C. Configurar Zoom
+        // Configurar Zoom
         zoomSelect.addEventListener('change', (e) => setZoom(parseFloat(e.target.value)));
         btnZoomIn.addEventListener('click', () => setZoom(currentZoom + 0.15));
         btnZoomOut.addEventListener('click', () => setZoom(currentZoom - 0.15));
         btnZoomFit.addEventListener('click', fitZoomToViewport);
 
-        // D. Configurar Atajos de Teclado
+        // Atajos de teclado & Acciones
         setupKeyboardShortcuts();
-
-        // E. Configurar Transformación en Bounding Box
+        setupActionEvents();
         setupTransformHandles();
-
-        // F. Configurar Botones de Acción
-        setupActionButtons();
-
-        // G. Guardar estado inicial en historial
-        saveHistoryState();
     }
 
-    // Cargar Estado del Proyecto
-    function loadProjectState() {
-        const localData = localStorage.getItem(`invitation_design_${designId}`);
-        if (localData) {
+    // Cargar Configuración Real (localStorage -> JSON -> Config JS)
+    function loadRealConfiguration() {
+        const localDraft = localStorage.getItem(`invitation_design_${designId}`);
+        if (localDraft) {
             try {
-                const parsed = JSON.parse(localData);
-                renderFromState(parsed);
-                showToast("Diseño cargado desde almacenamiento local");
+                activeConfig = JSON.parse(localDraft);
+                applyConfigToRealDOM(activeConfig);
+                showToast("Borrador local cargado");
                 return;
-            } catch(e) {
-                console.error("Error al cargar localStorage, cargando datos por defecto.");
-            }
+            } catch (e) {}
         }
 
-        // Cargar script de configuración como fallback
-        const scriptTag = document.createElement('script');
-        scriptTag.src = `../configs/${designId}.js`;
-        scriptTag.onload = () => {
-            if (typeof INVITATION_CONFIG !== 'undefined') {
-                importFromConfigObject(INVITATION_CONFIG);
-            }
-        };
-        scriptTag.onerror = () => {
-            // Generar lienzo por defecto
-            generateDefaultElements();
-        };
-        document.head.appendChild(scriptTag);
+        fetch(`../configs/editor/${designId}.json`)
+            .then(res => {
+                if (!res.ok) throw new Error('No JSON');
+                return res.json();
+            })
+            .then(jsonConfig => {
+                activeConfig = jsonConfig;
+                applyConfigToRealDOM(activeConfig);
+                showToast(`Configuración de ${designId} cargada`);
+            })
+            .catch(() => {
+                const scriptTag = document.createElement('script');
+                scriptTag.src = `../configs/${designId}.js`;
+                scriptTag.onload = () => {
+                    if (typeof INVITATION_CONFIG !== 'undefined') {
+                        activeConfig = INVITATION_CONFIG;
+                        applyConfigToRealDOM(activeConfig);
+                    }
+                };
+                document.head.appendChild(scriptTag);
+            });
     }
 
-    // Importar desde INVITATION_CONFIG clásico
-    function importFromConfigObject(config) {
+    // Aplicar Configuración al DOM Real de la Invitación
+    function applyConfigToRealDOM(config) {
+        // A. Aplicar Tema Cromático
         canvasFrame.className = `canvas-frame ${config.theme || 'theme-quinceanos'}`;
-        canvasTitleInput.value = config.personName || config.title || 'Invitación';
+        themePresetSelect.value = config.theme || 'theme-quinceanos';
 
-        elementsData = [
-            {
-                id: 'elem_hero_img',
-                type: 'image',
-                src: config.heroImage || '../assets/images/xv/hero.svg',
-                x: 60, y: 40, w: 270, h: 340, rot: 0, opacity: 1, zIndex: 1,
-                animEntrance: 'reveal', animLoop: 'none'
-            },
-            {
-                id: 'elem_title',
-                type: 'text',
-                content: config.title || 'Mis XV Años',
-                x: 45, y: 395, w: 300, h: 50, rot: 0, opacity: 1, zIndex: 2,
-                fontFamily: "'Playfair Display', serif", fontSize: 32, color: '#4a3e4e',
-                bold: true, align: 'center', animEntrance: 'fadeIn'
-            },
-            {
-                id: 'elem_name',
-                type: 'text',
-                content: config.personName || 'Ana María',
-                x: 35, y: 445, w: 320, h: 60, rot: 0, opacity: 1, zIndex: 3,
-                fontFamily: "'Great Vibes', cursive", fontSize: 48, color: '#d4af37',
-                bold: false, align: 'center', animEntrance: 'reveal'
-            },
-            {
-                id: 'elem_butterfly',
-                type: 'gif',
-                src: '../assets/gifs/xv/butterfly.gif',
-                name: 'Mariposa Dorada',
-                x: 310, y: 410, w: 55, h: 55, rot: 0, opacity: 0.9, zIndex: 4,
-                animEntrance: 'fadeIn', animLoop: 'float'
-            },
-            {
-                id: 'elem_sparkle',
-                type: 'gif',
-                src: '../assets/gifs/xv/sparkles.gif',
-                name: 'Destellos Dorados',
-                x: 20, y: 40, w: 65, h: 65, rot: 0, opacity: 0.9, zIndex: 5,
-                animEntrance: 'fadeIn', animLoop: 'none'
-            },
-            {
-                id: 'elem_rsvp',
-                type: 'component',
-                componentType: 'whatsapp',
-                x: 30, y: 740, w: 330, h: 60, rot: 0, opacity: 1, zIndex: 6,
-                waPhone: config.whatsapp || '51900000000',
-                waMsg: config.whatsappMessage || 'Hola, quiero confirmar mi asistencia.',
-                animEntrance: 'bounceIn', animLoop: 'pulse'
-            }
+        // B. Rellenar Textos del DOM Real
+        setDOMText('cover-title', config.personName || config.title);
+        setDOMText('cover-quote', config.coverQuote || '');
+
+        if (config.heroImage) document.getElementById('hero-img').src = config.heroImage;
+        setDOMText('hero-subtitle', config.subtitle || 'Estás cordialmente invitado a');
+        setDOMText('hero-title', config.title || 'Invitación Especial');
+        setDOMText('hero-name', config.personName || '');
+        setDOMText('hero-date', config.formattedDate || '');
+        setDOMText('hero-time', config.time || '');
+
+        setDOMText('main-message-text', config.mainMessage || '');
+
+        // C. Rellenar Galería Real
+        renderGalleryDOM(config.gallery || []);
+
+        // D. Ubicación y Mapas
+        setDOMText('location-name', config.locationName || 'Lugar del Evento');
+        setDOMText('location-address', config.address || '');
+
+        // E. Detalles
+        setDOMText('dress-code-text', config.dressCode || 'Formal');
+        setDOMText('gift-info-text', config.giftInfo || 'Sobres en recepción');
+        setDOMText('pass-info-text', config.passInfo || 'Pase Válido para 2 Personas');
+        setDOMText('final-message-text', config.finalMessage || '¡Gracias por acompañarnos!');
+
+        // F. Sincronizar Inputs del Inspector
+        inputConfigTitle.value = config.title || '';
+        inputConfigName.value = config.personName || '';
+        inputConfigDate.value = config.formattedDate || '';
+        inputConfigTime.value = config.time || '';
+        inputConfigWaPhone.value = config.whatsapp || '';
+        inputConfigWaMsg.value = config.whatsappMessage || '';
+        inputConfigLocName.value = config.locationName || '';
+        inputConfigLocAddr.value = config.address || '';
+
+        // G. Configurar Edición de Texto WYSIWYG Directa en Lienzo
+        setupWYSIWYGInlineTextEditing();
+
+        // H. Cargar Elementos Dinámicos (GIFs superpuestos)
+        dynamicElements = config.dynamicElements || [
+            { id: 'gif_b1', type: 'gif', src: '../assets/gifs/xv/butterfly.gif', name: 'Mariposa', x: 290, y: 30, w: 60, h: 60, rot: 0, opacity: 1, zIndex: 10 },
+            { id: 'gif_s1', type: 'gif', src: '../assets/gifs/xv/sparkles.gif', name: 'Destellos', x: 20, y: 40, w: 70, h: 70, rot: 0, opacity: 1, zIndex: 11 }
         ];
-
-        renderCanvas();
-        updateLayersList();
+        renderDynamicOverlay();
         saveHistoryState();
     }
 
-    function generateDefaultElements() {
-        elementsData = [
-            {
-                id: 'elem_title',
-                type: 'text',
-                content: 'Mis XV Años',
-                x: 45, y: 150, w: 300, h: 50, rot: 0, opacity: 1, zIndex: 1,
-                fontFamily: "'Playfair Display', serif", fontSize: 32, color: '#d4af37',
-                bold: true, align: 'center'
-            }
-        ];
-        renderCanvas();
-        updateLayersList();
+    function setDOMText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
     }
 
-    // Renderizar Canvas desde Estado
-    function renderCanvas() {
-        canvasRoot.innerHTML = '';
+    // Configurar Edición Directa Doble Clic en el Lienzo (WYSIWYG)
+    function setupWYSIWYGInlineTextEditing() {
+        const editableTexts = document.querySelectorAll('.editable-text');
+        editableTexts.forEach(el => {
+            el.addEventListener('dblclick', (e) => {
+                e.stopPropagation();
+                el.contentEditable = "true";
+                el.focus();
+                showToast("Modo de edición de texto directo activo");
+            });
 
-        elementsData.sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0)).forEach(elem => {
+            el.addEventListener('blur', () => {
+                el.contentEditable = "false";
+                syncDOMToConfig();
+                saveHistoryState();
+            });
+
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectRealDOMElement(el);
+            });
+        });
+    }
+
+    function syncDOMToConfig() {
+        activeConfig.personName = document.getElementById('hero-name')?.textContent || '';
+        activeConfig.title = document.getElementById('hero-title')?.textContent || '';
+        activeConfig.subtitle = document.getElementById('hero-subtitle')?.textContent || '';
+        activeConfig.coverQuote = document.getElementById('cover-quote')?.textContent || '';
+        activeConfig.formattedDate = document.getElementById('hero-date')?.textContent || '';
+        activeConfig.time = document.getElementById('hero-time')?.textContent || '';
+        activeConfig.mainMessage = document.getElementById('main-message-text')?.textContent || '';
+        activeConfig.locationName = document.getElementById('location-name')?.textContent || '';
+        activeConfig.address = document.getElementById('location-address')?.textContent || '';
+        activeConfig.dressCode = document.getElementById('dress-code-text')?.textContent || '';
+        activeConfig.giftInfo = document.getElementById('gift-info-text')?.textContent || '';
+        activeConfig.passInfo = document.getElementById('pass-info-text')?.textContent || '';
+        activeConfig.finalMessage = document.getElementById('final-message-text')?.textContent || '';
+    }
+
+    // Renderizar Galería en el DOM Real
+    function renderGalleryDOM(galleryList) {
+        const galleryGrid = document.getElementById('gallery-grid');
+        galleryGrid.innerHTML = '';
+        galleryItemsContainer.innerHTML = '';
+
+        galleryList.forEach((photo, index) => {
+            // Galería en Canvas Real
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            item.innerHTML = `<img src="${photo.url}" alt="${photo.caption || 'Foto'}">`;
+            galleryGrid.appendChild(item);
+
+            // Galería en Sidebar Editor
+            const editorItem = document.createElement('div');
+            editorItem.className = 'sample-item';
+            editorItem.style.marginBottom = '8px';
+            editorItem.innerHTML = `<img src="${photo.url}" alt="Foto ${index+1}"><span>Foto ${index+1}</span><button data-del-gal="${index}" style="color:#fca5a5; background:none; border:none; cursor:pointer; font-size:0.75rem;">Eliminar</button>`;
+            galleryItemsContainer.appendChild(editorItem);
+        });
+
+        // Event listener para eliminar fotos de la galería
+        galleryItemsContainer.querySelectorAll('[data-del-gal]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(e.target.getAttribute('data-del-gal'));
+                activeConfig.gallery.splice(idx, 1);
+                renderGalleryDOM(activeConfig.gallery);
+                saveHistoryState();
+                showToast("Foto eliminada de la galería");
+            });
+        });
+    }
+
+    // Renderizar Overlay Dinámico (GIFs y Elementos Flotantes Libremente)
+    function renderDynamicOverlay() {
+        dynamicOverlay.innerHTML = '';
+        dynamicElements.forEach(elem => {
             const el = document.createElement('div');
             el.id = elem.id;
-            el.className = `canvas-element ${elem.animLoop !== 'none' ? elem.animLoop : ''}`;
+            el.className = 'canvas-element';
             el.style.left = `${elem.x}px`;
             el.style.top = `${elem.y}px`;
             el.style.width = `${elem.w}px`;
             el.style.height = `${elem.h}px`;
             el.style.transform = `rotate(${elem.rot || 0}deg)`;
             el.style.opacity = elem.opacity !== undefined ? elem.opacity : 1;
-            el.style.zIndex = elem.zIndex || 1;
+            el.style.zIndex = elem.zIndex || 10;
 
-            if (elem.type === 'text') {
-                el.style.fontFamily = elem.fontFamily || "'Montserrat', sans-serif";
-                el.style.fontSize = `${elem.fontSize || 20}px`;
-                el.style.color = elem.color || '#333333';
-                el.style.fontWeight = elem.bold ? 'bold' : 'normal';
-                el.style.fontStyle = elem.italic ? 'italic' : 'normal';
-                el.style.textAlign = elem.align || 'center';
-                el.style.lineHeight = '1.2';
-                el.textContent = elem.content || 'Texto';
-            } else if (elem.type === 'image' || elem.type === 'gif') {
-                const img = document.createElement('img');
-                img.src = elem.src;
-                img.alt = elem.name || 'Elemento visual';
-                el.appendChild(img);
-            } else if (elem.type === 'component') {
-                el.innerHTML = renderComponentHTML(elem);
-            } else if (elem.type === 'shape') {
-                el.style.background = elem.color || '#d4af37';
-                if (elem.shape === 'circle') el.style.borderRadius = '50%';
-                if (elem.shape === 'line') el.style.height = '2px';
-            }
+            const img = document.createElement('img');
+            img.src = elem.src;
+            img.alt = elem.name || 'GIF Decorativo';
+            el.appendChild(img);
 
-            // Click listener para seleccionar elemento
             el.addEventListener('mousedown', (e) => {
                 e.stopPropagation();
-                selectElement(elem.id);
+                selectDynamicElement(elem.id);
                 startDrag(e, elem.id);
             });
 
-            el.addEventListener('touchstart', (e) => {
-                e.stopPropagation();
-                selectElement(elem.id);
-                startDrag(e, elem.id);
-            }, { passive: false });
-
-            canvasRoot.appendChild(el);
+            dynamicOverlay.appendChild(el);
         });
-
-        if (selectedElementId) {
-            updateSelectionBox();
-        } else {
-            selectionBox.style.display = 'none';
-        }
     }
 
-    // Renderizar HTML para Componentes Especiales
-    function renderComponentHTML(elem) {
-        if (elem.componentType === 'whatsapp') {
-            return `<div class="btn btn-whatsapp full-w" style="pointer-events:none; height:100%; display:flex; align-items:center; justify-content:center; gap:8px;">
-                <span>CONFIRMAR ASISTENCIA</span>
-            </div>`;
-        } else if (elem.componentType === 'map') {
-            return `<div class="glass-box" style="pointer-events:none; padding:15px; text-align:center; height:100%;">
-                <div style="font-size:1.5rem;">📍</div>
-                <div style="font-weight:700; color:var(--accent-color);">${elem.mapName || 'Lugar del Evento'}</div>
-                <div style="font-size:0.8rem; color:var(--text-muted);">${elem.mapAddress || 'Dirección'}</div>
-            </div>`;
-        } else if (elem.componentType === 'countdown') {
-            return `<div class="timer-grid" style="pointer-events:none; height:100%;">
-                <div class="timer-box glass-box"><span class="timer-number">05</span><span class="timer-label">DÍAS</span></div>
-                <div class="timer-box glass-box"><span class="timer-number">12</span><span class="timer-label">HORAS</span></div>
-                <div class="timer-box glass-box"><span class="timer-number">30</span><span class="timer-label">MIN</span></div>
-                <div class="timer-box glass-box"><span class="timer-number">00</span><span class="timer-label">SEG</span></div>
-            </div>`;
-        }
-        return `<div class="glass-box" style="pointer-events:none; padding:10px; text-align:center;">Componente ${elem.componentType}</div>`;
-    }
-
-    // Seleccionar Elemento
-    function selectElement(id) {
-        selectedElementId = id;
-        const elemData = elementsData.find(e => e.id === id);
-
-        if (!elemData) {
-            deselectAll();
-            return;
-        }
-
-        // Resaltar en lista de capas
-        updateLayersList();
-
-        // Mostrar Panel de Propiedades de Elemento
+    // Selección de Elemento DOM Real vs Overlay
+    function selectRealDOMElement(el) {
+        selectedElementId = el.id;
         propCanvasPanel.style.display = 'none';
         propElementPanel.style.display = 'block';
-        inspectorTitle.textContent = `Propiedades: ${elemData.type.toUpperCase()}`;
+        inspectorTitle.textContent = "Inspector de Texto";
+        selectedElemInfo.textContent = `Texto (${el.id})`;
+        propTextGroup.style.display = 'block';
 
-        // Rellenar valores en el inspector
-        propX.value = Math.round(elemData.x);
-        propY.value = Math.round(elemData.y);
-        propW.value = Math.round(elemData.w);
-        propH.value = Math.round(elemData.h);
-        propRot.value = Math.round(elemData.rot || 0);
-        propOpacity.value = Math.round((elemData.opacity !== undefined ? elemData.opacity : 1) * 100);
+        const computed = window.getComputedStyle(el);
+        propFontSize.value = parseInt(computed.fontSize);
+        propFontFamily.value = computed.fontFamily;
+        propTextColor.value = rgbToHex(computed.color);
 
-        // Rellenar grupo de texto
-        if (elemData.type === 'text') {
-            propTextGroup.style.display = 'block';
-            propFontFamily.value = elemData.fontFamily || "'Montserrat', sans-serif";
-            propFontSize.value = elemData.fontSize || 24;
-            propTextColor.value = elemData.color || '#d4af37';
-            btnTextBold.classList.toggle('active', !!elemData.bold);
-            btnTextItalic.classList.toggle('active', !!elemData.italic);
-        } else {
-            propTextGroup.style.display = 'none';
-        }
+        selectionBox.style.display = 'none';
+    }
 
-        // Rellenar grupo de componentes
-        if (elemData.type === 'component') {
-            propComponentGroup.style.display = 'block';
-            compWaFields.style.display = elemData.componentType === 'whatsapp' ? 'block' : 'none';
-            compMapFields.style.display = elemData.componentType === 'map' ? 'block' : 'none';
-            compCountdownFields.style.display = elemData.componentType === 'countdown' ? 'block' : 'none';
+    function selectDynamicElement(id) {
+        selectedElementId = id;
+        const elem = dynamicElements.find(e => e.id === id);
+        if (!elem) return;
 
-            if (elemData.componentType === 'whatsapp') {
-                propWaPhone.value = elemData.waPhone || '';
-                propWaMsg.value = elemData.waMsg || '';
-            } else if (elemData.componentType === 'map') {
-                propMapName.value = elemData.mapName || '';
-                propMapAddress.value = elemData.mapAddress || '';
-            }
-        } else {
-            propComponentGroup.style.display = 'none';
-        }
+        propCanvasPanel.style.display = 'none';
+        propElementPanel.style.display = 'block';
+        inspectorTitle.textContent = `Inspector: ${elem.type.toUpperCase()}`;
+        selectedElemInfo.textContent = `${elem.name || 'Elemento'}`;
+        propTextGroup.style.display = 'none';
 
-        propAnimEntrance.value = elemData.animEntrance || 'none';
-        propAnimLoop.value = elemData.animLoop || 'none';
+        propX.value = Math.round(elem.x);
+        propY.value = Math.round(elem.y);
+        propW.value = Math.round(elem.w);
+        propH.value = Math.round(elem.h);
+        propRot.value = Math.round(elem.rot || 0);
+        propOpacity.value = Math.round((elem.opacity !== undefined ? elem.opacity : 1) * 100);
 
         updateSelectionBox();
     }
@@ -399,42 +361,38 @@ document.addEventListener('DOMContentLoaded', () => {
         selectionBox.style.display = 'none';
         propElementPanel.style.display = 'none';
         propCanvasPanel.style.display = 'block';
-        inspectorTitle.textContent = 'Propiedades del Lienzo';
-        updateLayersList();
+        inspectorTitle.textContent = 'Propiedades del Diseño';
     }
 
-    // Actualizar Bounding Box de Selección
     function updateSelectionBox() {
-        const elemData = elementsData.find(e => e.id === selectedElementId);
-        if (!elemData) {
+        const elem = dynamicElements.find(e => e.id === selectedElementId);
+        if (!elem) {
             selectionBox.style.display = 'none';
             return;
         }
 
         selectionBox.style.display = 'block';
-        selectionBox.style.left = `${elemData.x}px`;
-        selectionBox.style.top = `${elemData.y}px`;
-        selectionBox.style.width = `${elemData.w}px`;
-        selectionBox.style.height = `${elemData.h}px`;
-        selectionBox.style.transform = `rotate(${elemData.rot || 0}deg)`;
+        selectionBox.style.left = `${elem.x}px`;
+        selectionBox.style.top = `${elem.y}px`;
+        selectionBox.style.width = `${elem.w}px`;
+        selectionBox.style.height = `${elem.h}px`;
+        selectionBox.style.transform = `rotate(${elem.rot || 0}deg)`;
     }
 
-    // Lógica Drag & Transformación
+    // Drag & Transformación
     function startDrag(e, id) {
         if (isResizing || isRotating) return;
         isDragging = true;
-        const elemData = elementsData.find(e => e.id === id);
+        const elem = dynamicElements.find(el => el.id === id);
         const point = getEventPoint(e);
 
         dragStartX = point.x;
         dragStartY = point.y;
-        elemStartX = elemData.x;
-        elemStartY = elemData.y;
+        elemStartX = elem.x;
+        elemStartY = elem.y;
 
         document.addEventListener('mousemove', onDragMove);
         document.addEventListener('mouseup', onDragEnd);
-        document.addEventListener('touchmove', onDragMove, { passive: false });
-        document.addEventListener('touchend', onDragEnd);
     }
 
     function onDragMove(e) {
@@ -443,57 +401,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const dx = (point.x - dragStartX) / currentZoom;
         const dy = (point.y - dragStartY) / currentZoom;
 
-        const elemData = elementsData.find(e => e.id === selectedElementId);
-        let newX = elemStartX + dx;
-        let newY = elemStartY + dy;
+        const elem = dynamicElements.find(el => el.id === selectedElementId);
+        if (!elem) return;
 
-        // Snap Guides (Alineación Magnética Inteligente al centro)
-        const frameW = 390;
-        const frameH = 844;
-        const elemCenterX = newX + elemData.w / 2;
-        const elemCenterY = newY + elemData.h / 2;
+        elem.x = elemStartX + dx;
+        elem.y = elemStartY + dy;
 
-        snapGuideH.style.display = 'none';
-        snapGuideV.style.display = 'none';
+        propX.value = Math.round(elem.x);
+        propY.value = Math.round(elem.y);
 
-        if (Math.abs(elemCenterX - frameW / 2) < 6) {
-            newX = frameW / 2 - elemData.w / 2;
-            snapGuideV.style.left = `${frameW / 2}px`;
-            snapGuideV.style.display = 'block';
-        }
-
-        if (Math.abs(elemCenterY - frameH / 2) < 6) {
-            newY = frameH / 2 - elemData.h / 2;
-            snapGuideH.style.top = `${frameH / 2}px`;
-            snapGuideH.style.display = 'block';
-        }
-
-        elemData.x = newX;
-        elemData.y = newY;
-
-        propX.value = Math.round(newX);
-        propY.value = Math.round(newY);
-
-        renderCanvas();
+        renderDynamicOverlay();
+        updateSelectionBox();
     }
 
     function onDragEnd() {
         if (isDragging) {
             isDragging = false;
-            snapGuideH.style.display = 'none';
-            snapGuideV.style.display = 'none';
             document.removeEventListener('mousemove', onDragMove);
             document.removeEventListener('mouseup', onDragEnd);
-            document.removeEventListener('touchmove', onDragMove);
-            document.removeEventListener('touchend', onDragEnd);
             saveHistoryState();
         }
     }
 
-    // Configurar Handles de Redimensionado y Rotación
     function setupTransformHandles() {
-        const handles = document.querySelectorAll('.handle');
-        handles.forEach(h => {
+        document.querySelectorAll('.handle').forEach(h => {
             h.addEventListener('mousedown', (e) => {
                 e.stopPropagation();
                 startResize(e, h.getAttribute('data-handle'));
@@ -509,15 +440,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function startResize(e, handleType) {
         isResizing = true;
         activeHandle = handleType;
-        const elemData = elementsData.find(e => e.id === selectedElementId);
+        const elem = dynamicElements.find(el => el.id === selectedElementId);
         const point = getEventPoint(e);
 
         dragStartX = point.x;
         dragStartY = point.y;
-        elemStartX = elemData.x;
-        elemStartY = elemData.y;
-        elemStartW = elemData.w;
-        elemStartH = elemData.h;
+        elemStartX = elem.x;
+        elemStartY = elem.y;
+        elemStartW = elem.w;
+        elemStartH = elem.h;
 
         document.addEventListener('mousemove', onResizeMove);
         document.addEventListener('mouseup', onResizeEnd);
@@ -528,25 +459,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const point = getEventPoint(e);
         const dx = (point.x - dragStartX) / currentZoom;
         const dy = (point.y - dragStartY) / currentZoom;
+        const elem = dynamicElements.find(el => el.id === selectedElementId);
 
-        const elemData = elementsData.find(e => e.id === selectedElementId);
-
-        if (activeHandle.includes('e')) elemData.w = Math.max(20, elemStartW + dx);
-        if (activeHandle.includes('s')) elemData.h = Math.max(20, elemStartH + dy);
+        if (activeHandle.includes('e')) elem.w = Math.max(20, elemStartW + dx);
+        if (activeHandle.includes('s')) elem.h = Math.max(20, elemStartH + dy);
         if (activeHandle.includes('w')) {
             const newW = Math.max(20, elemStartW - dx);
-            elemData.x = elemStartX + (elemStartW - newW);
-            elemData.w = newW;
+            elem.x = elemStartX + (elemStartW - newW);
+            elem.w = newW;
         }
         if (activeHandle.includes('n')) {
             const newH = Math.max(20, elemStartH - dy);
-            elemData.y = elemStartY + (elemStartH - newH);
-            elemData.h = newH;
+            elem.y = elemStartY + (elemStartH - newH);
+            elem.h = newH;
         }
 
-        propW.value = Math.round(elemData.w);
-        propH.value = Math.round(elemData.h);
-        renderCanvas();
+        propW.value = Math.round(elem.w);
+        propH.value = Math.round(elem.h);
+        renderDynamicOverlay();
+        updateSelectionBox();
     }
 
     function onResizeEnd() {
@@ -560,7 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startRotate(e) {
         isRotating = true;
-        const elemData = elementsData.find(e => e.id === selectedElementId);
+        const elem = dynamicElements.find(el => el.id === selectedElementId);
         const rect = selectionBox.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
@@ -571,9 +502,10 @@ document.addEventListener('DOMContentLoaded', () => {
             let degrees = Math.round(radians * (180 / Math.pi)) + 90;
             if (degrees < 0) degrees += 360;
 
-            elemData.rot = degrees;
+            elem.rot = degrees;
             propRot.value = degrees;
-            renderCanvas();
+            renderDynamicOverlay();
+            updateSelectionBox();
         }
 
         function onRotateEnd() {
@@ -587,48 +519,21 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('mouseup', onRotateEnd);
     }
 
-    // Botones de Acción (Añadir Elementos, Duplicar, Eliminar, Guardar)
-    function setupActionButtons() {
-        // Deseleccionar al hacer clic en fondo del lienzo
+    // Configurar Eventos de Acciones
+    function setupActionEvents() {
         canvasStage.addEventListener('mousedown', (e) => {
-            if (e.target === canvasStage || e.target === canvasFrame || e.target === canvasRoot) {
+            if (e.target === canvasStage || e.target === canvasFrame) {
                 deselectAll();
             }
         });
 
-        // Eventos Delegados para Añadir Elementos desde la barra izquierda
-        document.addEventListener('click', (e) => {
-            const target = e.target.closest('[data-action]');
-            if (!target) return;
-            const action = target.getAttribute('data-action');
-
-            if (action === 'add-text') {
-                const preset = target.getAttribute('data-preset');
-                addTextElement(preset);
-            } else if (action === 'add-image') {
-                const src = target.getAttribute('data-src');
-                addImageElement(src);
-            } else if (action === 'add-gif') {
-                const src = target.getAttribute('data-src');
-                const name = target.getAttribute('data-name');
-                addGifElement(src, name);
-            } else if (action === 'add-component') {
-                const type = target.getAttribute('data-type');
-                addComponentElement(type);
-            }
-        });
-
-        // Subir Imagen Local
-        document.getElementById('btn-trigger-upload').addEventListener('click', () => {
-            document.getElementById('img-upload-input').click();
-        });
-        document.getElementById('img-upload-input').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (evt) => addImageElement(evt.target.result);
-                reader.readAsDataURL(file);
-            }
+        // Añadir GIF
+        document.querySelectorAll('[data-action="add-gif"]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const src = btn.getAttribute('data-src');
+                const name = btn.getAttribute('data-name');
+                addGif(src, name);
+            });
         });
 
         // Subir GIF Personalizado
@@ -639,201 +544,97 @@ document.addEventListener('DOMContentLoaded', () => {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = (evt) => addGifElement(evt.target.result, file.name);
+                reader.onload = (evt) => addGif(evt.target.result, file.name);
                 reader.readAsDataURL(file);
             }
         });
 
-        // Duplicar & Eliminar
-        btnPropDuplicate.addEventListener('click', duplicateSelectedElement);
-        quickDup.addEventListener('click', duplicateSelectedElement);
-        btnPropDelete.addEventListener('click', deleteSelectedElement);
-        quickDel.addEventListener('click', deleteSelectedElement);
+        // Toggle Secciones
+        document.querySelectorAll('.btn-toggle-sec').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const secId = btn.getAttribute('data-sec-target');
+                const targetSec = document.getElementById(`sec-${secId}`) || document.getElementById(`${secId}-screen`);
+                if (targetSec) {
+                    const isVisible = targetSec.style.display !== 'none';
+                    targetSec.style.display = isVisible ? 'none' : 'block';
+                    btn.classList.toggle('off', isVisible);
+                    btn.textContent = isVisible ? '🙈 Oculto' : '👁 Visible';
+                    showToast(`Sección ${secId} ${isVisible ? 'ocultada' : 'visible'}`);
+                }
+            });
+        });
 
-        // Guardar & Exportar/Importar
+        // Guardar & Exportar
         btnSave.addEventListener('click', saveProjectState);
         btnExportJson.addEventListener('click', exportProjectJSON);
         btnImportJson.addEventListener('click', () => jsonFileInput.click());
         jsonFileInput.addEventListener('change', importProjectJSON);
-        btnPreview.addEventListener('click', () => {
-            window.open(`../invitacion/?id=${designId}`, '_blank');
-        });
+        btnPreview.addEventListener('click', () => window.open(`../invitacion/?id=${designId}`, '_blank'));
 
-        // Inputs en tiempo real del Inspector
-        setupInspectorRealtimeInputs();
-    }
+        btnPropDelete.addEventListener('click', deleteSelected);
+        quickDel.addEventListener('click', deleteSelected);
+        btnPropDuplicate.addEventListener('click', duplicateSelected);
+        quickDup.addEventListener('click', duplicateSelected);
 
-    // Configurar Inputs del Inspector en Tiempo Real
-    function setupInspectorRealtimeInputs() {
-        propX.addEventListener('input', () => updateSelectedProp('x', parseFloat(propX.value) || 0));
-        propY.addEventListener('input', () => updateSelectedProp('y', parseFloat(propY.value) || 0));
-        propW.addEventListener('input', () => updateSelectedProp('w', parseFloat(propW.value) || 50));
-        propH.addEventListener('input', () => updateSelectedProp('h', parseFloat(propH.value) || 50));
-        propRot.addEventListener('input', () => updateSelectedProp('rot', parseFloat(propRot.value) || 0));
-        propOpacity.addEventListener('input', () => updateSelectedProp('opacity', (parseFloat(propOpacity.value) || 100) / 100));
-
-        propFontFamily.addEventListener('change', () => updateSelectedProp('fontFamily', propFontFamily.value));
-        propFontSize.addEventListener('input', () => updateSelectedProp('fontSize', parseFloat(propFontSize.value) || 20));
-        propTextColor.addEventListener('input', () => updateSelectedProp('color', propTextColor.value));
-
-        btnTextBold.addEventListener('click', () => {
-            const elem = elementsData.find(e => e.id === selectedElementId);
-            if (elem) {
-                elem.bold = !elem.bold;
-                btnTextBold.classList.toggle('active', elem.bold);
-                renderCanvas();
-                saveHistoryState();
-            }
-        });
-
-        propAnimEntrance.addEventListener('change', () => updateSelectedProp('animEntrance', propAnimEntrance.value));
-        propAnimLoop.addEventListener('change', () => updateSelectedProp('animLoop', propAnimLoop.value));
-
-        themePresetSelect.addEventListener('change', (e) => {
-            canvasFrame.className = `canvas-frame ${e.target.value}`;
+        // Inputs en Tiempo Real del Inspector General
+        inputConfigName.addEventListener('input', (e) => {
+            setDOMText('hero-name', e.target.value);
+            setDOMText('cover-title', e.target.value);
+            activeConfig.personName = e.target.value;
             saveHistoryState();
         });
 
-        bgColorPicker.addEventListener('input', (e) => {
-            canvasFrame.style.backgroundColor = e.target.value;
+        inputConfigTitle.addEventListener('input', (e) => {
+            setDOMText('hero-title', e.target.value);
+            activeConfig.title = e.target.value;
             saveHistoryState();
         });
     }
 
-    function updateSelectedProp(key, value) {
-        if (!selectedElementId) return;
-        const elem = elementsData.find(e => e.id === selectedElementId);
-        if (elem) {
-            elem[key] = value;
-            renderCanvas();
-        }
-    }
-
-    // Funciones para añadir elementos
-    function addTextElement(preset) {
-        const id = 'text_' + Date.now();
-        let content = 'Nuevo Texto';
-        let fontSize = 24;
-        let fontFamily = "'Montserrat', sans-serif";
-
-        if (preset === 'title') {
-            content = 'Mis XV Años';
-            fontSize = 34;
-            fontFamily = "'Playfair Display', serif";
-        } else if (preset === 'subtitle') {
-            content = 'Te invitamos a celebrar';
-            fontSize = 20;
-        } else if (preset === 'quote') {
-            content = '“Un día inolvidable para compartir con quienes más quiero”';
-            fontSize = 18;
-            fontFamily = "'Cormorant Garamond', serif";
-        }
-
-        const newElem = {
-            id, type: 'text', content, x: 45, y: 250, w: 300, h: 50, rot: 0, opacity: 1, zIndex: elementsData.length + 1,
-            fontFamily, fontSize, color: '#d4af37', bold: true, align: 'center', animEntrance: 'fadeIn', animLoop: 'none'
-        };
-
-        elementsData.push(newElem);
-        renderCanvas();
-        selectElement(id);
-        updateLayersList();
-        saveHistoryState();
-        showToast("Texto añadido");
-    }
-
-    function addImageElement(src) {
-        const id = 'img_' + Date.now();
-        const newElem = {
-            id, type: 'image', src, x: 45, y: 150, w: 300, h: 300, rot: 0, opacity: 1, zIndex: elementsData.length + 1,
-            animEntrance: 'reveal', animLoop: 'none'
-        };
-        elementsData.push(newElem);
-        renderCanvas();
-        selectElement(id);
-        updateLayersList();
-        saveHistoryState();
-        showToast("Imagen añadida");
-    }
-
-    function addGifElement(src, name) {
+    function addGif(src, name) {
         const id = 'gif_' + Date.now();
         const newElem = {
-            id, type: 'gif', src, name: name || 'GIF Animado', x: 150, y: 200, w: 90, h: 90, rot: 0, opacity: 1, zIndex: elementsData.length + 1,
-            animEntrance: 'fadeIn', animLoop: 'none'
+            id, type: 'gif', src, name: name || 'GIF Animado',
+            x: 140, y: 200, w: 80, h: 80, rot: 0, opacity: 1, zIndex: 20
         };
-        elementsData.push(newElem);
-        renderCanvas();
-        selectElement(id);
-        updateLayersList();
+        dynamicElements.push(newElem);
+        renderDynamicOverlay();
+        selectDynamicElement(id);
         saveHistoryState();
-        showToast(`GIF ${name || ''} añadido`);
+        showToast(`GIF ${name || ''} añadido al lienzo`);
     }
 
-    function addComponentElement(compType) {
-        const id = 'comp_' + Date.now();
-        const newElem = {
-            id, type: 'component', componentType: compType, x: 30, y: 600, w: 330, h: 60, rot: 0, opacity: 1, zIndex: elementsData.length + 1,
-            animEntrance: 'reveal', animLoop: 'none'
-        };
-        elementsData.push(newElem);
-        renderCanvas();
-        selectElement(id);
-        updateLayersList();
-        saveHistoryState();
-        showToast(`Componente ${compType} añadido`);
-    }
-
-    function duplicateSelectedElement() {
+    function deleteSelected() {
         if (!selectedElementId) return;
-        const elem = elementsData.find(e => e.id === selectedElementId);
-        if (!elem) return;
-
-        const copy = JSON.parse(JSON.stringify(elem));
-        copy.id = 'elem_' + Date.now();
-        copy.x += 15;
-        copy.y += 15;
-        copy.zIndex = elementsData.length + 1;
-
-        elementsData.push(copy);
-        renderCanvas();
-        selectElement(copy.id);
-        updateLayersList();
-        saveHistoryState();
-        showToast("Elemento duplicado");
-    }
-
-    function deleteSelectedElement() {
-        if (!selectedElementId) return;
-        elementsData = elementsData.filter(e => e.id !== selectedElementId);
+        dynamicElements = dynamicElements.filter(e => e.id !== selectedElementId);
         deselectAll();
-        renderCanvas();
-        updateLayersList();
+        renderDynamicOverlay();
         saveHistoryState();
         showToast("Elemento eliminado");
     }
 
-    // Administrador de Capas
-    function updateLayersList() {
-        layersList.innerHTML = '';
-        const sorted = [...elementsData].sort((a, b) => (b.zIndex || 0) - (a.zIndex || 0));
-
-        sorted.forEach(elem => {
-            const li = document.createElement('li');
-            li.className = `layer-item ${elem.id === selectedElementId ? 'active' : ''}`;
-            li.innerHTML = `<span>${elem.name || elem.content || elem.type}</span><small>z:${elem.zIndex}</small>`;
-            li.addEventListener('click', () => selectElement(elem.id));
-            layersList.appendChild(li);
-        });
+    function duplicateSelected() {
+        if (!selectedElementId) return;
+        const elem = dynamicElements.find(e => e.id === selectedElementId);
+        if (!elem) return;
+        const copy = JSON.parse(JSON.stringify(elem));
+        copy.id = 'elem_' + Date.now();
+        copy.x += 15;
+        copy.y += 15;
+        dynamicElements.push(copy);
+        renderDynamicOverlay();
+        selectDynamicElement(copy.id);
+        saveHistoryState();
+        showToast("Elemento duplicado");
     }
 
-    // Historial Undo / Redo
+    // Persistencia y Historial
     function saveHistoryState() {
-        if (historyIndex < historyStack.length - 1) {
-            historyStack = historyStack.slice(0, historyIndex + 1);
-        }
-        historyStack.push(JSON.stringify(elementsData));
-        if (historyStack.length > MAX_HISTORY) historyStack.shift();
+        syncDOMToConfig();
+        activeConfig.dynamicElements = dynamicElements;
+        if (historyIndex < historyStack.length - 1) historyStack = historyStack.slice(0, historyIndex + 1);
+        historyStack.push(JSON.stringify(activeConfig));
+        if (historyStack.length > 30) historyStack.shift();
         historyIndex = historyStack.length - 1;
 
         btnUndo.disabled = historyIndex <= 0;
@@ -843,9 +644,8 @@ document.addEventListener('DOMContentLoaded', () => {
     btnUndo.addEventListener('click', () => {
         if (historyIndex > 0) {
             historyIndex--;
-            elementsData = JSON.parse(historyStack[historyIndex]);
-            renderCanvas();
-            updateLayersList();
+            activeConfig = JSON.parse(historyStack[historyIndex]);
+            applyConfigToRealDOM(activeConfig);
             btnUndo.disabled = historyIndex <= 0;
             btnRedo.disabled = historyIndex >= historyStack.length - 1;
         }
@@ -854,42 +654,31 @@ document.addEventListener('DOMContentLoaded', () => {
     btnRedo.addEventListener('click', () => {
         if (historyIndex < historyStack.length - 1) {
             historyIndex++;
-            elementsData = JSON.parse(historyStack[historyIndex]);
-            renderCanvas();
-            updateLayersList();
+            activeConfig = JSON.parse(historyStack[historyIndex]);
+            applyConfigToRealDOM(activeConfig);
             btnUndo.disabled = historyIndex <= 0;
             btnRedo.disabled = historyIndex >= historyStack.length - 1;
         }
     });
 
-    // Guardar en localStorage
     function saveProjectState() {
-        const payload = {
-            id: designId,
-            theme: canvasFrame.className.replace('canvas-frame ', ''),
-            bgColor: canvasFrame.style.backgroundColor,
-            title: canvasTitleInput.value,
-            elements: elementsData
-        };
-        localStorage.setItem(`invitation_design_${designId}`, JSON.stringify(payload));
+        syncDOMToConfig();
+        activeConfig.dynamicElements = dynamicElements;
+        localStorage.setItem(`invitation_design_${designId}`, JSON.stringify(activeConfig));
         saveStatus.textContent = '🟢 Cambios guardados';
-        showToast("Diseño guardado en almacenamiento local");
+        showToast("Borrador del diseño guardado en localStorage");
     }
 
     function exportProjectJSON() {
-        const payload = {
-            id: designId,
-            theme: canvasFrame.className.replace('canvas-frame ', ''),
-            title: canvasTitleInput.value,
-            elements: elementsData
-        };
-        const str = JSON.stringify(payload, null, 2);
+        syncDOMToConfig();
+        activeConfig.dynamicElements = dynamicElements;
+        const str = JSON.stringify(activeConfig, null, 2);
         const blob = new Blob([str], { type: 'application/json' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `${designId}_diseno.json`;
+        a.download = `${designId}.json`;
         a.click();
-        showToast("Archivo JSON descargado");
+        showToast("Configuración JSON descargada");
     }
 
     function importProjectJSON(e) {
@@ -898,10 +687,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const reader = new FileReader();
             reader.onload = (evt) => {
                 try {
-                    const parsed = JSON.parse(evt.target.result);
-                    renderFromState(parsed);
+                    activeConfig = JSON.parse(evt.target.result);
+                    applyConfigToRealDOM(activeConfig);
                     saveHistoryState();
-                    showToast("Diseño importado con éxito");
+                    showToast("Configuración importada con éxito");
                 } catch(err) {
                     alert("Error al leer el archivo JSON.");
                 }
@@ -910,18 +699,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function renderFromState(state) {
-        if (state.theme) canvasFrame.className = `canvas-frame ${state.theme}`;
-        if (state.bgColor) canvasFrame.style.backgroundColor = state.bgColor;
-        if (state.title) canvasTitleInput.value = state.title;
-        if (state.elements) elementsData = state.elements;
-        renderCanvas();
-        updateLayersList();
-    }
-
-    // Zoom Helpers
     function setZoom(val) {
-        currentZoom = Math.min(2, Math.max(0.25, val));
+        currentZoom = Math.min(1.5, Math.max(0.25, val));
         zoomSelect.value = currentZoom;
         canvasStage.style.transform = `scale(${currentZoom})`;
     }
@@ -930,13 +709,12 @@ document.addEventListener('DOMContentLoaded', () => {
         setZoom(0.85);
     }
 
-    // Atajos de Teclado
     function setupKeyboardShortcuts() {
         document.addEventListener('keydown', (e) => {
-            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName) || e.target.isContentEditable) return;
 
             if (e.key === 'Delete' || e.key === 'Backspace') {
-                deleteSelectedElement();
+                deleteSelected();
             } else if (e.ctrlKey && e.key === 'z') {
                 e.preventDefault();
                 btnUndo.click();
@@ -945,30 +723,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 btnRedo.click();
             } else if (e.ctrlKey && e.key === 'd') {
                 e.preventDefault();
-                duplicateSelectedElement();
+                duplicateSelected();
             } else if (e.ctrlKey && e.key === 's') {
                 e.preventDefault();
                 saveProjectState();
-            } else if (e.key.startsWith('Arrow') && selectedElementId) {
-                e.preventDefault();
-                const step = e.shiftKey ? 10 : 1;
-                const elem = elementsData.find(el => el.id === selectedElementId);
-                if (elem) {
-                    if (e.key === 'ArrowLeft') elem.x -= step;
-                    if (e.key === 'ArrowRight') elem.x += step;
-                    if (e.key === 'ArrowUp') elem.y -= step;
-                    if (e.key === 'ArrowDown') elem.y += step;
-                    renderCanvas();
-                }
             }
         });
     }
 
     function getEventPoint(e) {
-        if (e.touches && e.touches.length > 0) {
-            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-        }
+        if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
         return { x: e.clientX, y: e.clientY };
+    }
+
+    function rgbToHex(rgb) {
+        if (!rgb || !rgb.startsWith('rgb')) return '#d4af37';
+        const nums = rgb.match(/\d+/g);
+        if (!nums || nums.length < 3) return '#d4af37';
+        return '#' + nums.slice(0, 3).map(x => parseInt(x).toString(16).padStart(2, '0')).join('');
     }
 
     function showToast(msg) {
