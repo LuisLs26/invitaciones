@@ -58,6 +58,8 @@ echo =======================================================
 echo EXITO! El proyecto se ha actualizado en GitHub.
 echo Repositorio: https://github.com/LuisLs26/invitaciones.git
 echo Rama: main
+echo Editor publicado: https://luisls26.github.io/invitaciones/editor/?id=demo
+echo Invitacion demo: https://luisls26.github.io/invitaciones/invitacion/?id=demo
 echo =======================================================
 
 :END

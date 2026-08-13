@@ -150,11 +150,55 @@ document.addEventListener('DOMContentLoaded', async () => {
         overlay.innerHTML = '';
         elements.forEach((item) => {
             const wrapper = document.createElement('div'); wrapper.className = 'dynamic-item';
+            wrapper.dataset.dynamicId = item.id || '';
             Object.assign(wrapper.style, { left: `${item.x || 0}px`, top: `${item.y || 0}px`, width: `${item.w || 80}px`, height: `${item.h || 80}px`, transform: `rotate(${item.rot || 0}deg)`, opacity: item.opacity ?? 1, zIndex: item.zIndex || 10 });
             if (item.type === 'text') { wrapper.textContent = item.text || ''; wrapper.style.color = item.color || 'currentColor'; wrapper.style.fontFamily = item.font || 'inherit'; wrapper.style.fontSize = `${item.size || 22}px`; }
             else { const image = document.createElement('img'); image.src = item.src; image.alt = item.name || 'Decoración'; wrapper.appendChild(image); }
+            if (editorPreview && item.type === 'gif' && item.id) bindGifDrag(wrapper, item);
             overlay.appendChild(wrapper);
         });
+    }
+
+    function bindGifDrag(element, item) {
+        let dragging = false;
+        let offsetX = 0;
+        let offsetY = 0;
+        const app = $('#invitation-app');
+
+        const sendPosition = (phase) => {
+            window.parent.postMessage({ type: 'invitation:move-dynamic', id: item.id, x: Number.parseFloat(element.style.left), y: Number.parseFloat(element.style.top), phase }, window.location.origin);
+        };
+
+        element.addEventListener('pointerdown', (event) => {
+            dragging = true;
+            const rect = element.getBoundingClientRect();
+            offsetX = event.clientX - rect.left;
+            offsetY = event.clientY - rect.top;
+            element.setPointerCapture(event.pointerId);
+            element.classList.add('is-dragging');
+            event.preventDefault();
+        });
+
+        element.addEventListener('pointermove', (event) => {
+            if (!dragging) return;
+            const appRect = app.getBoundingClientRect();
+            const maxX = Math.max(0, app.clientWidth - element.offsetWidth);
+            const nextX = Math.min(maxX, Math.max(0, event.clientX - appRect.left - offsetX));
+            const nextY = Math.max(0, event.clientY - appRect.top - offsetY);
+            element.style.left = `${Math.round(nextX)}px`;
+            element.style.top = `${Math.round(nextY)}px`;
+            sendPosition('move');
+        });
+
+        const finishDrag = (event) => {
+            if (!dragging) return;
+            dragging = false;
+            if (element.hasPointerCapture(event.pointerId)) element.releasePointerCapture(event.pointerId);
+            element.classList.remove('is-dragging');
+            sendPosition('end');
+        };
+        element.addEventListener('pointerup', finishDrag);
+        element.addEventListener('pointercancel', finishDrag);
     }
 
     function createParticles() {

@@ -14,6 +14,9 @@
         .cover-overlay { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 100vh; }
         .envelope-container { margin: auto; }
         .desktop-mockup-wrapper { width: 100%; }
+        .editor-preview-mode .dynamic-item { pointer-events: auto; cursor: grab; touch-action: none; outline: 1px dashed transparent; }
+        .editor-preview-mode .dynamic-item:hover { outline-color: var(--accent); }
+        .editor-preview-mode .dynamic-item.is-dragging { cursor: grabbing; outline: 2px solid var(--accent); filter: drop-shadow(0 7px 10px rgba(0,0,0,.25)); }
     </style>
 </head>
 <body class="theme-default">

@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bindFields();
         bindGallery();
         bindGifs();
+        bindPreviewMessages();
         try {
             config = await loadConfig();
             originalConfig = clone(config);
@@ -113,6 +114,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const btnPreview = $('#btn-preview');
         if (btnPreview) btnPreview.addEventListener('click', () => window.open(`../invitacion/?id=${encodeURIComponent(designId)}`, '_blank', 'noopener,noreferrer'));
+
+        const btnExport = $('#btn-export');
+        if (btnExport) btnExport.addEventListener('click', exportConfig);
 
         const btnRefresh = $('#btn-refresh-preview');
         if (btnRefresh) btnRefresh.addEventListener('click', () => refreshPreview(true));
@@ -351,6 +355,38 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(persistTimer);
         persistConfig(true);
         if (showMessage) showToast('✓ Invitación guardada y publicada en el demo');
+    }
+
+    function exportConfig() {
+        if (!config) return;
+        const payload = JSON.stringify({ ...config, editorVersion: 2, updatedAt: new Date().toISOString() }, null, 2);
+        const file = new Blob([payload], { type: 'application/json' });
+        const url = URL.createObjectURL(file);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${designId}.json`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        showToast('JSON descargado. Reemplázalo en configs/editor y ejecuta subir-github.bat');
+    }
+
+    function bindPreviewMessages() {
+        window.addEventListener('message', (event) => {
+            if (event.origin !== window.location.origin || !event.data || event.data.type !== 'invitation:move-dynamic' || !config) return;
+            const element = (config.dynamicElements || []).find((item) => item.id === event.data.id);
+            if (!element) return;
+            element.x = Math.max(0, Math.round(Number(event.data.x) || 0));
+            element.y = Math.max(0, Math.round(Number(event.data.y) || 0));
+            if (event.data.phase === 'end') {
+                renderGifsList();
+                commitChange();
+                showToast('Posición del GIF guardada');
+            } else {
+                queueDraft();
+            }
+        });
     }
 
     function persistConfig(published) {
