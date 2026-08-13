@@ -954,10 +954,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Sincronizar Cambios del DOM al Objeto de Configuración
+    function syncDOMToConfig() {
+        if (!activeConfig) activeConfig = {};
+        
+        activeConfig.personName = document.getElementById('hero-name')?.textContent?.trim() || activeConfig.personName || 'Ana María';
+        activeConfig.title = document.getElementById('hero-title')?.textContent?.trim() || activeConfig.title || 'Mis XV Años';
+        activeConfig.subtitle = document.getElementById('hero-subtitle')?.textContent?.trim() || activeConfig.subtitle || '';
+        activeConfig.coverQuote = document.getElementById('cover-quote')?.textContent?.trim() || activeConfig.coverQuote || '';
+        activeConfig.formattedDate = document.getElementById('hero-date')?.textContent?.trim() || activeConfig.formattedDate || '';
+        activeConfig.time = document.getElementById('hero-time')?.textContent?.trim() || activeConfig.time || '';
+        activeConfig.mainMessage = document.getElementById('main-message-text')?.textContent?.trim() || activeConfig.mainMessage || '';
+        activeConfig.locationName = document.getElementById('location-name')?.textContent?.trim() || activeConfig.locationName || '';
+        activeConfig.address = document.getElementById('location-address')?.textContent?.trim() || activeConfig.address || '';
+        activeConfig.dressCode = document.getElementById('dress-code-text')?.textContent?.trim() || activeConfig.dressCode || '';
+        activeConfig.giftInfo = document.getElementById('gift-info-text')?.textContent?.trim() || activeConfig.giftInfo || '';
+        activeConfig.passInfo = document.getElementById('pass-info-text')?.textContent?.trim() || activeConfig.passInfo || '';
+        activeConfig.finalMessage = document.getElementById('final-message-text')?.textContent?.trim() || activeConfig.finalMessage || '';
+
+        const heroImgEl = document.getElementById('hero-img');
+        if (heroImgEl && heroImgEl.src) {
+            activeConfig.heroImage = heroImgEl.src;
+        }
+
+        activeConfig.dynamicElements = dynamicElements || [];
+    }
+
     // HISTORIAL Y PERSISTENCIA (50 ESTADOS)
     function saveHistoryState() {
         syncDOMToConfig();
-        activeConfig.dynamicElements = dynamicElements;
         if (historyIndex < historyStack.length - 1) historyStack = historyStack.slice(0, historyIndex + 1);
         historyStack.push(JSON.stringify(activeConfig));
         if (historyStack.length > MAX_HISTORY) historyStack.shift();
@@ -991,42 +1016,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function saveProjectState() {
         syncDOMToConfig();
-        activeConfig.dynamicElements = dynamicElements;
-        localStorage.setItem(`invitation_design_${designId}`, JSON.stringify(activeConfig));
+        const jsonStr = JSON.stringify(activeConfig);
+        localStorage.setItem(`invitation_design_${designId}`, jsonStr);
+        localStorage.setItem(`invitation_config_${designId}`, jsonStr);
+        localStorage.setItem(`invitation_${designId}`, jsonStr);
         saveStatus.textContent = '🟢 Cambios guardados';
-        showToast("💾 ¡Guardado directamente! La vista previa pública ahora muestra estos cambios.");
+        showToast("💾 ¡CAMBIOS GUARDADOS! Reflejados en el demo público.");
     }
 
-
-    function exportProjectJSON() {
-        syncDOMToConfig();
-        activeConfig.dynamicElements = dynamicElements;
-        const str = JSON.stringify(activeConfig, null, 2);
-        const blob = new Blob([str], { type: 'application/json' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `${designId}.json`;
-        a.click();
-        showToast("Configuración JSON exportada");
-    }
-
-    function importProjectJSON(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (evt) => {
-                try {
-                    activeConfig = JSON.parse(evt.target.result);
-                    applyConfigToRealDOM(activeConfig);
-                    saveHistoryState();
-                    showToast("Configuración importada");
-                } catch(err) {
-                    alert("Error al importar JSON.");
-                }
-            };
-            reader.readAsText(file);
-        }
-    }
 
     function setZoom(val) {
         currentZoom = Math.min(1.5, Math.max(0.25, val));

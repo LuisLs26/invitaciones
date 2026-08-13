@@ -33,7 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
     createFloatingParticles();
 
     // 4. Carga Dinámica de Configuración (Prioridad: localStorage -> JSON -> Script JS)
-    const localDraft = localStorage.getItem(`invitation_design_${invitationId}`);
+    const localDraft = localStorage.getItem(`invitation_design_${invitationId}`) || 
+                       localStorage.getItem(`invitation_config_${invitationId}`) || 
+                       localStorage.getItem(`invitation_${invitationId}`);
     if (localDraft) {
         try {
             const parsedConfig = JSON.parse(localDraft);
@@ -44,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         fetchJSONOrScriptFallback();
     }
+
 
     function fetchJSONOrScriptFallback() {
         fetch(`../configs/editor/${invitationId}.json`)
