@@ -1,7 +1,6 @@
 /**
- * Configuración: Bautizo de Lucía
- * Tier: Premium (S/ 12)
- * Incluye: Música, Galería, Countdown, Itinerario, Padrinos, Iglesia/Recepción, Mapa y RSVP WhatsApp
+ * Configuración: Bautizo (Lucía)
+ * Ruta: demos/bautizo/codigo/config.js
  */
 const INVITATION_CONFIG = {
     id: "bautizo",
@@ -18,7 +17,7 @@ const INVITATION_CONFIG = {
     mapUrl: "https://maps.google.com/?q=Parroquia+Nuestra+Senora+del+Pilar+Lima",
     whatsapp: "51944445555",
     whatsappMessage: "¡Hola! Confirmo mi asistencia al Bautizo de Lucía. Nombre(s): ",
-    heroImage: "https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=1200&q=80",
+    heroImage: "../imagenes/hero.jpg",
     coverQuote: "Señor, protege a nuestra hija Lucía en este día bendito y guía siempre sus pasos.",
     mainMessage: "Tenemos el honor de invitarte al Santo Bautismo de nuestra amada hija Lucía. Agradecemos a Dios por su vida y nos llenaría de gozo contar con tu compañía.",
     dressCode: "Formal / Traje de Etiqueta (Colores Blancos o Claros)",
@@ -37,16 +36,13 @@ const INVITATION_CONFIG = {
         { role: "Padrinos de Bautismo", name: "Javier Mendoza & Andrea de Mendoza" }
     ],
 
-    // Feature Toggles (Premium)
     showCountdown: true,
     showGallery: true,
     gallery: [
-        { url: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1000&q=80", caption: "Nuestra Pequeña Lucía" },
-        { url: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80", caption: "Recuerdos en Familia" },
-        { url: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1000&q=80", caption: "Con Nuestros Padrinos" }
+        { url: "../imagenes/galeria1.jpg", caption: "Nuestra Pequeña Lucía" },
+        { url: "../imagenes/galeria2.jpg", caption: "Recuerdos en Familia" },
+        { url: "../imagenes/galeria3.jpg", caption: "Con Nuestros Padrinos" }
     ],
     showMap: true,
-    showVideo: false,
-    video: null,
     finalMessage: "¡Que Dios bendiga tu presencia en este día tan sagrado!"
 };

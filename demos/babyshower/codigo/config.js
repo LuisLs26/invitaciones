@@ -1,7 +1,6 @@
 /**
- * Configuración: Baby Shower de Mateo
- * Tier: Premium (S/ 12)
- * Incluye: Música, Galería, Countdown, Itinerario, Padrinos/Padres, Lista de Regalos, Mapa y RSVP WhatsApp
+ * Configuración: Baby Shower (Mateo)
+ * Ruta: demos/babyshower/codigo/config.js
  */
 const INVITATION_CONFIG = {
     id: "babyshower",
@@ -18,7 +17,7 @@ const INVITATION_CONFIG = {
     mapUrl: "https://maps.google.com/?q=San+Isidro+Lima",
     whatsapp: "51922223333",
     whatsappMessage: "¡Hola! Confirmo mi asistencia al Baby Shower de Mateo. Nombre(s): ",
-    heroImage: "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&fit=crop&w=1200&q=80",
+    heroImage: "../imagenes/hero.jpg",
     coverQuote: "Un pequeño gran milagro está en camino para llenar nuestras vidas de amor.",
     mainMessage: "Estamos muy felices por la pronta llegada de nuestro bebé Mateo. Queremos compartir esta linda tarde de juegos, sorpresas y alegría con las personas que más queremos.",
     dressCode: "Casual Elegante / Tonos Pasteles (Celeste, Blanco, Beige)",
@@ -38,16 +37,13 @@ const INVITATION_CONFIG = {
         { role: "Tíos Consentidores", name: "Mateo Sr. & Daniela" }
     ],
 
-    // Feature Toggles (Premium)
     showCountdown: true,
     showGallery: true,
     gallery: [
-        { url: "https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=1000&q=80", caption: "Esperándote con Amor" },
-        { url: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1000&q=80", caption: "Detalles del Cuartito" },
-        { url: "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=1000&q=80", caption: "Ropita & Regalos" }
+        { url: "../imagenes/galeria1.jpg", caption: "Esperándote con Amor" },
+        { url: "../imagenes/galeria2.jpg", caption: "Detalles del Cuartito" },
+        { url: "../imagenes/galeria3.jpg", caption: "Ropita & Regalos" }
     ],
     showMap: true,
-    showVideo: false,
-    video: null,
     finalMessage: "¡Gracias por acompañarnos a recibir a Mateo con tanto cariño!"
 };

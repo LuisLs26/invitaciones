@@ -1,56 +1,40 @@
 @echo off
 setlocal enabledelayedexpansion
 
+title Subir Proyecto Invitaciones a GitHub
+
 echo =======================================================
 echo          SUBIR PROYECTO A GITHUB - INVITACIONES        
 echo =======================================================
 echo.
 
-REM 1. Asegurar que estamos en la carpeta del proyecto
+REM 1. Cambiar a la carpeta del proyecto
 cd /d "%~dp0"
 
-REM 2. Comprobar si existen cambios pendientes
-set HAS_CHANGES=0
-git status --porcelain > temp_status.txt 2>&1
-for /f "usebackq tokens=*" %%a in ("temp_status.txt") do (
-    set HAS_CHANGES=1
-)
-if exist temp_status.txt del /f /q temp_status.txt > nul 2>&1
-
-if !HAS_CHANGES!==0 (
-    echo [INFO] No hay cambios nuevos para subir.
-    echo.
-    goto END
-)
-
-REM 3. Anadir archivos al staging
-echo [1/3] Preparando archivos modificados (git add .)...
-git add .
+REM 2. Preparar todos los cambios
+echo [1/3] Preparando archivos (git add -A)...
+git add -A
 if errorlevel 1 (
     echo.
-    echo =======================================================
     echo ERROR: No se pudieron preparar los archivos para Git.
-    echo =======================================================
-    goto END
+    goto SALIR
 )
 
-REM 4. Crear commit con fecha y hora actual
-echo [2/3] Creando commit automatico...
-git commit -m "Actualizacion automatica: %date% %time%"
+REM 3. Crear commit
+echo [2/3] Guardando cambios en Git...
+git commit -m "Actualizacion de invitaciones digitales y demos"
 if errorlevel 1 (
-    echo.
-    echo [INFO] No se requirio commit adicional.
+    echo [INFO] No hay cambios pendientes por guardar.
 )
 
-REM 5. Subir cambios a GitHub (git push origin main)
-echo [3/3] Subiendo cambios a GitHub (git push origin main)...
+REM 4. Subir a GitHub
+echo [3/3] Subiendo cambios a GitHub...
 git push origin main
 if errorlevel 1 (
     echo.
-    echo =======================================================
     echo ERROR: No se pudo subir el proyecto a GitHub.
-    echo =======================================================
-    goto END
+    echo Verifica tu conexion a internet o tus permisos en GitHub.
+    goto SALIR
 )
 
 echo.
@@ -60,7 +44,7 @@ echo Repositorio: https://github.com/LuisLs26/invitaciones.git
 echo Rama: main
 echo =======================================================
 
-:END
+:SALIR
 echo.
 echo Presiona cualquier tecla para cerrar esta ventana...
 pause > nul

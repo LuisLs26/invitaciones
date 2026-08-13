@@ -1,10 +1,9 @@
 /**
  * Configuración: XV Años (Ana María)
- * Tier: Premium+ (S/ 20)
- * Incluye: Música, Galería, Countdown, Video, Itinerario, Padrinos, Mapa y RSVP WhatsApp
+ * Ruta: demos/xv-anos/codigo/config.js
  */
 const INVITATION_CONFIG = {
-    id: "demo",
+    id: "xv-anos",
     type: "quinceanos",
     theme: "theme-quinceanos",
     personName: "Ana María",
@@ -18,7 +17,7 @@ const INVITATION_CONFIG = {
     mapUrl: "https://maps.google.com/?q=San+Isidro+Lima",
     whatsapp: "51987654321",
     whatsappMessage: "¡Hola! Confirmo mi asistencia a los XV Años de Ana María. Nombre(s): ",
-    heroImage: "../assets/images/xv_hero.jpg",
+    heroImage: "../imagenes/hero.jpg",
     coverQuote: "Acompañame a celebrar una noche inolvidable llena de magia, sueños y alegría.",
     mainMessage: "Hay momentos en la vida que son verdaderamente especiales, y compartirlos con las personas que más quiero los hace inolvidables. Te espero para celebrar mis 15 años.",
     dressCode: "Rigurosa Etiqueta / Vestido de Gala & Traje Formal",
@@ -42,13 +41,11 @@ const INVITATION_CONFIG = {
     showCountdown: true,
     showGallery: true,
     gallery: [
-        { url: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=1000&q=80", caption: "Sesión Pre-15 Años" },
-        { url: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80", caption: "El Vestido & Salón de Gala" },
-        { url: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1000&q=80", caption: "Fiesta con Amigos & Familia" },
-        { url: "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=1000&q=80", caption: "Torta Principal & Detalles" }
+        { url: "../imagenes/galeria1.jpg", caption: "Sesión Pre-15 Años" },
+        { url: "../imagenes/galeria2.jpg", caption: "El Vestido & Salón de Gala" },
+        { url: "../imagenes/galeria3.jpg", caption: "Fiesta con Amigos & Familia" },
+        { url: "../imagenes/galeria4.jpg", caption: "Torta Principal & Detalles" }
     ],
     showMap: true,
-    showVideo: true,
-    video: "../assets/video/README.txt",
     finalMessage: "¡Gracias por ser parte de este día tan especial en mi vida!"
 };

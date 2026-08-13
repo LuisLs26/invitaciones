@@ -1,64 +1,18 @@
 /**
- * INVITACIONES DIGITALES - CARGADOR DINÁMICO DE CONFIGURACIÓN Y APLICACIÓN MOBILE
+ * INVITACIONES DIGITALES - SCRIPT DE DEMO STANDALONE
  */
-
 document.addEventListener('DOMContentLoaded', () => {
+    if (typeof INVITATION_CONFIG === 'undefined') return;
+    const config = INVITATION_CONFIG;
 
-    // 1. Obtener parámetro 'id' de la URL (Ej. ?id=demo, ?id=cliente1, ?id=bautizo, etc.)
-    const urlParams = new URLSearchParams(window.location.search);
-    const invitationId = urlParams.get('id');
-
-    const errorScreen = document.getElementById('error-screen');
     const coverScreen = document.getElementById('cover-screen');
     const invitationApp = document.getElementById('invitation-app');
     const particlesContainer = document.getElementById('particles-container');
     const envelopeWrapper = document.getElementById('envelope-interactive');
     const openBtn = document.getElementById('open-invitation-btn');
 
-    // Mapa de rutas a archivos de configuración por ID de evento
-    const configMap = {
-        'demo': '../configs/demo.js',
-        'xv': '../configs/demo.js',
-        'cliente1': '../configs/cliente1.js',
-        'boda': '../configs/cliente1.js',
-        'cumpleanos': '../configs/cumpleanos.js',
-        'babyshower': '../configs/babyshower.js',
-        'baby_shower': '../configs/babyshower.js',
-        'bautizo': '../configs/bautizo.js',
-        'aniversario': '../configs/aniversario.js'
-    };
-
-    // 2. Si no hay ID o no está mapeado, mostrar pantalla de error 404
-    if (!invitationId || !configMap[invitationId]) {
-        showErrorScreen();
-        return;
-    }
-
-    // 3. Cargar dinámicamente el archivo de configuración JS según el ID
-    const configPath = configMap[invitationId];
-    const scriptEl = document.createElement('script');
-    scriptEl.src = configPath;
-
-    scriptEl.onload = () => {
-        if (typeof INVITATION_CONFIG !== 'undefined') {
-            initInvitation(INVITATION_CONFIG);
-            createFloatingParticles();
-        } else {
-            showErrorScreen();
-        }
-    };
-
-    scriptEl.onerror = () => {
-        showErrorScreen();
-    };
-
-    document.head.appendChild(scriptEl);
-
-    function showErrorScreen() {
-        if (errorScreen) errorScreen.style.display = 'flex';
-        if (coverScreen) coverScreen.style.display = 'none';
-        if (invitationApp) invitationApp.style.display = 'none';
-    }
+    initInvitation(config);
+    createFloatingParticles();
 
     function createFloatingParticles() {
         if (!particlesContainer) return;
@@ -78,19 +32,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function initInvitation(config) {
-        // A. Aplicar Tema Cromático
         const themeClass = config.theme || `theme-${config.type || 'default'}`;
         document.body.className = themeClass;
         document.title = `${config.title} - ${config.personName}`;
 
-        // B. Rellenar Portada (Cover Screen & Envelope)
         document.getElementById('cover-badge').textContent = config.type ? `¡INVITACIÓN ESPECIAL PARA TI!` : 'INVITACIÓN';
         document.getElementById('cover-title').textContent = config.personName;
         const coverQuoteEl = document.getElementById('cover-quote');
         if (coverQuoteEl) coverQuoteEl.textContent = config.coverQuote || '';
         coverScreen.style.display = 'flex';
 
-        // C. Rellenar Sección Hero
         if (config.heroImage) {
             document.getElementById('hero-img').src = config.heroImage;
         }
@@ -100,10 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('hero-date').textContent = config.formattedDate || '';
         document.getElementById('hero-time').textContent = config.time || '';
 
-        // D. Rellenar Mensaje Principal
         document.getElementById('main-message-text').textContent = config.mainMessage || '';
 
-        // E. Configurar Cuenta Regresiva
         if (config.showCountdown && config.date) {
             document.getElementById('countdown-section').style.display = 'block';
             startCountdown(config.date);
@@ -111,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('countdown-section').style.display = 'none';
         }
 
-        // F1. Configurar Itinerario / Timeline (Programa del Evento)
         const timelineSection = document.getElementById('timeline-section');
         const timelineGrid = document.getElementById('timeline-grid');
         if (config.timeline && config.timeline.length > 0) {
@@ -129,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
             timelineSection.style.display = 'none';
         }
 
-        // F2. Configurar Padrinos & Padres (Sección de Bendición)
         const padrinosSection = document.getElementById('padrinos-section');
         const padrinosContent = document.getElementById('padrinos-content');
         if (config.padrinos && config.padrinos.length > 0) {
@@ -144,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
             padrinosSection.style.display = 'none';
         }
 
-        // G. Configurar Galería de Fotos
         if (config.showGallery && config.gallery && config.gallery.length > 0) {
             const gallerySection = document.getElementById('gallery-section');
             const galleryGrid = document.getElementById('gallery-grid');
@@ -164,24 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('gallery-section').style.display = 'none';
         }
 
-        // H. Configurar Video (si está activo)
-        if (config.showVideo && config.video) {
-            const videoSection = document.getElementById('video-section');
-            const videoContainer = document.getElementById('video-container');
-            
-            if (config.video.endsWith('.mp4')) {
-                videoContainer.innerHTML = `<video controls poster="${config.heroImage}"><source src="${config.video}" type="video/mp4">Tu navegador no soporta video.</video>`;
-            } else if (config.video.includes('youtube') || config.video.includes('vimeo')) {
-                videoContainer.innerHTML = `<iframe src="${config.video}" allowfullscreen></iframe>`;
-            } else {
-                videoContainer.innerHTML = `<div style="padding:30px; text-align:center;">Video Especial de la Celebración</div>`;
-            }
-            videoSection.style.display = 'block';
-        } else {
-            document.getElementById('video-section').style.display = 'none';
-        }
-
-        // I. Configurar Ubicación y Mapa
         if (config.showMap) {
             document.getElementById('map-section').style.display = 'block';
             document.getElementById('location-name').textContent = config.locationName || 'Lugar del Evento';
@@ -197,20 +125,16 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('map-section').style.display = 'none';
         }
 
-        // J. Configurar Detalles (Dresscode & Regalos)
         document.getElementById('dress-code-text').textContent = config.dressCode || 'Formal / Elegante';
         document.getElementById('gift-info-text').textContent = config.giftInfo || 'Cofre para lluvia de sobres en recepción';
 
-        // K. Configurar Enlace de WhatsApp RSVP
         const rsvpBtn = document.getElementById('rsvp-btn');
         const phone = config.whatsapp || '51900000000';
         const msg = encodeURIComponent(config.whatsappMessage || 'Hola, quiero confirmar mi asistencia al evento.');
         rsvpBtn.href = `https://wa.me/${phone}?text=${msg}`;
 
-        // L. Rellenar Mensaje Final Footer
         document.getElementById('final-message-text').textContent = config.finalMessage || '¡Te esperamos!';
 
-        // N. Lógica de Apertura Animada de Carta & Sobres
         let hasOpened = false;
         function triggerEnvelopeOpen() {
             if (hasOpened) return;
@@ -281,7 +205,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setInterval(update, 1000);
     }
 
-    // Modal Lightbox Handlers
     const lightboxModal = document.getElementById('lightbox-modal');
     const lightboxImg = document.getElementById('lightbox-img');
     const lightboxCaption = document.getElementById('lightbox-caption');

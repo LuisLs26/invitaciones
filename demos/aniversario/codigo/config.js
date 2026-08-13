@@ -1,7 +1,6 @@
 /**
- * Configuración: Bodas de Plata / Aniversario (Elena & Roberto)
- * Tier: Premium+ (S/ 20)
- * Incluye: Música, Galería, Countdown, Video, Itinerario, Testigos de Honor, Mapa y RSVP WhatsApp
+ * Configuración: Aniversario (Elena & Roberto)
+ * Ruta: demos/aniversario/codigo/config.js
  */
 const INVITATION_CONFIG = {
     id: "aniversario",
@@ -18,7 +17,7 @@ const INVITATION_CONFIG = {
     mapUrl: "https://maps.google.com/?q=San+Isidro+Lima",
     whatsapp: "51955556666",
     whatsappMessage: "¡Hola Elena y Roberto! Confirmo mi presencia para celebrar sus Bodas de Plata. Nombre(s): ",
-    heroImage: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=80",
+    heroImage: "../imagenes/hero.jpg",
     coverQuote: "25 años construyendo una familia unida y compartiendo la alegría de vivir juntos.",
     mainMessage: "Hace 25 años dijimos 'sí' y comenzamos un camino maravilloso. Hoy queremos renovar nuestros votos y brindar por el amor junto a nuestros familiares y amigos más queridos.",
     dressCode: "Rigurosa Etiqueta / Vestido de Noche & Traje de Gala",
@@ -37,17 +36,14 @@ const INVITATION_CONFIG = {
         { role: "Testigos de Honor", name: "Gonzalo & Martha" }
     ],
 
-    // Feature Toggles (Premium+)
     showCountdown: true,
     showGallery: true,
     gallery: [
-        { url: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1000&q=80", caption: "25 Años de Amor" },
-        { url: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80", caption: "Nuestra Familia" },
-        { url: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1000&q=80", caption: "Brindis de Aniversario" },
-        { url: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1000&q=80", caption: "Momentos Inolvidables" }
+        { url: "../imagenes/galeria1.jpg", caption: "25 Años de Amor" },
+        { url: "../imagenes/galeria2.jpg", caption: "Nuestra Familia" },
+        { url: "../imagenes/galeria3.jpg", caption: "Brindis de Aniversario" },
+        { url: "../imagenes/galeria4.jpg", caption: "Momentos Inolvidables" }
     ],
     showMap: true,
-    showVideo: true,
-    video: "../assets/video/README.txt",
     finalMessage: "¡Gracias por brindar con nosotros por estos 25 años de amor!"
 };

@@ -1,10 +1,9 @@
 /**
  * Configuración: Boda (María & Carlos)
- * Tier: Premium (S/ 12)
- * Incluye: Música, Galería, Countdown, Itinerario, Padres/Padrinos, Mapa, RSVP WhatsApp
+ * Ruta: demos/boda/codigo/config.js
  */
 const INVITATION_CONFIG = {
-    id: "cliente1",
+    id: "boda",
     type: "boda",
     theme: "theme-boda",
     personName: "María & Carlos",
@@ -17,8 +16,8 @@ const INVITATION_CONFIG = {
     address: "Jr. Lampa 210, Centro Histórico / Av. Primavera 1200",
     mapUrl: "https://maps.google.com/?q=Iglesia+San+Francisco+Lima",
     whatsapp: "51911112222",
-    whatsappMessage: "¡Hola María y Carlos! Confirmo con mucha alegría mi asistencia a su Boda. Nombre(s): ",
-    heroImage: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1200&q=80",
+    whatsappMessage: "¡Hola María y Carlos! Confirmo mi asistencia a su Boda. Nombre(s): ",
+    heroImage: "../imagenes/hero.jpg",
     coverQuote: "El amor no es mirarse el uno al otro, sino mirar juntos en la misma dirección.",
     mainMessage: "Después de caminar juntos y construir una historia hermosa, hemos decidido unir nuestras vidas en matrimonio. Nos encantaría contar con tu presencia en este momento tan especial.",
     dressCode: "Rigurosa Etiqueta / Traje Oscuro y Vestido Largo",
@@ -38,16 +37,13 @@ const INVITATION_CONFIG = {
         { role: "Padres del Novio", name: "Jorge Carlos & Beatriz Morales" }
     ],
 
-    // Feature Toggles (Premium - No Video)
     showCountdown: true,
     showGallery: true,
     gallery: [
-        { url: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80", caption: "Nuestra Historia de Amor" },
-        { url: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=1000&q=80", caption: "El Compromiso & Anillos" },
-        { url: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1000&q=80", caption: "Noche de Fiesta & Recepción" }
+        { url: "../imagenes/galeria1.jpg", caption: "Nuestra Historia de Amor" },
+        { url: "../imagenes/galeria2.jpg", caption: "El Compromiso & Anillos" },
+        { url: "../imagenes/galeria3.jpg", caption: "Noche de Fiesta & Recepción" }
     ],
     showMap: true,
-    showVideo: false,
-    video: null,
     finalMessage: "Esperamos compartir esta gran dicha contigo. ¡Te esperamos!"
 };
