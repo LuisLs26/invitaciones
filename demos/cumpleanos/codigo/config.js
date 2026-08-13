@@ -30,9 +30,18 @@ const INVITATION_CONFIG = {
         { time: "11:00 PM", title: "DJ Set & Party Night", description: "Pista abierta con lo mejor del reggaeton y electrónica" }
     ],
 
+    // Padrinos / Familia
+    padrinos: [
+        { role: "Padres de Juan", name: "Carlos & Carmen" }
+    ],
+
     showCountdown: true,
-    showGallery: false,
-    gallery: [],
+    showGallery: true,
+    gallery: [
+        { url: "../imagenes/galeria1.jpg", caption: "Noches de Alegría" },
+        { url: "../imagenes/galeria2.jpg", caption: "Amigos & Celebración" },
+        { url: "../imagenes/galeria3.jpg", caption: "Con los Mejores" }
+    ],
     showMap: true,
     finalMessage: "¡Nos vemos en la pista de baile!"
 };
