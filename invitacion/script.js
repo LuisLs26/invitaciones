@@ -144,95 +144,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function renderDynamicElements(elements) {
+        if (!elements.length) return;
         let overlay = $('#public-dynamic-overlay');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.id = 'public-dynamic-overlay';
-            $('#invitation-app').appendChild(overlay);
-        }
+        if (!overlay) { overlay = document.createElement('div'); overlay.id = 'public-dynamic-overlay'; $('#invitation-app').appendChild(overlay); }
         overlay.innerHTML = '';
-        if (!elements || !elements.length) return;
-
         elements.forEach((item) => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'dynamic-item';
-            wrapper.dataset.elemId = item.id;
-            Object.assign(wrapper.style, {
-                left: `${item.x || 0}px`,
-                top: `${item.y || 0}px`,
-                width: `${item.w || 80}px`,
-                height: `${item.h || 80}px`,
-                transform: `rotate(${item.rot || 0}deg)`,
-                opacity: item.opacity ?? 1,
-                zIndex: item.zIndex || 10,
-                pointerEvents: editorPreview ? 'auto' : 'none'
-            });
-
-            if (item.type === 'text') {
-                wrapper.textContent = item.text || '';
-                wrapper.style.color = item.color || 'currentColor';
-                wrapper.style.fontFamily = item.font || 'inherit';
-                wrapper.style.fontSize = `${item.size || 22}px`;
-            } else {
-                const image = document.createElement('img');
-                image.src = item.src;
-                image.alt = item.name || 'Decoración';
-                image.style.width = '100%';
-                image.style.height = '100%';
-                image.style.objectFit = 'contain';
-                wrapper.appendChild(image);
-            }
-
-            if (editorPreview && !item.locked) {
-                wrapper.style.cursor = 'move';
-                let isDragging = false;
-                let startX = 0, startY = 0;
-                let elemStartX = 0, elemStartY = 0;
-
-                wrapper.addEventListener('pointerdown', (e) => {
-                    e.stopPropagation();
-                    isDragging = true;
-                    startX = e.clientX;
-                    startY = e.clientY;
-                    elemStartX = item.x || 0;
-                    elemStartY = item.y || 0;
-                    wrapper.setPointerCapture(e.pointerId);
-                });
-
-                wrapper.addEventListener('pointermove', (e) => {
-                    if (!isDragging) return;
-                    const dx = e.clientX - startX;
-                    const dy = e.clientY - startY;
-                    item.x = elemStartX + dx;
-                    item.y = elemStartY + dy;
-                    wrapper.style.left = `${item.x}px`;
-                    wrapper.style.top = `${item.y}px`;
-                });
-
-                const endDrag = (e) => {
-                    if (isDragging) {
-                        isDragging = false;
-                        try {
-                            for (const key of STORAGE_KEYS) {
-                                const raw = localStorage.getItem(key);
-                                if (raw) {
-                                    const parsed = JSON.parse(raw);
-                                    parsed.dynamicElements = elements;
-                                    localStorage.setItem(key, JSON.stringify(parsed));
-                                }
-                            }
-                        } catch (err) {}
-                    }
-                };
-
-                wrapper.addEventListener('pointerup', endDrag);
-                wrapper.addEventListener('pointercancel', endDrag);
-            }
-
+            const wrapper = document.createElement('div'); wrapper.className = 'dynamic-item';
+            Object.assign(wrapper.style, { left: `${item.x || 0}px`, top: `${item.y || 0}px`, width: `${item.w || 80}px`, height: `${item.h || 80}px`, transform: `rotate(${item.rot || 0}deg)`, opacity: item.opacity ?? 1, zIndex: item.zIndex || 10 });
+            if (item.type === 'text') { wrapper.textContent = item.text || ''; wrapper.style.color = item.color || 'currentColor'; wrapper.style.fontFamily = item.font || 'inherit'; wrapper.style.fontSize = `${item.size || 22}px`; }
+            else { const image = document.createElement('img'); image.src = item.src; image.alt = item.name || 'Decoración'; wrapper.appendChild(image); }
             overlay.appendChild(wrapper);
         });
     }
-
 
     function createParticles() {
         const container = $('#particles-container'); container.innerHTML = '';

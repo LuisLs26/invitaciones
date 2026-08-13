@@ -23,20 +23,16 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const toggleMap = ['showCountdown', 'showGallery', 'showVideo', 'showMap', 'showMusic'];
 
-    let selectedElementId = null;
-
     init();
 
     async function init() {
         $('#design-id').textContent = designId;
+        initProjectSelector();
         bindNavigation();
         bindActions();
         bindFields();
         bindGallery();
-        bindGIFs();
-        bindLayers();
-        bindInspector();
-        bindJSONImportExport();
+        bindGifs();
         try {
             config = await loadConfig();
             originalConfig = clone(config);
@@ -48,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setStatus('Error al cargar', true);
         }
     }
+
 
     async function loadConfig() {
         const stored = readStoredConfig();
@@ -89,10 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         result.showVideo = result.showVideo === true;
         result.showMap = result.showMap !== false;
         result.showMusic = result.showMusic !== false && Boolean(result.music);
-        result.dynamicElements = Array.isArray(result.dynamicElements) ? result.dynamicElements : [
-            { id: 'gif_1', type: 'gif', src: '../assets/gifs/xv/butterfly.gif', name: 'Mariposa Dorada', x: 280, y: 35, w: 70, h: 70, rot: 0, opacity: 1, zIndex: 15 },
-            { id: 'gif_2', type: 'gif', src: '../assets/gifs/xv/sparkles.gif', name: 'Destellos Dorados', x: 20, y: 25, w: 75, h: 75, rot: 0, opacity: 1, zIndex: 16 }
-        ];
+        result.dynamicElements = Array.isArray(result.dynamicElements) ? result.dynamicElements : [];
         return result;
     }
 
@@ -167,216 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function bindGIFs() {
-        $$('.gif-preset-card').forEach((card) => {
-            card.addEventListener('click', () => {
-                const src = card.dataset.gifSrc;
-                const name = card.dataset.gifName || 'GIF Decorativo';
-                addDynamicElement('gif', src, name);
-            });
-        });
-
-        const uploadInput = $('#gif-upload');
-        if (uploadInput) {
-            uploadInput.addEventListener('change', (event) => {
-                const file = event.target.files[0];
-                if (!file) return;
-                fileToDataUrl(file).then((url) => {
-                    addDynamicElement('gif', url, file.name.replace(/\.[^/.]+$/, ''));
-                    event.target.value = '';
-                });
-            });
-        }
-    }
-
-    function addDynamicElement(type, src, name) {
-        const id = 'elem_' + Date.now();
-        const newElem = {
-            id,
-            type: type || 'gif',
-            src,
-            name: name || 'Elemento',
-            x: 140,
-            y: 160,
-            w: 85,
-            h: 85,
-            rot: 0,
-            opacity: 1,
-            zIndex: 10 + (config.dynamicElements ? config.dynamicElements.length : 0)
-        };
-        config.dynamicElements = config.dynamicElements || [];
-        config.dynamicElements.push(newElem);
-        renderLayers();
-        selectElement(id);
-        commitChange();
-        showToast(`✨ ${name} añadido al lienzo`);
-    }
-
-    function bindLayers() {
-        renderLayers();
-    }
-
-    function renderLayers() {
-        const container = $('#layers-tree');
-        if (!container) return;
-        container.innerHTML = '';
-
-        const elements = config.dynamicElements || [];
-        if (!elements.length) {
-            container.innerHTML = '<div class="tip-card soft"><span>✦</span><p>No hay elementos flotantes en el lienzo. Añade un GIF o sticker desde la pestaña GIFs.</p></div>';
-            return;
-        }
-
-        elements.forEach((item) => {
-            const row = document.createElement('div');
-            row.className = `layer-row ${item.id === selectedElementId ? 'active' : ''}`;
-            row.innerHTML = `
-                <div class="layer-row-info">
-                    <span>${item.type === 'gif' ? '🎬' : '🖼'}</span>
-                    <strong>${escapeHtml(item.name || 'Elemento')}</strong>
-                </div>
-                <div class="layer-row-actions">
-                    <button type="button" class="btn-layer-lock" title="Bloquear">${item.locked ? '🔒' : '🔓'}</button>
-                    <button type="button" class="btn-layer-del" title="Eliminar">🗑️</button>
-                </div>
-            `;
-            row.addEventListener('click', (e) => {
-                if (e.target.tagName === 'BUTTON') return;
-                selectElement(item.id);
-            });
-            row.querySelector('.btn-layer-lock').addEventListener('click', () => {
-                item.locked = !item.locked;
-                renderLayers();
-                commitChange();
-            });
-            row.querySelector('.btn-layer-del').addEventListener('click', () => {
-                deleteElement(item.id);
-            });
-            container.appendChild(row);
-        });
-    }
-
-    function selectElement(id) {
-        selectedElementId = id;
-        renderLayers();
-        renderInspector();
-    }
-
-    function bindInspector() {
-        $('#insp-x').addEventListener('input', (e) => updateSelectedProp('x', parseFloat(e.target.value) || 0));
-        $('#insp-y').addEventListener('input', (e) => updateSelectedProp('y', parseFloat(e.target.value) || 0));
-        $('#insp-w').addEventListener('input', (e) => updateSelectedProp('w', parseFloat(e.target.value) || 10));
-        $('#insp-h').addEventListener('input', (e) => updateSelectedProp('h', parseFloat(e.target.value) || 10));
-        $('#insp-rot').addEventListener('input', (e) => updateSelectedProp('rot', parseFloat(e.target.value) || 0));
-        $('#insp-opacity').addEventListener('input', (e) => updateSelectedProp('opacity', (parseFloat(e.target.value) || 100) / 100));
-        $('#insp-zindex').addEventListener('input', (e) => updateSelectedProp('zIndex', parseInt(e.target.value, 10) || 1));
-
-        $('#btn-insp-dup').addEventListener('click', () => {
-            if (!selectedElementId) return;
-            const elem = (config.dynamicElements || []).find((el) => el.id === selectedElementId);
-            if (elem) {
-                addDynamicElement(elem.type, elem.src, (elem.name || 'Copia') + ' Copia');
-            }
-        });
-        $('#btn-insp-lock').addEventListener('click', () => {
-            if (!selectedElementId) return;
-            const elem = (config.dynamicElements || []).find((el) => el.id === selectedElementId);
-            if (elem) {
-                elem.locked = !elem.locked;
-                renderLayers();
-                renderInspector();
-                commitChange();
-            }
-        });
-        $('#btn-insp-del').addEventListener('click', () => {
-            if (selectedElementId) deleteElement(selectedElementId);
-        });
-    }
-
-    function updateSelectedProp(prop, val) {
-        if (!selectedElementId) return;
-        const elem = (config.dynamicElements || []).find((el) => el.id === selectedElementId);
-        if (elem) {
-            elem[prop] = val;
-            commitChange();
-        }
-    }
-
-    function deleteElement(id) {
-        config.dynamicElements = (config.dynamicElements || []).filter((el) => el.id !== id);
-        if (selectedElementId === id) selectedElementId = null;
-        renderLayers();
-        renderInspector();
-        commitChange();
-        showToast('Elemento eliminado');
-    }
-
-    function renderInspector() {
-        const empty = $('#inspector-empty');
-        const form = $('#inspector-form');
-        if (!selectedElementId) {
-            empty.hidden = false;
-            form.hidden = true;
-            return;
-        }
-        const elem = (config.dynamicElements || []).find((el) => el.id === selectedElementId);
-        if (!elem) {
-            empty.hidden = false;
-            form.hidden = true;
-            return;
-        }
-        empty.hidden = true;
-        form.hidden = false;
-        $('#insp-x').value = Math.round(elem.x || 0);
-        $('#insp-y').value = Math.round(elem.y || 0);
-        $('#insp-w').value = Math.round(elem.w || 80);
-        $('#insp-h').value = Math.round(elem.h || 80);
-        $('#insp-rot').value = Math.round(elem.rot || 0);
-        $('#insp-opacity').value = Math.round((elem.opacity ?? 1) * 100);
-        $('#insp-zindex').value = elem.zIndex || 10;
-        $('#btn-insp-lock').textContent = elem.locked ? '🔓 Desbloquear' : '🔒 Bloquear';
-    }
-
-    function bindJSONImportExport() {
-        const exportBtn = $('#btn-export-json');
-        const importBtn = $('#btn-import-json');
-        const importInput = $('#json-file-input');
-
-        if (exportBtn) {
-            exportBtn.addEventListener('click', () => {
-                const str = JSON.stringify(config, null, 2);
-                const blob = new Blob([str], { type: 'application/json' });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = `${designId}.json`;
-                a.click();
-                showToast('📤 Configuración JSON exportada');
-            });
-        }
-
-        if (importBtn && importInput) {
-            importBtn.addEventListener('click', () => importInput.click());
-            importInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (evt) => {
-                    try {
-                        const parsed = JSON.parse(evt.target.result);
-                        config = normalizeConfig(parsed);
-                        renderEditor();
-                        commitChange();
-                        showToast('📥 JSON cargado exitosamente');
-                    } catch (err) {
-                        alert('Error al leer el archivo JSON');
-                    }
-                };
-                reader.readAsText(file);
-                importInput.value = '';
-            });
-        }
-    }
-
     function fileToDataUrl(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -395,8 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleMap.forEach((key) => { $(`#toggle-${key}`).checked = Boolean(config[key]); });
         $$('.theme-card').forEach((card) => card.classList.toggle('active', card.dataset.theme === config.theme));
         renderGallery();
-        renderLayers();
-        renderInspector();
+        renderGifsList();
         refreshPreview(false);
     }
 
@@ -572,4 +355,204 @@ document.addEventListener('DOMContentLoaded', () => {
         if (Number.isNaN(date.getTime())) return '';
         return new Intl.DateTimeFormat('es-PE', { hour: 'numeric', minute: '2-digit', hour12: true }).format(date).replace('a. m.', 'AM').replace('p. m.', 'PM');
     }
+
+    const knownProjects = [
+        { id: 'demo', label: '✨ XV Años — Ana María' },
+        { id: 'cliente1', label: '💍 Boda — María & Carlos' },
+        { id: 'cumpleanos', label: '🎂 Cumpleaños — Juan' }
+    ];
+
+    function initProjectSelector() {
+        const selector = $('#project-selector');
+        if (!selector) return;
+
+        const extraIds = new Set();
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && (key.startsWith('invitation_config_v2_') || key.startsWith('invitation_design_'))) {
+                const pId = key.replace(/^(invitation_config_v2_|invitation_design_|invitation_config_|invitation_)/, '');
+                if (pId && !knownProjects.some(p => p.id === pId)) {
+                    extraIds.add(pId);
+                }
+            }
+        }
+
+        const allProjects = [...knownProjects];
+        for (const extraId of extraIds) {
+            allProjects.push({ id: extraId, label: `✦ Proyecto — ${extraId}` });
+        }
+
+        selector.innerHTML = '';
+        allProjects.forEach(proj => {
+            const opt = document.createElement('option');
+            opt.value = proj.id;
+            opt.textContent = proj.label;
+            if (proj.id === designId) opt.selected = true;
+            selector.appendChild(opt);
+        });
+
+        const divider = document.createElement('option');
+        divider.value = '__divider__';
+        divider.disabled = true;
+        divider.textContent = '────────────────────';
+        selector.appendChild(divider);
+
+        const newOpt = document.createElement('option');
+        newOpt.value = '__new_project__';
+        newOpt.textContent = '+ Nuevo proyecto';
+        selector.appendChild(newOpt);
+
+        selector.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (val === '__new_project__') {
+                showToast('+ Nuevo proyecto estará disponible próximamente');
+                selector.value = designId;
+                return;
+            }
+            if (val && val !== designId && val !== '__divider__') {
+                window.location.href = `./?id=${encodeURIComponent(val)}`;
+            }
+        });
+    }
+
+    function bindGifs() {
+        $$('.gif-thumb-card').forEach((card) => {
+            card.addEventListener('click', () => {
+                const src = card.dataset.gifSrc;
+                const name = card.dataset.gifName;
+                addGifToCanvas(src, name);
+            });
+        });
+
+        const input = $('#gif-upload-input');
+        if (input) {
+            input.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                if (!file.type.includes('gif') && !file.name.endsWith('.gif')) {
+                    showToast('Por favor selecciona un archivo .gif');
+                    return;
+                }
+                try {
+                    const dataUrl = await fileToDataUrl(file);
+                    addGifToCanvas(dataUrl, file.name.replace(/\.[^/.]+$/, ''));
+                    input.value = '';
+                } catch (err) {
+                    showToast('Error al procesar el archivo GIF');
+                }
+            });
+        }
+    }
+
+    function addGifToCanvas(src, name) {
+        const newGif = {
+            id: 'gif_' + Date.now(),
+            type: 'gif',
+            src: src,
+            name: name || 'GIF Decorativo',
+            x: 100,
+            y: 180,
+            w: 120,
+            h: 120,
+            rot: 0,
+            opacity: 1,
+            zIndex: 100 + (config.dynamicElements ? config.dynamicElements.length : 0)
+        };
+        config.dynamicElements = [...(config.dynamicElements || []), newGif];
+        renderGifsList();
+        commitChange();
+        showToast(`✨ ${newGif.name} añadido a la invitación`);
+    }
+
+    function renderGifsList() {
+        const list = $('#active-gifs-list');
+        if (!list) return;
+        list.innerHTML = '';
+
+        const gifs = (config.dynamicElements || []).filter(el => el.type === 'gif');
+
+        if (!gifs.length) {
+            const empty = document.createElement('div');
+            empty.className = 'tip-card soft';
+            empty.innerHTML = '<span>✨</span><p>No hay GIFs en esta invitación. Haz clic en una miniatura arriba para añadir uno.</p>';
+            list.appendChild(empty);
+            return;
+        }
+
+        gifs.forEach((gif) => {
+            const card = document.createElement('div');
+            card.className = 'active-gif-card';
+
+            const header = document.createElement('div');
+            header.className = 'active-gif-header';
+
+            const info = document.createElement('div');
+            info.className = 'active-gif-info';
+            info.innerHTML = `<img src="${gif.src}" alt="${gif.name}"><b>${gif.name || 'GIF Decorativo'}</b>`;
+
+            const actions = document.createElement('div');
+            actions.className = 'active-gif-actions';
+
+            const btnDup = document.createElement('button');
+            btnDup.type = 'button';
+            btnDup.title = 'Duplicar GIF';
+            btnDup.textContent = '📋';
+            btnDup.addEventListener('click', () => {
+                const dup = { ...gif, id: 'gif_' + Date.now(), x: (gif.x || 100) + 20, y: (gif.y || 180) + 20 };
+                config.dynamicElements.push(dup);
+                renderGifsList();
+                commitChange();
+                showToast('GIF duplicado');
+            });
+
+            const btnDel = document.createElement('button');
+            btnDel.type = 'button';
+            btnDel.className = 'danger';
+            btnDel.title = 'Eliminar GIF';
+            btnDel.textContent = '×';
+            btnDel.addEventListener('click', () => {
+                const realIdx = config.dynamicElements.findIndex(el => el.id === gif.id);
+                if (realIdx !== -1) {
+                    config.dynamicElements.splice(realIdx, 1);
+                    renderGifsList();
+                    commitChange();
+                    showToast('GIF eliminado');
+                }
+            });
+
+            actions.append(btnDup, btnDel);
+            header.append(info, actions);
+
+            const controls = document.createElement('div');
+            controls.className = 'active-gif-controls';
+
+            controls.innerHTML = `
+                <label class="field"><span>Posición X (px)</span><input type="number" value="${gif.x || 0}" class="gif-prop-x"></label>
+                <label class="field"><span>Posición Y (px)</span><input type="number" value="${gif.y || 0}" class="gif-prop-y"></label>
+                <label class="field"><span>Ancho (px)</span><input type="number" value="${gif.w || 120}" class="gif-prop-w"></label>
+                <label class="field"><span>Alto (px)</span><input type="number" value="${gif.h || 120}" class="gif-prop-h"></label>
+            `;
+
+            const propX = controls.querySelector('.gif-prop-x');
+            const propY = controls.querySelector('.gif-prop-y');
+            const propW = controls.querySelector('.gif-prop-w');
+            const propH = controls.querySelector('.gif-prop-h');
+
+            [propX, propY, propW, propH].forEach(inp => {
+                inp.addEventListener('input', () => {
+                    gif.x = parseInt(propX.value) || 0;
+                    gif.y = parseInt(propY.value) || 0;
+                    gif.w = parseInt(propW.value) || 50;
+                    gif.h = parseInt(propH.value) || 50;
+                    queueDraft();
+                    refreshPreview(false);
+                });
+                inp.addEventListener('change', () => pushHistory());
+            });
+
+            card.append(header, controls);
+            list.appendChild(card);
+        });
+    }
 });
+
