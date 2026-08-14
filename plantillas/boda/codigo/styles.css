@@ -308,16 +308,17 @@ img {
     left: 0;
     width: 100%;
     height: 130px;
-    clip-path: polygon(0 0, 100% 0, 50% 100%);
     transform-origin: top;
     transition: transform 0.85s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 5;
-    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15));
     will-change: transform;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    padding-bottom: 8px;
+    overflow: visible;
+}
+
+.envelope-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 .envelope-wrapper.open .envelope-flap {
@@ -377,16 +378,16 @@ img {
     transform: translate3d(0, -95px, 0) scale(1);
 }
 
-/* Front Pocket Overlay - Completely covers bottom of envelope with real pocket fold */
+/* Front Pocket Overlay - Organic curved paper envelope fold */
 .envelope-pocket {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
     height: 165px;
-    clip-path: polygon(0 100%, 100% 100%, 100% 0px, 50% 55px, 0 0px);
     border-radius: 0 0 18px 18px;
     z-index: 4;
+    overflow: visible;
 }
 
 /* ==========================================================================
@@ -396,19 +397,15 @@ img {
 /* 1. XV Años (Rosa Princesa, Oro Rosado & Marfil) */
 .theme-quinceanos {
     --bg-color: #fdf5f7;
+    --flap-top-color: #fce4e8;
+    --flap-bot-color: #f4acb7;
+    --pocket-top-color: #ffcad4;
+    --pocket-bot-color: #f4acb7;
 }
 
 .theme-quinceanos .envelope-body {
     background: linear-gradient(145deg, #fff0f3 0%, #ffe4e9 100%);
     box-shadow: 0 20px 45px rgba(229, 169, 180, 0.35), 0 0 0 1.5px rgba(229, 169, 180, 0.6);
-}
-
-.theme-quinceanos .envelope-flap {
-    background: linear-gradient(180deg, #fce4e8 0%, #f4acb7 100%);
-}
-
-.theme-quinceanos .envelope-pocket {
-    background: linear-gradient(0deg, #f4acb7 0%, #ffcad4 100%);
 }
 
 .theme-quinceanos .card-inside-header {
@@ -420,19 +417,15 @@ img {
 /* 2. Boda (Blanco Imperial & Oro de Gala) */
 .theme-boda {
     --bg-color: #faf8f5;
+    --flap-top-color: #fffaf0;
+    --flap-bot-color: #f7ebd9;
+    --pocket-top-color: #fffaf0;
+    --pocket-bot-color: #f7ebd9;
 }
 
 .theme-boda .envelope-body {
     background: linear-gradient(145deg, #ffffff 0%, #fdfbf7 100%);
     box-shadow: 0 20px 45px rgba(212, 175, 55, 0.2), 0 0 0 1.5px rgba(212, 175, 55, 0.45);
-}
-
-.theme-boda .envelope-flap {
-    background: linear-gradient(180deg, #fffaf0 0%, #f7ebd9 100%);
-}
-
-.theme-boda .envelope-pocket {
-    background: linear-gradient(0deg, #f7ebd9 0%, #fffaf0 100%);
 }
 
 .theme-boda .card-inside-header {
@@ -444,19 +437,15 @@ img {
 /* 3. Cumpleaños #18 (Azul Noche VIP, Neón Cian & Magenta) */
 .theme-cumpleanos {
     --bg-color: #080c14;
+    --flap-top-color: #1e293b;
+    --flap-bot-color: #0f172a;
+    --pocket-top-color: #162032;
+    --pocket-bot-color: #0d131f;
 }
 
 .theme-cumpleanos .envelope-body {
     background: linear-gradient(145deg, #161b26 0%, #0a0e17 100%);
     box-shadow: 0 20px 45px rgba(0, 242, 254, 0.25), 0 0 0 1.5px rgba(0, 242, 254, 0.45);
-}
-
-.theme-cumpleanos .envelope-flap {
-    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-}
-
-.theme-cumpleanos .envelope-pocket {
-    background: linear-gradient(0deg, #0d131f 0%, #162032 100%);
 }
 
 .theme-cumpleanos .card-inside-header {
@@ -468,19 +457,15 @@ img {
 /* 4. Baby Shower (Azul Cielo Pastel & Nube) */
 .theme-babyshower, .theme-baby_shower {
     --bg-color: #f0f7fc;
+    --flap-top-color: #e0f2fe;
+    --flap-bot-color: #bae6fd;
+    --pocket-top-color: #e0f2fe;
+    --pocket-bot-color: #bae6fd;
 }
 
 .theme-babyshower .envelope-body, .theme-baby_shower .envelope-body {
     background: linear-gradient(145deg, #ffffff 0%, #e8f4fc 100%);
     box-shadow: 0 20px 45px rgba(142, 202, 230, 0.28), 0 0 0 1.5px rgba(142, 202, 230, 0.5);
-}
-
-.theme-babyshower .envelope-flap, .theme-baby_shower .envelope-flap {
-    background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%);
-}
-
-.theme-babyshower .envelope-pocket, .theme-baby_shower .envelope-pocket {
-    background: linear-gradient(0deg, #bae6fd 0%, #e0f2fe 100%);
 }
 
 .theme-babyshower .card-inside-header, .theme-baby_shower .card-inside-header {
@@ -492,19 +477,15 @@ img {
 /* 5. Bautizo (Blanco Celestial & Oro Santo) */
 .theme-bautizo {
     --bg-color: #fcfbf9;
+    --flap-top-color: #fffdfa;
+    --flap-bot-color: #f3ebd7;
+    --pocket-top-color: #fffdfa;
+    --pocket-bot-color: #f3ebd7;
 }
 
 .theme-bautizo .envelope-body {
     background: linear-gradient(145deg, #ffffff 0%, #faf8f5 100%);
     box-shadow: 0 20px 45px rgba(212, 175, 55, 0.22), 0 0 0 1.5px rgba(212, 175, 55, 0.45);
-}
-
-.theme-bautizo .envelope-flap {
-    background: linear-gradient(180deg, #fffdfa 0%, #f3ebd7 100%);
-}
-
-.theme-bautizo .envelope-pocket {
-    background: linear-gradient(0deg, #f3ebd7 0%, #fffdfa 100%);
 }
 
 .theme-bautizo .card-inside-header {
@@ -516,19 +497,15 @@ img {
 /* 6. Aniversario (Bodas de Plata, Azul Real & Plata) */
 .theme-aniversario {
     --bg-color: #0f172a;
+    --flap-top-color: #334155;
+    --flap-bot-color: #1e293b;
+    --pocket-top-color: #1e293b;
+    --pocket-bot-color: #0f172a;
 }
 
 .theme-aniversario .envelope-body {
     background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
     box-shadow: 0 20px 45px rgba(203, 213, 225, 0.25), 0 0 0 1.5px rgba(203, 213, 225, 0.45);
-}
-
-.theme-aniversario .envelope-flap {
-    background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
-}
-
-.theme-aniversario .envelope-pocket {
-    background: linear-gradient(0deg, #0f172a 0%, #1e293b 100%);
 }
 
 .theme-aniversario .card-inside-header {
