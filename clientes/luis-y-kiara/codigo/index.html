@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Demo XV Años - Ana María</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@300;400;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-quinceanos">
+
+    <!-- Opening Cover Screen (Minimalist Luxury Envelope Cover Screen) -->
+    <div id="cover-screen" class="cover-overlay">
+        <!-- Floating Particles Layer -->
+        <div id="particles-container" class="particles-layer"></div>
+
+        <div class="envelope-screen-container">
+            <div class="animated-header-banner">
+                <span class="envelope-badge" id="cover-badge">¡TIENES UN MENSAJE ESPECIAL!</span>
+                <h1 class="header-title-clean glow-text">¡Tienes una Invitación!</h1>
+            </div>
+
+            <!-- Realistic Physical Paper 4-Fold Envelope -->
+            <div id="envelope-interactive" class="envelope-wrapper float-soft-anim">
+                <div class="envelope-real">
+                    
+                    <!-- Envelope Interior / Liner -->
+                    <div class="env-interior"></div>
+
+                    <!-- Inner Card (Pops up when opened) -->
+                    <div class="envelope-card-inside" id="envelope-card-inside">
+                        <div class="card-inside-badge">INVITACIÓN</div>
+                        <div class="card-inside-header" id="cover-title">Ana María</div>
+                        <div class="card-inside-ornament">✦ ✨ ✦</div>
+                    </div>
+
+                    <!-- Left, Right & Bottom Folds (Front Pocket) -->
+                    <svg class="env-svg-folds" viewBox="0 0 320 210" preserveAspectRatio="none">
+                        <!-- Left Fold -->
+                        <path d="M 0 0 L 160 105 L 0 210 Z" class="env-side-left" />
+                        <!-- Right Fold -->
+                        <path d="M 320 0 L 160 105 L 320 210 Z" class="env-side-right" />
+                        <!-- Bottom Fold -->
+                        <path d="M 0 210 L 320 210 L 160 95 Z" class="env-bottom" />
+                    </svg>
+
+                    <!-- Top Flap (Folds down over pocket, rotates open 3D) -->
+                    <div class="envelope-flap" id="envelope-flap">
+                        <svg viewBox="0 0 320 120" class="env-svg-flap" preserveAspectRatio="none">
+                            <path d="M 0 0 L 320 0 L 165 116 Q 160 120 155 116 L 0 0 Z" class="env-top-path"/>
+                        </svg>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Mobile Invitation Application Shell -->
+    <main id="invitation-app" style="display: none;">
+
+        <!-- Hero Section -->
+        <section class="section hero-section reveal">
+            <div class="hero-container">
+                <div class="hero-frame glow">
+                    <img id="hero-img" src="../imagenes/hero.jpg" alt="Portada XV Años" class="hero-image kenburns">
+                    <div class="hero-frame-shine"></div>
+                </div>
+                <div class="hero-header-text">
+                    <span class="hero-subtitle" id="hero-subtitle">Estás cordialmente invitado a</span>
+                    <h1 class="hero-title" id="hero-title">Mis XV Años</h1>
+                    <h2 class="hero-name glow-text" id="hero-name">Ana María</h2>
+                </div>
+                <div class="hero-date-badge glass-panel">
+                    <div class="date-line" id="hero-date">Sábado, 12 de Diciembre de 2026</div>
+                    <div class="time-line" id="hero-time">8:00 PM</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Countdown Timer Section -->
+        <section id="countdown-section" class="section countdown-section reveal">
+            <div class="section-card glass-card">
+                <div class="card-ornament-top">✦ ✦ ✦</div>
+                <h3 class="section-subtitle">CUENTA REGRESIVA</h3>
+                <h2 class="section-title">El Gran Día Se Acerca</h2>
+                <div class="timer-grid">
+                    <div class="timer-box glass-timer">
+                        <span id="cd-days" class="timer-number">00</span>
+                        <span class="timer-label">Días</span>
+                    </div>
+                    <div class="timer-box glass-timer">
+                        <span id="cd-hours" class="timer-number">00</span>
+                        <span class="timer-label">Horas</span>
+                    </div>
+                    <div class="timer-box glass-timer">
+                        <span id="cd-minutes" class="timer-number">00</span>
+                        <span class="timer-label">Minutos</span>
+                    </div>
+                    <div class="timer-box glass-timer">
+                        <span id="cd-seconds" class="timer-number">00</span>
+                        <span class="timer-label">Segundos</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Presentation Message -->
+        <section class="section message-section reveal">
+            <div class="section-card gold-border glass-card">
+                <div class="quote-icon">“</div>
+                <p id="main-message-text" class="message-text"></p>
+                <div class="quote-icon right">”</div>
+            </div>
+        </section>
+
+        <!-- Event Timeline / Itinerary Section -->
+        <section id="timeline-section" class="section timeline-section reveal">
+            <h3 class="section-subtitle">PROGRAMA DEL EVENTO</h3>
+            <h2 class="section-title">Itinerario de la Noche</h2>
+            <div id="timeline-grid" class="timeline-grid glass-card"></div>
+        </section>
+
+        <!-- Padrinos Section -->
+        <section id="padrinos-section" class="section padrinos-section reveal">
+            <div class="section-card glass-card">
+                <h3 class="section-subtitle">CON LA BENDICIÓN DE</h3>
+                <h2 class="section-title">Nuestros Padres & Padrinos</h2>
+                <div id="padrinos-content" class="padrinos-grid"></div>
+            </div>
+        </section>
+
+        <!-- Photo Gallery Section -->
+        <section id="gallery-section" class="section gallery-section reveal">
+            <h3 class="section-subtitle">GALERÍA DE RECUERDOS</h3>
+            <h2 class="section-title">Momentos Especiales</h2>
+            <div id="gallery-grid" class="gallery-grid"></div>
+        </section>
+
+        <!-- Location & Map Section -->
+        <section id="map-section" class="section location-section reveal">
+            <div class="section-card glass-card">
+                <div class="location-icon-badge">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                </div>
+                <h3 class="section-subtitle">UBICACIÓN Y RECEPCIÓN</h3>
+                <h2 class="section-title" id="location-name">Lugar del Evento</h2>
+                <p id="location-address" class="location-address">Dirección del lugar</p>
+                <div class="location-buttons-grid">
+                    <a id="map-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-full">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                        <span>Ver Ubicación en Google Maps</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Event Details (Dresscode & Gifts) -->
+        <section class="section details-section reveal">
+            <div class="details-grid">
+                <div class="detail-card glass-card">
+                    <div class="card-icon">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10a2 2 0 002 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/></svg>
+                    </div>
+                    <h4>Código de Vestimenta</h4>
+                    <p id="dress-code-text">Vestimenta Elegante / Formal</p>
+                </div>
+                <div class="detail-card glass-card">
+                    <div class="card-icon">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M12 8C10.5 5 7 5 7 8s5 0 5 0zM12 8C13.5 5 17 5 17 8s-5 0-5 0z"/></svg>
+                    </div>
+                    <h4>Muestra de Cariño</h4>
+                    <p id="gift-info-text">Cofre de lluvia de sobres en recepción</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- RSVP Confirmation Section -->
+        <section class="section rsvp-section reveal">
+            <div class="rsvp-card glass-card shimmer-border">
+                <div class="rsvp-header">
+                    <div class="rsvp-badge">CONFIRMACIÓN DE ASISTENCIA</div>
+                    <h2>¿Nos Acompañas?</h2>
+                    <p>Confirma tu presencia para coordinar todos los detalles de tu asistencia.</p>
+                </div>
+                <a id="rsvp-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp btn-pulse btn-shimmer btn-full">
+                    <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 0C7.163 0 0 7.163 0 16c0 3.377.92 6.536 2.518 9.24L.55 31.05a1 1 0 001.218 1.218l5.81-1.968A15.932 15.932 0 0016 32c8.837 0 16-7.163 16-16S24.837 0 16 0z" fill="#25D366"/>
+                        <path d="M24.872 20.892c-.37-.186-2.188-1.08-2.528-1.203-.34-.124-.587-.186-.834.185-.247.371-.957 1.204-1.173 1.451-.216.247-.432.278-.802.093-.37-.186-1.563-.576-2.977-1.838-1.1-1.002-1.843-2.24-2.059-2.61-.216-.37-.023-.57.162-.755.167-.167.37-.432.555-.648.185-.216.247-.37.37-.617.124-.247.062-.463-.03-.648-.093-.186-.833-2.006-1.142-2.747-.301-.722-.607-.624-.834-.635-.216-.01-.463-.012-.71-.012s-.648.093-.987.463c-.34.37-1.296 1.265-1.296 3.086 0 1.82 1.327 3.58 1.512 3.827.185.247 2.61 3.986 6.324 5.587.883.38 1.572.607 2.11.778.887.282 1.694.242 2.332.147.712-.106 2.188-.895 2.497-1.76.309-.864.309-1.605.216-1.76-.093-.154-.34-.247-.71-.432z" fill="#FFFFFF"/>
+                    </svg>
+                    <span>Confirmar Asistencia</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer-section">
+            <p id="final-message-text" class="final-message">¡Gracias por ser parte de nuestra historia!</p>
+            <div class="luxury-flourish">
+                <span class="flourish-star">✦</span>
+                <span class="flourish-line"></span>
+                <span class="flourish-star">✦</span>
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- Modal Lightbox -->
+    <div id="lightbox-modal" class="lightbox-modal" style="display: none;">
+        <span id="lightbox-close" class="lightbox-close">&times;</span>
+        <img id="lightbox-img" src="" alt="Imagen ampliada" class="lightbox-content">
+        <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
+
+    <!-- Script imports -->
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
