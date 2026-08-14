@@ -1,0 +1,13 @@
+# Cloudflare Pages Short URL Rewrites
+/luis-y-kiara       /clientes/luisnurenagonzales_26082005/codigo/index.html 200
+/luisnurena         /clientes/luisnurenagonzales_26082005/codigo/index.html 200
+/luis-kiara         /clientes/luisnurenagonzales_26082005/codigo/index.html 200
+/cliente1           /clientes/luisnurenagonzales_26082005/codigo/index.html 200
+
+# Short links for Demos
+/demo-xv            /demos/xv-anos/codigo/index.html                        200
+/demo-boda          /demos/boda/codigo/index.html                           200
+/demo-cumple        /demos/cumpleanos/codigo/index.html                     200
+/demo-baby          /demos/babyshower/codigo/index.html                     200
+/demo-bautizo       /demos/bautizo/codigo/index.html                        200
+/demo-aniversario   /demos/aniversario/codigo/index.html                    200
