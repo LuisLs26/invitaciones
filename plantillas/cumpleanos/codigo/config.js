@@ -15,7 +15,7 @@ const INVITATION_CONFIG = {
     locationName: "Sky Lounge Club & Terrazas VIP",
     address: "Av. Larco 880, Miraflores, Lima",
     mapUrl: "https://maps.google.com/?q=Miraflores+Lima",
-    whatsapp: "51988799404",
+    whatsapp: "51900000001",
     whatsappMessage: "¡Hola Juan! Confirmo mi asistencia a tu fiesta de 18 Años. Nombre(s): ",
     heroImage: "../imagenes/hero.jpg",
     coverQuote: "La vida se mide en momentos inolvidables y risas compartidas. Acompáñame a celebrar una noche épica de cumpleaños.",

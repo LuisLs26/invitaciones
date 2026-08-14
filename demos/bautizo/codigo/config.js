@@ -15,7 +15,7 @@ const INVITATION_CONFIG = {
     locationName: "Parroquia Nuestra Señora del Pilar & Recepción Casona",
     address: "Av. Arequipa 3400, San Isidro / Villa Floral",
     mapUrl: "https://maps.google.com/?q=Parroquia+Nuestra+Senora+del+Pilar+Lima",
-    whatsapp: "51944445555",
+    whatsapp: "51900000001",
     whatsappMessage: "¡Hola! Confirmo mi asistencia al Bautizo de Lucía. Nombre(s): ",
     heroImage: "../imagenes/hero.jpg",
     coverQuote: "Señor, protege a nuestra hija Lucía en este día bendito y guía siempre sus pasos.",

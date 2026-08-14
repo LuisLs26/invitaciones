@@ -15,7 +15,7 @@ const INVITATION_CONFIG = {
     locationName: "Iglesia San Francisco & Casona Los Olivos",
     address: "Jr. Lampa 210, Centro Histórico / Av. Primavera 1200",
     mapUrl: "https://maps.google.com/?q=Iglesia+San+Francisco+Lima",
-    whatsapp: "51911112222",
+    whatsapp: "51900000001",
     whatsappMessage: "¡Hola María y Carlos! Confirmo mi asistencia a su Boda. Nombre(s): ",
     heroImage: "../imagenes/hero.jpg",
     coverQuote: "El amor no es mirarse el uno al otro, sino mirar juntos en la misma dirección.",

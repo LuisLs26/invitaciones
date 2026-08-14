@@ -15,7 +15,7 @@ const INVITATION_CONFIG = {
     locationName: "Jardín Los Rosales & Lounge",
     address: "Av. Las Camelias 280, San Isidro, Lima",
     mapUrl: "https://maps.google.com/?q=San+Isidro+Lima",
-    whatsapp: "51922223333",
+    whatsapp: "51900000001",
     whatsappMessage: "¡Hola! Confirmo mi asistencia al Baby Shower de Mateo. Nombre(s): ",
     heroImage: "../imagenes/hero.jpg",
     coverQuote: "Un pequeño gran milagro está en camino para llenar nuestras vidas de amor.",

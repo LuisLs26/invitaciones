@@ -15,7 +15,7 @@ const INVITATION_CONFIG = {
     locationName: "Salón de Eventos Los Olivos & Jardin de Gala",
     address: "Av. Las Flores 123, San Isidro, Lima",
     mapUrl: "https://maps.google.com/?q=San+Isidro+Lima",
-    whatsapp: "51987654321",
+    whatsapp: "51900000001",
     whatsappMessage: "¡Hola! Confirmo mi asistencia a los XV Años de Ana María. Nombre(s): ",
     heroImage: "../imagenes/hero.jpg",
     coverQuote: "Acompañame a celebrar una noche inolvidable llena de magia, sueños y alegría.",

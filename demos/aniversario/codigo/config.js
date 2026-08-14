@@ -15,7 +15,7 @@ const INVITATION_CONFIG = {
     locationName: "Casona de Gala Los Virreyes & Salón Real",
     address: "Av. El Golf 540, San Isidro, Lima",
     mapUrl: "https://maps.google.com/?q=San+Isidro+Lima",
-    whatsapp: "51955556666",
+    whatsapp: "51900000001",
     whatsappMessage: "¡Hola Elena y Roberto! Confirmo mi presencia para celebrar sus Bodas de Plata. Nombre(s): ",
     heroImage: "../imagenes/hero.jpg",
     coverQuote: "25 años construyendo una familia unida y compartiendo la alegría de vivir juntos.",
