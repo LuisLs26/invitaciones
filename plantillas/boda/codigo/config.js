@@ -40,9 +40,9 @@ const INVITATION_CONFIG = {
     showCountdown: true,
     showGallery: true,
     gallery: [
-        { url: "../imagenes/galeria1.jpg", caption: "Nuestra Historia de Amor" },
-        { url: "../imagenes/galeria2.jpg", caption: "El Compromiso & Anillos" },
-        { url: "../imagenes/galeria3.jpg", caption: "Noche de Fiesta & Recepción" }
+        { url: "../imagenes/galeria1.jpg", caption: "Anillos & Ramo de Novia" },
+        { url: "../imagenes/galeria2.jpg", caption: "Salida de la Ceremonia" },
+        { url: "../imagenes/galeria3.jpg", caption: "Cena de Gala & Brindis" }
     ],
     showMap: true,
     finalMessage: "Esperamos compartir esta gran dicha contigo. ¡Te esperamos!"

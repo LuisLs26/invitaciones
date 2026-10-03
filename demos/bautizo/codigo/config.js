@@ -39,9 +39,9 @@ const INVITATION_CONFIG = {
     showCountdown: true,
     showGallery: true,
     gallery: [
-        { url: "../imagenes/galeria1.jpg", caption: "Nuestra Pequeña Lucía" },
-        { url: "../imagenes/galeria2.jpg", caption: "Recuerdos en Familia" },
-        { url: "../imagenes/galeria3.jpg", caption: "Con Nuestros Padrinos" }
+        { url: "../imagenes/galeria1.jpg", caption: "Vela y Bendición de Bautizo" },
+        { url: "../imagenes/galeria2.jpg", caption: "Mesa de Recepción & Flores" },
+        { url: "../imagenes/galeria3.jpg", caption: "Torta Sagrada de Bautizo" }
     ],
     showMap: true,
     finalMessage: "¡Que Dios bendiga tu presencia en este día tan sagrado!"

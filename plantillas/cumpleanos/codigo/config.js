@@ -40,9 +40,9 @@ const INVITATION_CONFIG = {
     showCountdown: true,
     showGallery: true,
     gallery: [
-        { url: "../imagenes/galeria1.jpg", caption: "Celebración & Amigos" },
-        { url: "../imagenes/galeria2.jpg", caption: "Noches Inolvidables" },
-        { url: "../imagenes/galeria3.jpg", caption: "Momentos Especiales" }
+        { url: "../imagenes/galeria1.jpg", caption: "Celebración con Amigos" },
+        { url: "../imagenes/galeria2.jpg", caption: "Torta & Velas de Fiesta" },
+        { url: "../imagenes/galeria3.jpg", caption: "Pista de Baile & Fiesta VIP" }
     ],
     showMap: true,
     finalMessage: "¡Prepara tu mejor energía y nos vemos en la pista de baile!"

@@ -41,10 +41,10 @@ const INVITATION_CONFIG = {
     showCountdown: true,
     showGallery: true,
     gallery: [
-        { url: "../imagenes/galeria1.jpg", caption: "Sesión Pre-15 Años" },
-        { url: "../imagenes/galeria2.jpg", caption: "El Vestido & Salón de Gala" },
-        { url: "../imagenes/galeria3.jpg", caption: "Fiesta con Amigos & Familia" },
-        { url: "../imagenes/galeria4.jpg", caption: "Torta Principal & Detalles" }
+        { url: "../imagenes/galeria1.jpg", caption: "Sesión en los Jardines" },
+        { url: "../imagenes/galeria2.jpg", caption: "Corona & Accesorios Reales" },
+        { url: "../imagenes/galeria3.jpg", caption: "El Baile de Gala & Vals" },
+        { url: "../imagenes/galeria4.jpg", caption: "Torta Real de 15 Años" }
     ],
     showMap: true,
     finalMessage: "¡Gracias por ser parte de este día tan especial en mi vida!"

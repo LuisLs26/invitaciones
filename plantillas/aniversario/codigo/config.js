@@ -39,10 +39,10 @@ const INVITATION_CONFIG = {
     showCountdown: true,
     showGallery: true,
     gallery: [
-        { url: "../imagenes/galeria1.jpg", caption: "25 Años de Amor" },
-        { url: "../imagenes/galeria2.jpg", caption: "Nuestra Familia" },
-        { url: "../imagenes/galeria3.jpg", caption: "Brindis de Aniversario" },
-        { url: "../imagenes/galeria4.jpg", caption: "Momentos Inolvidables" }
+        { url: "../imagenes/galeria1.jpg", caption: "25 Años de Amor & Baile" },
+        { url: "../imagenes/galeria2.jpg", caption: "Brindis de Bodas de Plata" },
+        { url: "../imagenes/galeria3.jpg", caption: "Torta Conmemorativa" },
+        { url: "../imagenes/galeria4.jpg", caption: "Álbum de Recuerdos & Alianzas" }
     ],
     showMap: true,
     finalMessage: "¡Gracias por brindar con nosotros por estos 25 años de amor!"

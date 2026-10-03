@@ -40,9 +40,9 @@ const INVITATION_CONFIG = {
     showCountdown: true,
     showGallery: true,
     gallery: [
-        { url: "../imagenes/galeria1.jpg", caption: "Esperándote con Amor" },
-        { url: "../imagenes/galeria2.jpg", caption: "Detalles del Cuartito" },
-        { url: "../imagenes/galeria3.jpg", caption: "Ropita & Regalos" }
+        { url: "../imagenes/galeria1.jpg", caption: "Zapatitos & Espera de Amor" },
+        { url: "../imagenes/galeria2.jpg", caption: "Mesa Dulce & Pastelito" },
+        { url: "../imagenes/galeria3.jpg", caption: "Detallitos para Mateo" }
     ],
     showMap: true,
     finalMessage: "¡Gracias por acompañarnos a recibir a Mateo con tanto cariño!"
