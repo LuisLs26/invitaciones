@@ -2,10 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Demo XV Años - Ana María</title>
     
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Modern Luxury & Apple SF Inspired -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@300;400;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -14,55 +18,83 @@
 </head>
 <body class="theme-quinceanos">
 
-    <!-- Opening Cover Screen (Minimalist Luxury Envelope Cover Screen) -->
-    <div id="cover-screen" class="cover-overlay">
-        <!-- Floating Particles Layer -->
-        <div id="particles-container" class="particles-layer"></div>
-
-        <div class="envelope-screen-container">
-            <div class="animated-header-banner">
-                <span class="envelope-badge" id="cover-badge">¡TIENES UN MENSAJE ESPECIAL!</span>
-                <h1 class="header-title-clean glow-text">¡Tienes una Invitación!</h1>
+    <!-- Opening Cover Screen (Viral Apple iPhone Light Theme Lock Screen) -->
+    <div id="cover-screen" class="ios-lock-overlay">
+        <div class="ios-mobile-screen">
+            
+            <!-- Dynamic Island -->
+            <div class="ios-island-top">
+                <div class="island-lens"></div>
+                <div class="island-dot"></div>
             </div>
 
-            <!-- Realistic Physical Paper 4-Fold Envelope -->
-            <div id="envelope-interactive" class="envelope-wrapper float-soft-anim">
-                <div class="envelope-real">
-                    
-                    <!-- Envelope Interior / Liner -->
-                    <div class="env-interior"></div>
-
-                    <!-- Inner Card (Pops up when opened) -->
-                    <div class="envelope-card-inside" id="envelope-card-inside">
-                        <div class="card-inside-badge">INVITACIÓN</div>
-                        <div class="card-inside-header" id="cover-title">Ana María</div>
-                        <div class="card-inside-ornament">✦ ✨ ✦</div>
-                    </div>
-
-                    <!-- Left, Right & Bottom Folds (Front Pocket) -->
-                    <svg class="env-svg-folds" viewBox="0 0 320 210" preserveAspectRatio="none">
-                        <!-- Left Fold -->
-                        <path d="M 0 0 L 160 105 L 0 210 Z" class="env-side-left" />
-                        <!-- Right Fold -->
-                        <path d="M 320 0 L 160 105 L 320 210 Z" class="env-side-right" />
-                        <!-- Bottom Fold -->
-                        <path d="M 0 210 L 320 210 L 160 95 Z" class="env-bottom" />
+            <!-- iOS Status Bar -->
+            <div class="ios-bar-header">
+                <span class="ios-bar-time" id="ios-status-time">9:41</span>
+                <div class="ios-bar-icons">
+                    <svg class="signal-icon" width="14" height="10" viewBox="0 0 16 12" fill="currentColor">
+                        <rect x="0" y="8" width="3" height="4" rx="0.5"/>
+                        <rect x="4" y="5" width="3" height="7" rx="0.5"/>
+                        <rect x="8" y="2.5" width="3" height="9.5" rx="0.5"/>
+                        <rect x="12" y="0" width="3" height="12" rx="0.5"/>
                     </svg>
-
-                    <!-- Top Flap (Folds down over pocket, rotates open 3D) -->
-                    <div class="envelope-flap" id="envelope-flap">
-                        <svg viewBox="0 0 320 120" class="env-svg-flap" preserveAspectRatio="none">
-                            <path d="M 0 0 L 320 0 L 165 116 Q 160 120 155 116 L 0 0 Z" class="env-top-path"/>
-                        </svg>
+                    <svg class="wifi-icon" width="13" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+                    <div class="ios-bat">
+                        <div class="ios-bat-fill"></div>
                     </div>
-
                 </div>
             </div>
+
+            <!-- Lockscreen Wallpaper Background with Light Glass Overlay -->
+            <img id="ios-cover-wallpaper" src="../imagenes/hero.jpg" alt="Portada" class="ios-screen-wallpaper">
+            <div class="ios-glass-mesh"></div>
+
+            <!-- Lockscreen Top Date & Clock (Tema Claro) -->
+            <div class="ios-lock-top-widget">
+                <div class="ios-lock-date-txt" id="ios-cover-date">SÁBADO, 12 DE DICIEMBRE</div>
+                <div class="ios-lock-clock-txt" id="ios-cover-clock">20:00</div>
+            </div>
+
+            <!-- Apple Glassmorphic Event Pass Widget (Tema Claro) -->
+            <div id="ios-event-pass-trigger" class="ios-glass-pass-widget">
+                <div class="pass-pill-badge">PASE DE INVITACIÓN</div>
+                <h3 class="pass-person-name" id="ios-cover-person">Ana María</h3>
+                <p class="pass-event-title" id="ios-cover-title">Mis XV Años</p>
+                <div class="pass-location-row" id="ios-cover-loc">📍 Salón de Eventos Los Olivos</div>
+            </div>
+
+            <!-- Apple Music Player Widget in Light Frosted Glass -->
+            <div class="ios-glass-music-widget">
+                <div class="ios-music-cover">🎵</div>
+                <div class="ios-music-meta">
+                    <div class="ios-music-song" id="ios-music-title">Música del Evento</div>
+                    <div class="ios-music-sub">Toca para escuchar</div>
+                </div>
+                <div class="ios-music-waves">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <!-- Unlock Button with Shimmer Sweep -->
+            <div id="ios-unlock-pill-btn" class="ios-slide-unlock-btn">
+                <span class="ios-sweep-light"></span>
+                <span class="ios-unlock-text-label">Toca para abrir invitación ➔</span>
+            </div>
+
+            <!-- Bottom Flashlight & Camera Glass Circles -->
+            <div class="ios-lock-footer-buttons">
+                <div class="ios-glass-circle-btn">🔦</div>
+                <div class="ios-glass-circle-btn">📷</div>
+            </div>
+
+            <!-- iOS Home Indicator -->
+            <div class="ios-home-pill-bar"></div>
+
         </div>
     </div>
 
-    <!-- Main Mobile Invitation Application Shell -->
-    <main id="invitation-app" style="display: none;">
+    <!-- Main Mobile Invitation Application Shell (Strict Smartphone Container) -->
+    <main id="invitation-app" class="mobile-app-wrapper" style="display: none;">
 
         <!-- Hero Section -->
         <section class="section hero-section reveal">
