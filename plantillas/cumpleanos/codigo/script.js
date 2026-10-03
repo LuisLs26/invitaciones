@@ -36,32 +36,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.className = themeClass;
         document.title = `${config.title} - ${config.personName}`;
 
-        // 1. Initialize iOS Lockscreen Start Screen (Viral iPhone Light Theme)
-        const iosDateEl = document.getElementById('ios-cover-date');
-        const iosClockEl = document.getElementById('ios-cover-clock');
-        const iosPersonEl = document.getElementById('ios-cover-person');
-        const iosTitleEl = document.getElementById('ios-cover-title');
-        const iosLocEl = document.getElementById('ios-cover-loc');
-        const iosWallpaperEl = document.getElementById('ios-cover-wallpaper');
-        const iosStatusTimeEl = document.getElementById('ios-status-time');
-
-        if (iosDateEl) iosDateEl.textContent = config.formattedDate || 'Sábado, 12 de Diciembre';
-        if (iosPersonEl) iosPersonEl.textContent = config.personName;
-        if (iosTitleEl) iosTitleEl.textContent = config.title;
-        if (iosLocEl) iosLocEl.textContent = '📍 ' + (config.locationName || 'Lugar del Evento');
-        if (iosWallpaperEl && config.heroImage) iosWallpaperEl.src = config.heroImage;
-
-        function updateIosClock() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const timeStr = `${hours}:${minutes}`;
-            if (iosStatusTimeEl) iosStatusTimeEl.textContent = timeStr;
-            if (iosClockEl) iosClockEl.textContent = config.time ? config.time.replace(/ (AM|PM)/i, '') : timeStr;
-        }
-        updateIosClock();
-
-        if (coverScreen) coverScreen.style.display = 'flex';
+        document.getElementById('cover-badge').textContent = config.type ? `¡INVITACIÓN ESPECIAL PARA TI!` : 'INVITACIÓN';
+        document.getElementById('cover-title').textContent = config.personName;
+        const coverQuoteEl = document.getElementById('cover-quote');
+        if (coverQuoteEl) coverQuoteEl.textContent = config.coverQuote || '';
+        coverScreen.style.display = 'flex';
 
         if (config.heroImage) {
             document.getElementById('hero-img').src = config.heroImage;
@@ -156,37 +135,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('final-message-text').textContent = config.finalMessage || '¡Te esperamos!';
 
-        // iOS Unlock Trigger
         let hasOpened = false;
-        function triggerIosUnlock() {
+        function triggerEnvelopeOpen() {
             if (hasOpened) return;
             hasOpened = true;
 
-            if (coverScreen) {
-                coverScreen.classList.add('ios-unlocking');
+            if (envelopeWrapper) {
+                envelopeWrapper.classList.add('open');
             }
 
             setTimeout(() => {
-                if (coverScreen) coverScreen.style.display = 'none';
-                if (invitationApp) invitationApp.style.display = 'block';
+                coverScreen.classList.add('hide-cover');
+                invitationApp.style.display = 'block';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 initScrollReveal();
-            }, 450);
+            }, 850);
         }
 
-        const passTrigger = document.getElementById('ios-event-pass-trigger');
-        const unlockPillBtn = document.getElementById('ios-unlock-pill-btn');
-        if (passTrigger) passTrigger.addEventListener('click', (e) => {
-            e.stopPropagation();
-            triggerIosUnlock();
-        });
-        if (unlockPillBtn) unlockPillBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            triggerIosUnlock();
-        });
-        if (coverScreen) coverScreen.addEventListener('click', () => {
-            triggerIosUnlock();
-        });
+        if (envelopeWrapper) envelopeWrapper.addEventListener('click', triggerEnvelopeOpen);
+        if (openBtn) openBtn.addEventListener('click', triggerEnvelopeOpen);
     }
 
     function initScrollReveal() {
