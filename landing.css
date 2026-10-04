@@ -374,6 +374,9 @@ body.apple-light-body {
     overflow: hidden;
     box-shadow: var(--apple-shadow);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    content-visibility: auto;
+    contain-intrinsic-size: 320px;
+    will-change: transform;
 }
 
 .apple-product-card:hover {

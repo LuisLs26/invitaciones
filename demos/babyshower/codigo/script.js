@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             config.gallery.forEach((photo) => {
                 const item = document.createElement('div');
                 item.className = 'gallery-item';
-                item.innerHTML = `<img src="${photo.url}" alt="${photo.caption || 'Foto'}">`;
+                item.innerHTML = `<img src="${photo.url}" alt="${photo.caption || 'Foto'}" loading="lazy" decoding="async">`;
                 item.addEventListener('click', () => {
                     openLightbox(photo.url, photo.caption);
                 });
@@ -149,6 +149,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 invitationApp.style.display = 'block';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 initScrollReveal();
+
+                // Detener animaciones en segundo plano para ahorrar bateria y CPU en moviles
+                setTimeout(() => {
+                    coverScreen.style.display = 'none';
+                    if (particlesContainer) particlesContainer.innerHTML = '';
+                }, 750);
             }, 850);
         }
 
@@ -164,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
                 }
             });
         }, { threshold: 0.15 });
