@@ -33,109 +33,109 @@ img {
 }
 
 /* ==========================================================================
-   TEMAS CROMÁTICOS & TIPOGRAFÍA DE LUJO
+   TEMAS CROMÁTICOS & TIPOGRAFÍA DE LUJO (100% TEMA CLARO - COLORES ÚNICOS)
    ========================================================================== */
 
-/* Tema 1: XV Años (Rosa Marfil, Dorado Rosado, Tipografía Romántica) */
+/* Tema 1: XV Años (Rosa Empolvado, Glamour Rosado, Tipografía Romántica) */
 .theme-quinceanos, .theme-default {
-    --bg-color: #fdf8f9;
+    --bg-color: #fdf5f8;
     --card-bg: rgba(255, 255, 255, 0.94);
-    --text-color: #3d3142;
-    --text-muted: #826e89;
-    --accent-color: #d4af37;
-    --accent-glow: rgba(212, 175, 55, 0.3);
-    --secondary-color: #f4c2c2;
-    --primary-btn-bg: linear-gradient(135deg, #d4af37 0%, #aa771c 100%);
+    --text-color: #3b2030;
+    --text-muted: #825d73;
+    --accent-color: #d85c84;
+    --accent-glow: rgba(216, 92, 132, 0.28);
+    --secondary-color: #f8c9d8;
+    --primary-btn-bg: linear-gradient(135deg, #d85c84 0%, #aa3a60 100%);
     --primary-btn-text: #ffffff;
     --font-heading: 'Playfair Display', serif;
     --font-hand: 'Great Vibes', cursive;
-    --border-color: rgba(212, 175, 55, 0.35);
-    --shadow-color: rgba(180, 140, 60, 0.12);
+    --border-color: rgba(216, 92, 132, 0.3);
+    --shadow-color: rgba(216, 92, 132, 0.12);
 }
 
-/* Tema 2: Boda (Champán, Blanco Marfil, Caligrafía Fina Alex Brush) */
+/* Tema 2: Boda (Champán Marfil, Dorado Noble Imperial, Caligrafía Fina Alex Brush) */
 .theme-boda {
-    --bg-color: #fcfaf7;
+    --bg-color: #faf7f2;
     --card-bg: rgba(255, 255, 255, 0.95);
-    --text-color: #2b2622;
-    --text-muted: #6e655c;
-    --accent-color: #c5a059;
-    --accent-glow: rgba(197, 160, 89, 0.3);
-    --secondary-color: #d8c3a5;
-    --primary-btn-bg: linear-gradient(135deg, #c5a059 0%, #987836 100%);
-    --primary-btn-text: #ffffff;
-    --font-heading: 'Cinzel', 'Cormorant Garamond', serif;
-    --font-hand: 'Alex Brush', cursive;
-    --border-color: rgba(197, 160, 89, 0.4);
-    --shadow-color: rgba(150, 120, 50, 0.12);
-}
-
-/* Tema 3: Cumpleaños / Fiesta (Oscuro Neón, Cian Eléctrico, Violeta) */
-.theme-cumpleanos {
-    --bg-color: #0a0e17;
-    --card-bg: rgba(22, 27, 38, 0.92);
-    --text-color: #f0f6fc;
-    --text-muted: #8b949e;
-    --accent-color: #00f2fe;
-    --accent-glow: rgba(0, 242, 254, 0.35);
-    --secondary-color: #ff416c;
-    --primary-btn-bg: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
-    --primary-btn-text: #ffffff;
-    --font-heading: 'Outfit', sans-serif;
-    --font-hand: 'Outfit', sans-serif;
-    --border-color: rgba(0, 242, 254, 0.35);
-    --shadow-color: rgba(0, 242, 254, 0.15);
-}
-
-/* Tema 4: Baby Shower (Azul Pastel & Manteca, Tierno y Delicado) */
-.theme-babyshower, .theme-baby_shower {
-    --bg-color: #f6fafd;
-    --card-bg: rgba(255, 255, 255, 0.95);
-    --text-color: #2c3e50;
-    --text-muted: #7f8c8d;
-    --accent-color: #3498db;
-    --accent-glow: rgba(52, 152, 219, 0.25);
-    --secondary-color: #f39c12;
-    --primary-btn-bg: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-    --primary-btn-text: #ffffff;
-    --font-heading: 'Outfit', sans-serif;
-    --font-hand: 'Great Vibes', cursive;
-    --border-color: rgba(52, 152, 219, 0.3);
-    --shadow-color: rgba(52, 152, 219, 0.1);
-}
-
-/* Tema 5: Bautizo (Blanco Marfil, Dorado Santo & Esmeralda) */
-.theme-bautizo {
-    --bg-color: #faf9f6;
-    --card-bg: rgba(255, 255, 255, 0.95);
-    --text-color: #2c2825;
-    --text-muted: #736b63;
-    --accent-color: #d4af37;
-    --accent-glow: rgba(212, 175, 55, 0.3);
-    --secondary-color: #e8e3d9;
-    --primary-btn-bg: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
-    --primary-btn-text: #ffffff;
-    --font-heading: 'Cormorant Garamond', serif;
-    --font-hand: 'Great Vibes', cursive;
-    --border-color: rgba(212, 175, 55, 0.35);
-    --shadow-color: rgba(180, 140, 60, 0.12);
-}
-
-/* Tema 6: Aniversario & Fiestas (Vino tinto / Rose Gold Elegante) */
-.theme-aniversario {
-    --bg-color: #fdf6f7;
-    --card-bg: rgba(255, 255, 255, 0.95);
-    --text-color: #3b2327;
-    --text-muted: #856166;
-    --accent-color: #b76e79;
-    --accent-glow: rgba(183, 110, 121, 0.3);
-    --secondary-color: #e8c5c8;
-    --primary-btn-bg: linear-gradient(135deg, #b76e79 0%, #8b4552 100%);
+    --text-color: #2e261f;
+    --text-muted: #6e6155;
+    --accent-color: #b8860b;
+    --accent-glow: rgba(184, 134, 11, 0.25);
+    --secondary-color: #e8d7c0;
+    --primary-btn-bg: linear-gradient(135deg, #c59b3f 0%, #997322 100%);
     --primary-btn-text: #ffffff;
     --font-heading: 'Cinzel', serif;
     --font-hand: 'Alex Brush', cursive;
-    --border-color: rgba(183, 110, 121, 0.35);
-    --shadow-color: rgba(183, 110, 121, 0.12);
+    --border-color: rgba(197, 155, 63, 0.35);
+    --shadow-color: rgba(184, 134, 11, 0.12);
+}
+
+/* Tema 3: Cumpleaños / Fiesta (Coral Atardecer Radiante & Melocotón Festivo - TEMA CLARO) */
+.theme-cumpleanos {
+    --bg-color: #fff8f5;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --text-color: #2b1f1d;
+    --text-muted: #7a635f;
+    --accent-color: #ff5722;
+    --accent-glow: rgba(255, 87, 34, 0.25);
+    --secondary-color: #ffd0b0;
+    --primary-btn-bg: linear-gradient(135deg, #ff5722 0%, #e64a19 100%);
+    --primary-btn-text: #ffffff;
+    --font-heading: 'Outfit', sans-serif;
+    --font-hand: 'Outfit', sans-serif;
+    --border-color: rgba(255, 87, 34, 0.3);
+    --shadow-color: rgba(255, 87, 34, 0.12);
+}
+
+/* Tema 4: Baby Shower (Azul Cielo Pastel & Blanco Nube, Tierno y Delicado) */
+.theme-babyshower, .theme-baby_shower {
+    --bg-color: #f0f7fc;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --text-color: #1a2e3f;
+    --text-muted: #57738b;
+    --accent-color: #0284c7;
+    --accent-glow: rgba(2, 132, 199, 0.25);
+    --secondary-color: #bfe3f7;
+    --primary-btn-bg: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    --primary-btn-text: #ffffff;
+    --font-heading: 'Outfit', sans-serif;
+    --font-hand: 'Great Vibes', cursive;
+    --border-color: rgba(2, 132, 199, 0.3);
+    --shadow-color: rgba(2, 132, 199, 0.1);
+}
+
+/* Tema 5: Bautizo (Blanco Perla & Verde Salvia Esmeralda Sacro - TEMA CLARO ÚNICO) */
+.theme-bautizo {
+    --bg-color: #f3f8f5;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --text-color: #192e22;
+    --text-muted: #536e5f;
+    --accent-color: #2e7d5a;
+    --accent-glow: rgba(46, 125, 90, 0.25);
+    --secondary-color: #c9e6d7;
+    --primary-btn-bg: linear-gradient(135deg, #2e7d5a 0%, #1f563d 100%);
+    --primary-btn-text: #ffffff;
+    --font-heading: 'Cormorant Garamond', serif;
+    --font-hand: 'Great Vibes', cursive;
+    --border-color: rgba(46, 125, 90, 0.3);
+    --shadow-color: rgba(46, 125, 90, 0.1);
+}
+
+/* Tema 6: Aniversario (Vino Tinto Borgoña Regio & Malva Imperial - TEMA CLARO) */
+.theme-aniversario {
+    --bg-color: #fbf5f8;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --text-color: #381a29;
+    --text-muted: #785065;
+    --accent-color: #8c245c;
+    --accent-glow: rgba(140, 36, 92, 0.25);
+    --secondary-color: #ebd0de;
+    --primary-btn-bg: linear-gradient(135deg, #8c245c 0%, #631540 100%);
+    --primary-btn-text: #ffffff;
+    --font-heading: 'Cinzel', serif;
+    --font-hand: 'Alex Brush', cursive;
+    --border-color: rgba(140, 36, 92, 0.3);
+    --shadow-color: rgba(140, 36, 92, 0.12);
 }
 
 /* ==========================================================================
@@ -318,23 +318,23 @@ img {
 }
 
 .theme-boda .env-interior {
-    background: linear-gradient(145deg, #fcf6ec 0%, #ece2d0 100%);
+    background: linear-gradient(145deg, #fdf8ee 0%, #eedfcb 100%);
 }
 
 .theme-cumpleanos .env-interior {
-    background: linear-gradient(145deg, #1b2332 0%, #0d121c 100%);
+    background: linear-gradient(145deg, #fff0e8 0%, #ffd4bf 100%);
 }
 
 .theme-babyshower .env-interior, .theme-baby_shower .env-interior {
-    background: linear-gradient(145deg, #e4f2fa 0%, #cae3f2 100%);
+    background: linear-gradient(145deg, #ebf5fc 0%, #cce5f7 100%);
 }
 
 .theme-bautizo .env-interior {
-    background: linear-gradient(145deg, #fbf7ee 0%, #ebe2ce 100%);
+    background: linear-gradient(145deg, #edf6f1 0%, #cfe6d9 100%);
 }
 
 .theme-aniversario .env-interior {
-    background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+    background: linear-gradient(145deg, #f7ecf3 0%, #e2c0d5 100%);
 }
 
 /* Inner Card that slides UP */
@@ -447,61 +447,62 @@ img {
 }
 
 /* ==========================================================================
-   THEME-SPECIFIC REALISTIC COLOR PALETTES
+   THEME-SPECIFIC REALISTIC COLOR PALETTES (100% TEMA CLARO)
    ========================================================================== */
 
 /* 1. XV Años (Blush Rose Gold) */
 .theme-quinceanos {
-    --bg-color: #fdf5f7;
-    --flap-color: #fad3db;
-    --pocket-side-left: #f6bcc6;
-    --pocket-side-right: #f4b4bf;
-    --pocket-bottom: #eea4b2;
+    --bg-color: #fdf5f8;
+    --flap-color: #fad0dc;
+    --pocket-side-left: #f6b5c7;
+    --pocket-side-right: #f3a8bd;
+    --pocket-bottom: #ec97ad;
 }
 
 .theme-quinceanos .card-inside-header {
-    color: #b56576;
+    color: #b83b68;
     font-family: 'Great Vibes', cursive;
     font-size: 2.2rem;
 }
 
 /* 2. Boda (Imperial Silk Ivory & Warm Gold) */
 .theme-boda {
-    --bg-color: #faf8f5;
-    --flap-color: #fcf6ed;
-    --pocket-side-left: #f5ece0;
-    --pocket-side-right: #f2e7d7;
-    --pocket-bottom: #eedfcb;
+    --bg-color: #faf7f2;
+    --flap-color: #fcf5ea;
+    --pocket-side-left: #f3e8d6;
+    --pocket-side-right: #eee0cc;
+    --pocket-bottom: #e5d4bd;
 }
 
 .theme-boda .card-inside-header {
-    color: #aa771c;
+    color: #997322;
     font-family: 'Alex Brush', cursive;
     font-size: 2.3rem;
 }
 
-/* 3. Cumpleaños #18 (VIP Obsidian & Matte Dark Navy) */
+/* 3. Cumpleaños #18 (Sunset Coral & Golden Amber Festive - TEMA CLARO) */
 .theme-cumpleanos {
-    --bg-color: #080c14;
-    --flap-color: #242f42;
-    --pocket-side-left: #1a2332;
-    --pocket-side-right: #161e2b;
-    --pocket-bottom: #121824;
+    --bg-color: #fff8f5;
+    --flap-color: #ffe8dc;
+    --pocket-side-left: #ffd8c4;
+    --pocket-side-right: #ffc9b0;
+    --pocket-bottom: #ffb899;
 }
 
 .theme-cumpleanos .card-inside-header {
-    color: #0f172a;
+    color: #e64a19;
     font-family: 'Outfit', sans-serif;
-    font-weight: 900;
+    font-weight: 800;
+    font-size: 1.9rem;
 }
 
 /* 4. Baby Shower (Soft Sky Pastel Cloud) */
 .theme-babyshower, .theme-baby_shower {
     --bg-color: #f0f7fc;
-    --flap-color: #e5f2fa;
-    --pocket-side-left: #cbe3f3;
-    --pocket-side-right: #c2ddf0;
-    --pocket-bottom: #b5d5eb;
+    --flap-color: #e1effa;
+    --pocket-side-left: #cbe3f5;
+    --pocket-side-right: #bddbf0;
+    --pocket-bottom: #afd1e9;
 }
 
 .theme-babyshower .card-inside-header, .theme-baby_shower .card-inside-header {
@@ -510,34 +511,36 @@ img {
     font-size: 2.1rem;
 }
 
-/* 5. Bautizo (Celestial Pearl White & Holy Gold) */
+/* 5. Bautizo (Pure Pearl & Sacred Botanical Sage / Emerald - TEMA CLARO) */
 .theme-bautizo {
-    --bg-color: #fcfbf9;
-    --flap-color: #fcfaf4;
-    --pocket-side-left: #f5f0e4;
-    --pocket-side-right: #f0ebd9;
-    --pocket-bottom: #ebe4cf;
+    --bg-color: #f3f8f5;
+    --flap-color: #e5f1ea;
+    --pocket-side-left: #cce3d6;
+    --pocket-side-right: #bedac9;
+    --pocket-bottom: #afd1be;
 }
 
 .theme-bautizo .card-inside-header {
-    color: #b8860b;
+    color: #236347;
     font-family: 'Cormorant Garamond', serif;
     font-weight: 700;
+    font-size: 2.1rem;
 }
 
-/* 6. Aniversario (Royal Midnight Velvet & Silver) */
+/* 6. Aniversario (Regal Burgundy & Royal Mauve - TEMA CLARO) */
 .theme-aniversario {
-    --bg-color: #0f172a;
-    --flap-color: #2d3b4f;
-    --pocket-side-left: #222d3d;
-    --pocket-side-right: #1d2634;
-    --pocket-bottom: #171f2b;
+    --bg-color: #fbf5f8;
+    --flap-color: #f3e2ec;
+    --pocket-side-left: #e7c8dc;
+    --pocket-side-right: #debcd1;
+    --pocket-bottom: #d3adc5;
 }
 
 .theme-aniversario .card-inside-header {
-    color: #0f172a;
-    font-family: 'Playfair Display', serif;
-    font-weight: 800;
+    color: #8c245c;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 1.9rem;
 }
 
 /* ==========================================================================
