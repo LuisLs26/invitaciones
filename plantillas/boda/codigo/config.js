@@ -12,9 +12,9 @@ const INVITATION_CONFIG = {
     date: "2026-10-18T16:30:00",
     formattedDate: "Domingo, 18 de Octubre de 2026",
     time: "4:30 PM (Ceremonia Religiosa)",
-    locationName: "Iglesia San Francisco & Casona Los Olivos",
-    address: "Jr. Lampa 210, Centro Histórico / Av. Primavera 1200",
-    mapUrl: "https://maps.google.com/?q=Iglesia+San+Francisco+Lima",
+    locationName: "Hacienda Villa — Salón de Eventos & Jardines",
+    address: "Av. Hernando Lavalle s/n, Pantanos de Villa, Chorrillos, Lima, Perú",
+    mapUrl: "https://www.google.com/maps/search/?api=1&query=Hacienda+Villa+Chorrillos+Lima+Peru",
     whatsapp: "51900000001",
     whatsappMessage: "¡Hola María y Carlos! Confirmo mi asistencia a su Boda. Nombre(s): ",
     heroImage: "../imagenes/hero.jpg",
@@ -26,7 +26,7 @@ const INVITATION_CONFIG = {
     // Event Timeline
     timeline: [
         { time: "4:30 PM", title: "Ceremonia Religiosa", description: "Parroquia San Francisco de Asís" },
-        { time: "6:30 PM", title: "Coctel de Bienvenida", description: "Jardines de la Casona Los Olivos" },
+        { time: "6:30 PM", title: "Coctel de Bienvenida", description: "Jardines Centrales de Hacienda Villa" },
         { time: "7:30 PM", title: "Cena de Gala & Brindis", description: "Brindis de novios y palabras de honor" },
         { time: "9:00 PM", title: "Fiesta & Hora Loca", description: "Banda en vivo y celebración de noche" }
     ],

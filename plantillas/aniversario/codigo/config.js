@@ -12,9 +12,9 @@ const INVITATION_CONFIG = {
     date: "2026-11-28T19:30:00",
     formattedDate: "Sábado, 28 de Noviembre de 2026",
     time: "7:30 PM (Misa de Renovación & Gala)",
-    locationName: "Casona de Gala Los Virreyes & Salón Real",
-    address: "Av. El Golf 540, San Isidro, Lima",
-    mapUrl: "https://maps.google.com/?q=San+Isidro+Lima",
+    locationName: "Club Suizo del Perú — Salón Principal de Gala",
+    address: "Calle Manuel Ugarteche 270, Miraflores, Lima, Perú",
+    mapUrl: "https://www.google.com/maps/search/?api=1&query=Club+Suizo+Miraflores+Lima+Peru",
     whatsapp: "51900000001",
     whatsappMessage: "¡Hola Elena y Roberto! Confirmo mi presencia para celebrar sus Bodas de Plata. Nombre(s): ",
     heroImage: "../imagenes/hero.jpg",
@@ -26,7 +26,7 @@ const INVITATION_CONFIG = {
     // Event Timeline
     timeline: [
         { time: "7:30 PM", title: "Misa de Renovación", description: "Renovación de votos matrimoniales en el Altar Mayor" },
-        { time: "8:30 PM", title: "Recepción & Brindis", description: "Brindis de Plata por los 25 años juntos" },
+        { time: "8:30 PM", title: "Recepción & Brindis", description: "Brindis de Plata en el Salón Principal Club Suizo" },
         { time: "9:30 PM", title: "Cena de Gala & Video", description: "Cena ejecutiva y proyección del video de recuerdos" }
     ],
 

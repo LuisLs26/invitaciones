@@ -12,9 +12,9 @@ const INVITATION_CONFIG = {
     date: "2026-10-25T11:00:00",
     formattedDate: "Domingo, 25 de Octubre de 2026",
     time: "11:00 AM (Misa de Bautismo)",
-    locationName: "Parroquia Nuestra Señora del Pilar & Recepción Casona",
-    address: "Av. Arequipa 3400, San Isidro / Villa Floral",
-    mapUrl: "https://maps.google.com/?q=Parroquia+Nuestra+Senora+del+Pilar+Lima",
+    locationName: "Parroquia Santa María Reina & Salón de Recepciones",
+    address: "Av. Los Conquistadores 1293, San Isidro, Lima, Perú",
+    mapUrl: "https://www.google.com/maps/search/?api=1&query=Parroquia+Santa+Maria+Reina+San+Isidro+Lima+Peru",
     whatsapp: "51900000001",
     whatsappMessage: "¡Hola! Confirmo mi asistencia al Bautizo de Lucía. Nombre(s): ",
     heroImage: "../imagenes/hero.jpg",
@@ -26,7 +26,7 @@ const INVITATION_CONFIG = {
     // Event Timeline
     timeline: [
         { time: "11:00 AM", title: "Misa de Bautismo", description: "Parroquia Nuestra Señora del Pilar" },
-        { time: "1:00 PM", title: "Almuerzo de Gala", description: "Recepción en Casona Villa Floral" },
+        { time: "1:00 PM", title: "Almuerzo de Gala", description: "Recepción en el Salón Parroquial Los Conquistadores" },
         { time: "3:00 PM", title: "Torta & Recuerdos", description: "Bendición y brindis en honor a Lucía" }
     ],
 

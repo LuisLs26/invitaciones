@@ -12,9 +12,9 @@ const INVITATION_CONFIG = {
     date: "2026-11-20T17:00:00",
     formattedDate: "Viernes, 20 de Noviembre de 2026",
     time: "5:00 PM",
-    locationName: "Jardín Los Rosales & Lounge",
-    address: "Av. Las Camelias 280, San Isidro, Lima",
-    mapUrl: "https://maps.google.com/?q=San+Isidro+Lima",
+    locationName: "Jardines Las Poncianas — Salón Campestre",
+    address: "Calle Las Poncianas 280, La Molina, Lima, Perú",
+    mapUrl: "https://www.google.com/maps/search/?api=1&query=Las+Poncianas+La+Molina+Lima+Peru",
     whatsapp: "51900000001",
     whatsappMessage: "¡Hola! Confirmo mi asistencia al Baby Shower de Mateo. Nombre(s): ",
     heroImage: "../imagenes/hero.jpg",
@@ -25,7 +25,7 @@ const INVITATION_CONFIG = {
     
     // Event Timeline
     timeline: [
-        { time: "5:00 PM", title: "Bienvenida & Apertura", description: "Recepción con bocaditos y coctel de bienvenida" },
+        { time: "5:00 PM", title: "Bienvenida & Apertura", description: "Recepción en los Jardines Las Poncianas con bocaditos" },
         { time: "6:00 PM", title: "Juegos Interactivos", description: "Trivia para papás y adivina la medida de la pancita" },
         { time: "7:00 PM", title: "Apertura de Regalos", description: "Descubriendo los detallitos para Mateo" },
         { time: "7:30 PM", title: "Torta & Recuerdos", description: "Foto familiar y entrega de recuerditos" }

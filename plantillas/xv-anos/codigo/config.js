@@ -12,9 +12,9 @@ const INVITATION_CONFIG = {
     date: "2026-12-12T20:00:00",
     formattedDate: "Sábado, 12 de Diciembre de 2026",
     time: "8:00 PM",
-    locationName: "Salón de Eventos Los Olivos & Jardin de Gala",
-    address: "Av. Las Flores 123, San Isidro, Lima",
-    mapUrl: "https://maps.google.com/?q=San+Isidro+Lima",
+    locationName: "Villa Verde — Salón de Eventos & Jardín de Gala",
+    address: "Av. Nueva Toledo 145, Cieneguilla, Lima, Perú",
+    mapUrl: "https://www.google.com/maps/search/?api=1&query=Villa+Verde+Eventos+Cieneguilla+Lima+Peru",
     whatsapp: "51900000001",
     whatsappMessage: "¡Hola! Confirmo mi asistencia a los XV Años de Ana María. Nombre(s): ",
     heroImage: "../imagenes/hero.jpg",
@@ -25,7 +25,7 @@ const INVITATION_CONFIG = {
     
     // Event Timeline
     timeline: [
-        { time: "8:00 PM", title: "Recepción de Invitados", description: "Llegada al Salón de Gala Los Olivos" },
+        { time: "8:00 PM", title: "Recepción de Invitados", description: "Llegada al Jardín de Gala Villa Verde" },
         { time: "9:00 PM", title: "Entrada Triunfal & Vals", description: "Primer baile de gala con el padre y padrinos" },
         { time: "10:00 PM", title: "Brindis de Honor", description: "Palabras de la quinceañera y familia" },
         { time: "10:30 PM", title: "Apertura de Pista & Fiesta", description: "Cena, DJ en vivo y hora loca" }

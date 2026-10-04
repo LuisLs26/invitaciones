@@ -173,9 +173,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     observer.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.15 });
+        }, {
+            rootMargin: '150px 0px 100px 0px',
+            threshold: 0.01
+        });
 
-        sections.forEach(sec => observer.observe(sec));
+        sections.forEach((sec, idx) => {
+            const rect = sec.getBoundingClientRect();
+            if (idx === 0 || rect.top < window.innerHeight + 100) {
+                sec.classList.add('is-visible');
+            } else {
+                observer.observe(sec);
+            }
+        });
     }
 
     function startCountdown(targetDateStr) {

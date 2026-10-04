@@ -12,9 +12,9 @@ const INVITATION_CONFIG = {
     date: "2026-09-30T21:00:00",
     formattedDate: "Miércoles, 30 de Septiembre de 2026",
     time: "9:00 PM",
-    locationName: "Sky Lounge Club & Terrazas VIP",
-    address: "Av. Larco 880, Miraflores, Lima",
-    mapUrl: "https://maps.google.com/?q=Miraflores+Lima",
+    locationName: "Madbar & Rooftop Lounge — BTH Hotel",
+    address: "Av. Guardia Civil 727, San Borja, Lima, Perú",
+    mapUrl: "https://www.google.com/maps/search/?api=1&query=BTH+Hotel+San+Borja+Lima+Peru",
     whatsapp: "51900000001",
     whatsappMessage: "¡Hola Juan! Confirmo mi asistencia a tu fiesta de 18 Años. Nombre(s): ",
     heroImage: "../imagenes/hero.jpg",
@@ -25,7 +25,7 @@ const INVITATION_CONFIG = {
     
     // Event Timeline
     timeline: [
-        { time: "9:00 PM", title: "Welcome Drinks & Coctelería", description: "Recepción en la Terraza VIP Sky Lounge Bar" },
+        { time: "9:00 PM", title: "Welcome Drinks & Coctelería", description: "Recepción en la Terraza Rooftop BTH Hotel" },
         { time: "10:30 PM", title: "Soplado de Velas & Brindis", description: "Torta de cumpleaños y brindis de honor #18" },
         { time: "11:00 PM", title: "DJ Live Set & Pista Abierta", description: "Lo mejor del reggaeton, pop y música electrónica" },
         { time: "1:00 AM", title: "Hora Loca & Celebration", description: "Cotillón de fiesta, sorpresas y baile hasta el amanecer" }
